@@ -1,4 +1,0 @@
-rm: cannot remove 'data/gnuplot/profile_x*': No such file or directory
-rm: cannot remove 'data/gnuplot/profile_y*': No such file or directory
-rm: cannot remove 'data/gnuplot/profile_z*': No such file or directory
-slurmstepd: error: *** JOB 6194 ON cn-021 CANCELLED AT 2019-06-03T22:20:55 ***

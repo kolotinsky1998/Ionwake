@@ -1,3 +1,0 @@
-rm: cannot remove 'data/density_t*': No such file or directory
-rm: cannot remove 'data/potential_t*': No such file or directory
-rm: cannot remove 'data/velocity_t*': No such file or directory

@@ -1,3 +1,0 @@
-rm: cannot remove 'data/gnuplot/profile_x*': No such file or directory
-rm: cannot remove 'data/gnuplot/profile_y*': No such file or directory
-rm: cannot remove 'data/gnuplot/profile_z*': No such file or directory

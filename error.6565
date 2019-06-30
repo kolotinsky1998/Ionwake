@@ -1,4 +1,0 @@
-rm: cannot remove 'data/density_t*': No such file or directory
-rm: cannot remove 'data/potential_t*': No such file or directory
-rm: cannot remove 'data/velocity_t*': No such file or directory
-slurmstepd: error: *** JOB 6565 ON cn-017 CANCELLED AT 2019-06-21T16:34:07 DUE TO TIME LIMIT ***
