@@ -1,0 +1,920 @@
+######### Physical parameters of the system #############
+#########################################################
+Temperature       : 300 K
+Thermal velocity  : 24963.3 cm/s
+Debay radious     : 0.84517 cm
+Plasmas frequency : 29536.4 1/s
+Relaxation time   : 0.0004 s
+Ion concenteration: 20000 1/cm**3
+Particle charge   : 1000 (electron charges)
+External force    : 1e-05 (cgs units)
+Physical delta t  : 1.31814e-07s
+
+########## Scheme parameters ###########################
+#########################################################
+                        X       Y       Z     
+
+coordinate step  	0.15	0.15	0.15
+velocity step    	0.2	0.2	0.2
+coordinate N     	40	40	40
+velocity N       	71	50	50
+cut velocity     	9.26388	5	5
+length of the box	6	6	6
+#########################################################
+
+### Some important parameters for numerical scheme ######
+#########################################################
+Flow velocity    :1.15798
+Relaxation time  :11.8146
+Ion concentration:12074.3
+Delta T          :0.0038933
+
+Time taken by inizialisation: 158036214 microseconds
+
+####### Simulation time = 0  #######
+
+####### Simulation time = 0.0038933  #######
+
+####### Simulation time = 0.00778659  #######
+
+####### Simulation time = 0.0116799  #######
+
+####### Simulation time = 0.0155732  #######
+
+####### Simulation time = 0.0194665  #######
+
+####### Simulation time = 0.0233598  #######
+
+####### Simulation time = 0.0272531  #######
+
+####### Simulation time = 0.0311464  #######
+
+####### Simulation time = 0.0350397  #######
+
+####### Simulation time = 0.038933  #######
+
+####### Simulation time = 0.0428263  #######
+
+####### Simulation time = 0.0467196  #######
+
+####### Simulation time = 0.0506129  #######
+
+####### Simulation time = 0.0545062  #######
+
+####### Simulation time = 0.0583995  #######
+
+####### Simulation time = 0.0622928  #######
+
+####### Simulation time = 0.066186  #######
+
+####### Simulation time = 0.0700793  #######
+
+####### Simulation time = 0.0739726  #######
+
+####### Simulation time = 0.0778659  #######
+
+####### Simulation time = 0.0817592  #######
+
+####### Simulation time = 0.0856525  #######
+
+####### Simulation time = 0.0895458  #######
+
+####### Simulation time = 0.0934391  #######
+
+####### Simulation time = 0.0973324  #######
+
+####### Simulation time = 0.101226  #######
+
+####### Simulation time = 0.105119  #######
+
+####### Simulation time = 0.109012  #######
+
+####### Simulation time = 0.112906  #######
+
+####### Simulation time = 0.116799  #######
+
+####### Simulation time = 0.120692  #######
+
+####### Simulation time = 0.124586  #######
+
+####### Simulation time = 0.128479  #######
+
+####### Simulation time = 0.132372  #######
+
+####### Simulation time = 0.136265  #######
+
+####### Simulation time = 0.140159  #######
+
+####### Simulation time = 0.144052  #######
+
+####### Simulation time = 0.147945  #######
+
+####### Simulation time = 0.151839  #######
+
+####### Simulation time = 0.155732  #######
+
+####### Simulation time = 0.159625  #######
+
+####### Simulation time = 0.163518  #######
+
+####### Simulation time = 0.167412  #######
+
+####### Simulation time = 0.171305  #######
+
+####### Simulation time = 0.175198  #######
+
+####### Simulation time = 0.179092  #######
+
+####### Simulation time = 0.182985  #######
+
+####### Simulation time = 0.186878  #######
+
+####### Simulation time = 0.190772  #######
+
+####### Simulation time = 0.194665  #######
+
+####### Simulation time = 0.198558  #######
+
+####### Simulation time = 0.202451  #######
+
+####### Simulation time = 0.206345  #######
+
+####### Simulation time = 0.210238  #######
+
+####### Simulation time = 0.214131  #######
+
+####### Simulation time = 0.218025  #######
+
+####### Simulation time = 0.221918  #######
+
+####### Simulation time = 0.225811  #######
+
+####### Simulation time = 0.229705  #######
+
+####### Simulation time = 0.233598  #######
+
+####### Simulation time = 0.237491  #######
+
+####### Simulation time = 0.241384  #######
+
+####### Simulation time = 0.245278  #######
+
+####### Simulation time = 0.249171  #######
+
+####### Simulation time = 0.253064  #######
+
+####### Simulation time = 0.256958  #######
+
+####### Simulation time = 0.260851  #######
+
+####### Simulation time = 0.264744  #######
+
+####### Simulation time = 0.268637  #######
+
+####### Simulation time = 0.272531  #######
+
+####### Simulation time = 0.276424  #######
+
+####### Simulation time = 0.280317  #######
+
+####### Simulation time = 0.284211  #######
+
+####### Simulation time = 0.288104  #######
+
+####### Simulation time = 0.291997  #######
+
+####### Simulation time = 0.295891  #######
+
+####### Simulation time = 0.299784  #######
+
+####### Simulation time = 0.303677  #######
+
+####### Simulation time = 0.30757  #######
+
+####### Simulation time = 0.311464  #######
+
+####### Simulation time = 0.315357  #######
+
+####### Simulation time = 0.31925  #######
+
+####### Simulation time = 0.323144  #######
+
+####### Simulation time = 0.327037  #######
+
+####### Simulation time = 0.33093  #######
+
+####### Simulation time = 0.334824  #######
+
+####### Simulation time = 0.338717  #######
+
+####### Simulation time = 0.34261  #######
+
+####### Simulation time = 0.346503  #######
+
+####### Simulation time = 0.350397  #######
+
+####### Simulation time = 0.35429  #######
+
+####### Simulation time = 0.358183  #######
+
+####### Simulation time = 0.362077  #######
+
+####### Simulation time = 0.36597  #######
+
+####### Simulation time = 0.369863  #######
+
+####### Simulation time = 0.373757  #######
+
+####### Simulation time = 0.37765  #######
+
+####### Simulation time = 0.381543  #######
+
+####### Simulation time = 0.385436  #######
+
+####### Simulation time = 0.38933  #######
+
+####### Simulation time = 0.393223  #######
+
+####### Simulation time = 0.397116  #######
+
+####### Simulation time = 0.40101  #######
+
+####### Simulation time = 0.404903  #######
+
+####### Simulation time = 0.408796  #######
+
+####### Simulation time = 0.412689  #######
+
+####### Simulation time = 0.416583  #######
+
+####### Simulation time = 0.420476  #######
+
+####### Simulation time = 0.424369  #######
+
+####### Simulation time = 0.428263  #######
+
+####### Simulation time = 0.432156  #######
+
+####### Simulation time = 0.436049  #######
+
+####### Simulation time = 0.439943  #######
+
+####### Simulation time = 0.443836  #######
+
+####### Simulation time = 0.447729  #######
+
+####### Simulation time = 0.451622  #######
+
+####### Simulation time = 0.455516  #######
+
+####### Simulation time = 0.459409  #######
+
+####### Simulation time = 0.463302  #######
+
+####### Simulation time = 0.467196  #######
+
+####### Simulation time = 0.471089  #######
+
+####### Simulation time = 0.474982  #######
+
+####### Simulation time = 0.478876  #######
+
+####### Simulation time = 0.482769  #######
+
+####### Simulation time = 0.486662  #######
+
+####### Simulation time = 0.490555  #######
+
+####### Simulation time = 0.494449  #######
+
+####### Simulation time = 0.498342  #######
+
+####### Simulation time = 0.502235  #######
+
+####### Simulation time = 0.506129  #######
+
+####### Simulation time = 0.510022  #######
+
+####### Simulation time = 0.513915  #######
+
+####### Simulation time = 0.517808  #######
+
+####### Simulation time = 0.521702  #######
+
+####### Simulation time = 0.525595  #######
+
+####### Simulation time = 0.529488  #######
+
+####### Simulation time = 0.533382  #######
+
+####### Simulation time = 0.537275  #######
+
+####### Simulation time = 0.541168  #######
+
+####### Simulation time = 0.545062  #######
+
+####### Simulation time = 0.548955  #######
+
+####### Simulation time = 0.552848  #######
+
+####### Simulation time = 0.556741  #######
+
+####### Simulation time = 0.560635  #######
+
+####### Simulation time = 0.564528  #######
+
+####### Simulation time = 0.568421  #######
+
+####### Simulation time = 0.572315  #######
+
+####### Simulation time = 0.576208  #######
+
+####### Simulation time = 0.580101  #######
+
+####### Simulation time = 0.583995  #######
+
+####### Simulation time = 0.587888  #######
+
+####### Simulation time = 0.591781  #######
+
+####### Simulation time = 0.595674  #######
+
+####### Simulation time = 0.599568  #######
+
+####### Simulation time = 0.603461  #######
+
+####### Simulation time = 0.607354  #######
+
+####### Simulation time = 0.611248  #######
+
+####### Simulation time = 0.615141  #######
+
+####### Simulation time = 0.619034  #######
+
+####### Simulation time = 0.622928  #######
+
+####### Simulation time = 0.626821  #######
+
+####### Simulation time = 0.630714  #######
+
+####### Simulation time = 0.634607  #######
+
+####### Simulation time = 0.638501  #######
+
+####### Simulation time = 0.642394  #######
+
+####### Simulation time = 0.646287  #######
+
+####### Simulation time = 0.650181  #######
+
+####### Simulation time = 0.654074  #######
+
+####### Simulation time = 0.657967  #######
+
+####### Simulation time = 0.66186  #######
+
+####### Simulation time = 0.665754  #######
+
+####### Simulation time = 0.669647  #######
+
+####### Simulation time = 0.67354  #######
+
+####### Simulation time = 0.677434  #######
+
+####### Simulation time = 0.681327  #######
+
+####### Simulation time = 0.68522  #######
+
+####### Simulation time = 0.689114  #######
+
+####### Simulation time = 0.693007  #######
+
+####### Simulation time = 0.6969  #######
+
+####### Simulation time = 0.700793  #######
+
+####### Simulation time = 0.704687  #######
+
+####### Simulation time = 0.70858  #######
+
+####### Simulation time = 0.712473  #######
+
+####### Simulation time = 0.716367  #######
+
+####### Simulation time = 0.72026  #######
+
+####### Simulation time = 0.724153  #######
+
+####### Simulation time = 0.728047  #######
+
+####### Simulation time = 0.73194  #######
+
+####### Simulation time = 0.735833  #######
+
+####### Simulation time = 0.739726  #######
+
+####### Simulation time = 0.74362  #######
+
+####### Simulation time = 0.747513  #######
+
+####### Simulation time = 0.751406  #######
+
+####### Simulation time = 0.7553  #######
+
+####### Simulation time = 0.759193  #######
+
+####### Simulation time = 0.763086  #######
+
+####### Simulation time = 0.76698  #######
+
+####### Simulation time = 0.770873  #######
+
+####### Simulation time = 0.774766  #######
+
+####### Simulation time = 0.778659  #######
+
+####### Simulation time = 0.782553  #######
+
+####### Simulation time = 0.786446  #######
+
+####### Simulation time = 0.790339  #######
+
+####### Simulation time = 0.794233  #######
+
+####### Simulation time = 0.798126  #######
+
+####### Simulation time = 0.802019  #######
+
+####### Simulation time = 0.805912  #######
+
+####### Simulation time = 0.809806  #######
+
+####### Simulation time = 0.813699  #######
+
+####### Simulation time = 0.817592  #######
+
+####### Simulation time = 0.821486  #######
+
+####### Simulation time = 0.825379  #######
+
+####### Simulation time = 0.829272  #######
+
+####### Simulation time = 0.833166  #######
+
+####### Simulation time = 0.837059  #######
+
+####### Simulation time = 0.840952  #######
+
+####### Simulation time = 0.844845  #######
+
+####### Simulation time = 0.848739  #######
+
+####### Simulation time = 0.852632  #######
+
+####### Simulation time = 0.856525  #######
+
+####### Simulation time = 0.860419  #######
+
+####### Simulation time = 0.864312  #######
+
+####### Simulation time = 0.868205  #######
+
+####### Simulation time = 0.872099  #######
+
+####### Simulation time = 0.875992  #######
+
+####### Simulation time = 0.879885  #######
+
+####### Simulation time = 0.883778  #######
+
+####### Simulation time = 0.887672  #######
+
+####### Simulation time = 0.891565  #######
+
+####### Simulation time = 0.895458  #######
+
+####### Simulation time = 0.899352  #######
+
+####### Simulation time = 0.903245  #######
+
+####### Simulation time = 0.907138  #######
+
+####### Simulation time = 0.911031  #######
+
+####### Simulation time = 0.914925  #######
+
+####### Simulation time = 0.918818  #######
+
+####### Simulation time = 0.922711  #######
+
+####### Simulation time = 0.926605  #######
+
+####### Simulation time = 0.930498  #######
+
+####### Simulation time = 0.934391  #######
+
+####### Simulation time = 0.938285  #######
+
+####### Simulation time = 0.942178  #######
+
+####### Simulation time = 0.946071  #######
+
+####### Simulation time = 0.949964  #######
+
+####### Simulation time = 0.953858  #######
+
+####### Simulation time = 0.957751  #######
+
+####### Simulation time = 0.961644  #######
+
+####### Simulation time = 0.965538  #######
+
+####### Simulation time = 0.969431  #######
+
+####### Simulation time = 0.973324  #######
+
+####### Simulation time = 0.977218  #######
+
+####### Simulation time = 0.981111  #######
+
+####### Simulation time = 0.985004  #######
+
+####### Simulation time = 0.988897  #######
+
+####### Simulation time = 0.992791  #######
+
+####### Simulation time = 0.996684  #######
+
+####### Simulation time = 1.00058  #######
+
+####### Simulation time = 1.00447  #######
+
+####### Simulation time = 1.00836  #######
+
+####### Simulation time = 1.01226  #######
+
+####### Simulation time = 1.01615  #######
+
+####### Simulation time = 1.02004  #######
+
+####### Simulation time = 1.02394  #######
+
+####### Simulation time = 1.02783  #######
+
+####### Simulation time = 1.03172  #######
+
+####### Simulation time = 1.03562  #######
+
+####### Simulation time = 1.03951  #######
+
+####### Simulation time = 1.0434  #######
+
+####### Simulation time = 1.0473  #######
+
+####### Simulation time = 1.05119  #######
+
+####### Simulation time = 1.05508  #######
+
+####### Simulation time = 1.05898  #######
+
+####### Simulation time = 1.06287  #######
+
+####### Simulation time = 1.06676  #######
+
+####### Simulation time = 1.07066  #######
+
+####### Simulation time = 1.07455  #######
+
+####### Simulation time = 1.07844  #######
+
+####### Simulation time = 1.08234  #######
+
+####### Simulation time = 1.08623  #######
+
+####### Simulation time = 1.09012  #######
+
+####### Simulation time = 1.09402  #######
+
+####### Simulation time = 1.09791  #######
+
+####### Simulation time = 1.1018  #######
+
+####### Simulation time = 1.1057  #######
+
+####### Simulation time = 1.10959  #######
+
+####### Simulation time = 1.11348  #######
+
+####### Simulation time = 1.11738  #######
+
+####### Simulation time = 1.12127  #######
+
+####### Simulation time = 1.12516  #######
+
+####### Simulation time = 1.12906  #######
+
+####### Simulation time = 1.13295  #######
+
+####### Simulation time = 1.13684  #######
+
+####### Simulation time = 1.14074  #######
+
+####### Simulation time = 1.14463  #######
+
+####### Simulation time = 1.14852  #######
+
+####### Simulation time = 1.15242  #######
+
+####### Simulation time = 1.15631  #######
+
+####### Simulation time = 1.1602  #######
+
+####### Simulation time = 1.1641  #######
+
+####### Simulation time = 1.16799  #######
+
+####### Simulation time = 1.17188  #######
+
+####### Simulation time = 1.17578  #######
+
+####### Simulation time = 1.17967  #######
+
+####### Simulation time = 1.18356  #######
+
+####### Simulation time = 1.18746  #######
+
+####### Simulation time = 1.19135  #######
+
+####### Simulation time = 1.19524  #######
+
+####### Simulation time = 1.19914  #######
+
+####### Simulation time = 1.20303  #######
+
+####### Simulation time = 1.20692  #######
+
+####### Simulation time = 1.21082  #######
+
+####### Simulation time = 1.21471  #######
+
+####### Simulation time = 1.2186  #######
+
+####### Simulation time = 1.2225  #######
+
+####### Simulation time = 1.22639  #######
+
+####### Simulation time = 1.23028  #######
+
+####### Simulation time = 1.23418  #######
+
+####### Simulation time = 1.23807  #######
+
+####### Simulation time = 1.24196  #######
+
+####### Simulation time = 1.24586  #######
+
+####### Simulation time = 1.24975  #######
+
+####### Simulation time = 1.25364  #######
+
+####### Simulation time = 1.25753  #######
+
+####### Simulation time = 1.26143  #######
+
+####### Simulation time = 1.26532  #######
+
+####### Simulation time = 1.26921  #######
+
+####### Simulation time = 1.27311  #######
+
+####### Simulation time = 1.277  #######
+
+####### Simulation time = 1.28089  #######
+
+####### Simulation time = 1.28479  #######
+
+####### Simulation time = 1.28868  #######
+
+####### Simulation time = 1.29257  #######
+
+####### Simulation time = 1.29647  #######
+
+####### Simulation time = 1.30036  #######
+
+####### Simulation time = 1.30425  #######
+
+####### Simulation time = 1.30815  #######
+
+####### Simulation time = 1.31204  #######
+
+####### Simulation time = 1.31593  #######
+
+####### Simulation time = 1.31983  #######
+
+####### Simulation time = 1.32372  #######
+
+####### Simulation time = 1.32761  #######
+
+####### Simulation time = 1.33151  #######
+
+####### Simulation time = 1.3354  #######
+
+####### Simulation time = 1.33929  #######
+
+####### Simulation time = 1.34319  #######
+
+####### Simulation time = 1.34708  #######
+
+####### Simulation time = 1.35097  #######
+
+####### Simulation time = 1.35487  #######
+
+####### Simulation time = 1.35876  #######
+
+####### Simulation time = 1.36265  #######
+
+####### Simulation time = 1.36655  #######
+
+####### Simulation time = 1.37044  #######
+
+####### Simulation time = 1.37433  #######
+
+####### Simulation time = 1.37823  #######
+
+####### Simulation time = 1.38212  #######
+
+####### Simulation time = 1.38601  #######
+
+####### Simulation time = 1.38991  #######
+
+####### Simulation time = 1.3938  #######
+
+####### Simulation time = 1.39769  #######
+
+####### Simulation time = 1.40159  #######
+
+####### Simulation time = 1.40548  #######
+
+####### Simulation time = 1.40937  #######
+
+####### Simulation time = 1.41327  #######
+
+####### Simulation time = 1.41716  #######
+
+####### Simulation time = 1.42105  #######
+
+####### Simulation time = 1.42495  #######
+
+####### Simulation time = 1.42884  #######
+
+####### Simulation time = 1.43273  #######
+
+####### Simulation time = 1.43663  #######
+
+####### Simulation time = 1.44052  #######
+
+####### Simulation time = 1.44441  #######
+
+####### Simulation time = 1.44831  #######
+
+####### Simulation time = 1.4522  #######
+
+####### Simulation time = 1.45609  #######
+
+####### Simulation time = 1.45999  #######
+
+####### Simulation time = 1.46388  #######
+
+####### Simulation time = 1.46777  #######
+
+####### Simulation time = 1.47167  #######
+
+####### Simulation time = 1.47556  #######
+
+####### Simulation time = 1.47945  #######
+
+####### Simulation time = 1.48335  #######
+
+####### Simulation time = 1.48724  #######
+
+####### Simulation time = 1.49113  #######
+
+####### Simulation time = 1.49503  #######
+
+####### Simulation time = 1.49892  #######
+
+####### Simulation time = 1.50281  #######
+
+####### Simulation time = 1.50671  #######
+
+####### Simulation time = 1.5106  #######
+
+####### Simulation time = 1.51449  #######
+
+####### Simulation time = 1.51839  #######
+
+####### Simulation time = 1.52228  #######
+
+####### Simulation time = 1.52617  #######
+
+####### Simulation time = 1.53007  #######
+
+####### Simulation time = 1.53396  #######
+
+####### Simulation time = 1.53785  #######
+
+####### Simulation time = 1.54175  #######
+
+####### Simulation time = 1.54564  #######
+
+####### Simulation time = 1.54953  #######
+
+####### Simulation time = 1.55343  #######
+
+####### Simulation time = 1.55732  #######
+
+####### Simulation time = 1.56121  #######
+
+####### Simulation time = 1.56511  #######
+
+####### Simulation time = 1.569  #######
+
+####### Simulation time = 1.57289  #######
+
+####### Simulation time = 1.57679  #######
+
+####### Simulation time = 1.58068  #######
+
+####### Simulation time = 1.58457  #######
+
+####### Simulation time = 1.58847  #######
+
+####### Simulation time = 1.59236  #######
+
+####### Simulation time = 1.59625  #######
+
+####### Simulation time = 1.60015  #######
+
+####### Simulation time = 1.60404  #######
+
+####### Simulation time = 1.60793  #######
+
+####### Simulation time = 1.61182  #######
+
+####### Simulation time = 1.61572  #######
+
+####### Simulation time = 1.61961  #######
+
+####### Simulation time = 1.6235  #######
+
+####### Simulation time = 1.6274  #######
+
+####### Simulation time = 1.63129  #######
+
+####### Simulation time = 1.63518  #######
+
+####### Simulation time = 1.63908  #######
+
+####### Simulation time = 1.64297  #######
+
+####### Simulation time = 1.64686  #######
+
+####### Simulation time = 1.65076  #######
+
+####### Simulation time = 1.65465  #######
+
+####### Simulation time = 1.65854  #######
+
+####### Simulation time = 1.66244  #######
+
+####### Simulation time = 1.66633  #######
+
+####### Simulation time = 1.67022  #######
+
+####### Simulation time = 1.67412  #######
+
+####### Simulation time = 1.67801  #######
+
+####### Simulation time = 1.6819  #######
+
+####### Simulation time = 1.6858  #######
+
+####### Simulation time = 1.68969  #######
+
+####### Simulation time = 1.69358  #######
+
+####### Simulation time = 1.69748  #######
+
+####### Simulation time = 1.70137  #######
+
+####### Simulation time = 1.70526  #######
+
+####### Simulation time = 1.70916  #######
+
+####### Simulation time = 1.71305  #######
+
+####### Simulation time = 1.71694  #######
+
+####### Simulation time = 1.72084  #######
+
+####### Simulation time = 1.72473  #######

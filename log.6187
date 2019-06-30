@@ -1,0 +1,35 @@
+######### Physical parameters of the system #############
+#########################################################
+Temperature       : 300 K
+Thermal velocity  : 24963.3 cm/s
+Debay radious     : 0.84517 cm
+Plasmas frequency : 29536.4 1/s
+Relaxation time   : 4e-10 s
+Ion concenteration: 20000 1/cm**3
+Particle charge   : 10 (electron charges)
+External force    : 0.1 (cgs units)
+Physical delta t  : 6.90855e-10s
+
+########## Scheme parameters ###########################
+#########################################################
+                        X       Y       Z     
+
+coordinate step  	0.15	0.15	0.15
+velocity step    	0.2	0.2	0.2
+coordinate N     	20	20	20
+velocity N       	50	50	50
+cut velocity     	5	5	5
+length of the box	3	3	3
+#########################################################
+
+### Some important parameters for numerical scheme ######
+#########################################################
+Flow velocity    :0.0115798
+Relaxation time  :1.18146e-05
+Ion concentration:12074.3
+Delta T          :2.04054e-05
+
+Time taken by inizialisation: 20026446 microseconds
+
+####### Simulation time = 0  #######
+Time taken by numerical scheme: 61597289 microseconds

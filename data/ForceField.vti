@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<VTKFile type="ImageData" version="0.1" byte_order="LittleEndian" header_type="UInt32" compressor="vtkZLibDataCompressor">
+  <ImageData WholeExtent="0 1 0 1 0 1" Origin="0 0 0" Spacing="1 1 1">
+  <Piece Extent="0 1 0 1 0 1">
+    <PointData>
+      <DataArray type="Float64" Name="Datas" NumberOfComponents="3" format="ascii" RangeMin="5.0734885845" RangeMax="5.0734885845">
+        2.92918 2.92918 2.92918 -2.92918 2.92918 2.92918
+        2.92918 -2.92918 2.92918 -2.92918 -2.92918 2.92918
+        2.92918 2.92918 -2.92918 -2.92918 2.92918 -2.92918
+        2.92918 -2.92918 -2.92918 -2.92918 -2.92918 -2.92918
+      </DataArray>
+    </PointData>
+    <CellData>
+    </CellData>
+  </Piece>
+  </ImageData>
+</VTKFile>

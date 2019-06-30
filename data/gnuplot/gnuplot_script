@@ -1,0 +1,12 @@
+#!/bin/bash
+
+rm data/gnuplot/draw
+touch data/gnuplot/draw
+echo "set term png" >> data/gnuplot/draw
+echo "set output \"$2\"" >> data/gnuplot/draw
+echo "plot \"$1\" w l" >> data/gnuplot/draw
+
+chmod +x data/gnuplot/draw
+gnuplot data/gnuplot/draw
+
+
