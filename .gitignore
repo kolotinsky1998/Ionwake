@@ -1,4 +1,7 @@
 *.o
 *.dat
 *.png
-
+log*
+error*
+project
+data*
