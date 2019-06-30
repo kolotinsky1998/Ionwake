@@ -5,3 +5,4 @@ log*
 error*
 project
 data*
+.vscode
