@@ -191,3 +191,7 @@ double converter::GetElementaryCharge() const{
 double converter::GetEl() const{
     return El;
 }
+
+double converter::GetPi() const{
+    return pi;
+}

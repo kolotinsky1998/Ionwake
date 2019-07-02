@@ -9,26 +9,27 @@ Converter(&Converter_)
 {
     
 
-    pi = 3.14159265359;
+    pi = Converter->GetPi();
+
     hx = Converter->GetCoordinateStepX();
     hy = Converter->GetCoordinateStepY();
     hz = Converter->GetCoordinateStepZ();
+
     nx = Converter->GetNx();
     ny = Converter->GetNy();
     nz = Converter->GetNz();
     
-    nx_0 = nx / 2; 
-    ny_0 = ny / 2; 
-    nz_0 = nz / 2; 
+    nx_0 = Converter->GetNx_0();
+    ny_0 = Converter->GetNy_0();
+    nz_0 = Converter->GetNz_0();
 
+    Lx = Converter->GetLx();
+    Ly = Converter->GetLy();
+    Lz = Converter->GetLz();
 
     hvx = 0.2;
     hvy = 0.2;
     hvz = 0.2;
-
-    Lx = (double(nx) - 1.) * hx;
-    Ly = (double(ny) - 1.) * hy;
-    Lz = (double(nz) - 1.) * hz;
 
     vxcut = max(5.,8 * Converter->GetDimensionlessFlowVelocity());
     vyzcut = 5;

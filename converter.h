@@ -68,6 +68,8 @@ class converter{
             double GetElementaryCharge() const;
             ///get longitudinal electricity field
             double GetEl() const;
+            ///get value of pi constant
+            double GetPi() const;
 
 
             
