@@ -1,23 +1,21 @@
-CC=icc
+CC=g++
 
-CFLAGS=-c -fast
-
-PFLAGS=
+CFLAGS=-c -Wall -O2
 
 all: project
 
 project: main.o  kinetic.o converter.o poisson.o output.o
-	$(CC) $(PFLAGS) main.o kinetic.o converter.o poisson.o output.o -o project
+	$(CC) main.o kinetic.o converter.o poisson.o output.o -o project
 main.o: main.cpp
-	$(CC) $(CFLAGS) $(PFLAGS) main.cpp
+	$(CC) $(CFLAGS) main.cpp
 kinetic.o: kinetic.cpp
-	$(CC) $(CFLAGS) $(PFLAGS) kinetic.cpp
+	$(CC) $(CFLAGS) kinetic.cpp
 converter.o: converter.cpp
-	$(CC) $(CFLAGS) $(PFLAGS) converter.cpp
+	$(CC) $(CFLAGS) converter.cpp
 poisson.o: poisson.cpp
-	$(CC) $(CFLAGS) $(PFLAGS) poisson.cpp
+	$(CC) $(CFLAGS) poisson.cpp
 output.o: output.cpp
-	$(CC) $(CFLAGS) $(PFLAGS) output.cpp
+	$(CC) $(CFLAGS) output.cpp
 
 
 clean:

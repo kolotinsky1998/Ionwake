@@ -15,6 +15,9 @@ poisson::poisson(const converter &Converter){
     Nz = Converter.GetNz();
     n_i = Converter.GetDimensionlessIonConcentration();
     q = Converter.GetParticleCharge();
+    Nx_0 = Converter.GetNx_0();
+    Ny_0 = Converter.GetNy_0();
+    Nz_0 = Converter.GetNz_0();
 
     potential = new double**[Nx];
     sfx = new double**[Nx];
@@ -96,38 +99,34 @@ void poisson::PoissonScheme(double ***density){
 	                Fi = (potential[i+1][j][k] - 2.0 * F1 + potential[i-1][j][k]) / owx;
 	                Fj = (potential[i][j+1][k] - 2.0 * F1 + potential[i][j-1][k]) / owy;
 	                Fk = (potential[i][j][k+1] - 2.0 * F1 + potential[i][j][k-1]) / owz;
-                    
 	                potential[i][j][k] = potential[i][j][k]         
-                    + (Fi + Fj + Fk + 4.* pi * (density[i][j][k] - n_i + 15.625 - 1000000.0*(i==Nx/2)*(j==Ny/2)*(k==Nz/2)) ) * tau;
+                    + (Fi + Fj + Fk + 4.* pi * (density[i][j][k] / n_i - 1. + q / (n_i * hx * hy * hz * Nz * Ny * Nz) - q * (i==Nx_0)*(j==Ny_0)*(k==Nz_0)) / (n_i * hx * hy * hz) ) * tau;
                     if(potential[i][j][k]!=0){
                         if(abs((potential[i][j][k] - F1)/potential[i][j][k] ) > e) f = 0;
                     }
                 }
             }
 	    } 
-        //cout << 1 << endl;
 
     } while(f == 0);
-
-    //cout << "*** Finalizing Poisson scheme ***" << endl;
 
 }
 
 
 void poisson::GradientScheme(){
 
-    // scheme body
-    //cout << "*** Starting gradient scheme ***" << endl;
     for(int i = 1; i < Nx-1; i++){
         for(int j = 1; j < Ny-1; j++){
 	          for(int k = 1; k < Nz-1; k++){
               sfx[i][j][k] = - (potential[i+1][j  ][k  ] - potential[i-1][j  ][k  ]) / (2.0 * hx); 
               sfy[i][j][k] = - (potential[i  ][j+1][k  ] - potential[i  ][j-1][k  ]) / (2.0 * hy); 
               sfz[i][j][k] = - (potential[i  ][j  ][k+1] - potential[i  ][j  ][k-1]) / (2.0 * hz); 
+              sfx[i][j][k] = sfx[i][j][k] * n_i;
+              sfy[i][j][k] = sfy[i][j][k] * n_i;
+              sfz[i][j][k] = sfz[i][j][k] * n_i;
             }
         }
     }
-    //cout << "*** Finalizing gradient scheme ***" << endl;
 }
 
 double*** poisson::GetSelfConsistentForceFieldX()const{

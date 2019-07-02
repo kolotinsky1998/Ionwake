@@ -1,0 +1,413 @@
+\hypertarget{classconverter}{}\section{converter Class Reference}
+\label{classconverter}\index{converter@{converter}}
+
+
+This class is used to save and convert physical values.  
+
+
+
+
+{\ttfamily \#include $<$converter.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classconverter_a739bb1c56d40ec92d168670fa96743eb}{converter}} ()
+\begin{DoxyCompactList}\small\item\em constuctor \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classconverter_ab0baf1f442a7119d458300f0d15ad526}{converter}} (double T\+\_\+, double tau\+\_\+, double n\+\_\+0\+\_\+, double q\+\_\+, double El\+\_\+, double Lx\+\_\+, double Ly\+\_\+, double Lz\+\_\+, int Nx\+\_\+, int Ny\+\_\+, int Nz\+\_\+, int Nx\+\_\+0, int Ny\+\_\+0, int Nz\+\_\+0)
+\begin{DoxyCompactList}\small\item\em constuctor \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classconverter_ad8feb2580c06b85cc60f643cc36c47ab}{$\sim$converter}} ()
+\begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a560c30ce21d05ac22ab8dcb84caf2e43}{Get\+S\+Axeleration\+Cofficient}} () const
+\begin{DoxyCompactList}\small\item\em get cofficient near the self-\/consistent axeleration term \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a671ceabb409c6401cc3b84e1b56e9497}{Get\+L\+Axeleration\+Cofficient}} () const
+\begin{DoxyCompactList}\small\item\em get cofficient near the longitudinal axeleration term \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a6701071c81bc345e3cfa096bebfeb291}{Get\+C\+Axeleration\+Cofficient}} () const
+\begin{DoxyCompactList}\small\item\em get cofficient near the Coloumb axeleration term \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a52660e55a0c282351a0a764787587f79}{Convert\+Potential}} () const
+\begin{DoxyCompactList}\small\item\em convertion cofficent for dimensionless potential \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_ac72a868ef0a7141d08db58a5cdb27c58}{Get\+Dimensionless\+Tau}} () const
+\begin{DoxyCompactList}\small\item\em convert physical mean free time in dimensionless units \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a89fabf7b30a0009ff92378357549846d}{Get\+Dimensionless\+Flow\+Velocity}} () const
+\begin{DoxyCompactList}\small\item\em get dimensionless flow velocity \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_aa856f42e3c480e1c0132fbd83c2b95e2}{Get\+Dimensionless\+Ion\+Concentration}} () const
+\begin{DoxyCompactList}\small\item\em get dimensionless ion concentration \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a3b867cd7429ebf9227a2c9442bb25124}{Get\+Coordinate\+StepX}} () const
+\begin{DoxyCompactList}\small\item\em get coordinate step X \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_acaf40a138024b759fb53b58257a57c32}{Get\+Coordinate\+StepY}} () const
+\begin{DoxyCompactList}\small\item\em get coordinate step Y \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_af2f9301cdbcd2a6686d57f70eaebde67}{Get\+Coordinate\+StepZ}} () const
+\begin{DoxyCompactList}\small\item\em get coordinate step Z \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classconverter_a75d08969a972c30b96b5bfeb9fb39d03}{Get\+Nx}} () const
+\begin{DoxyCompactList}\small\item\em get grid size X \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classconverter_a01bbb22fc729f7ec1c48ffada82922aa}{Get\+Ny}} () const
+\begin{DoxyCompactList}\small\item\em get grid size Y \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classconverter_ac9b3c0f9d011f2979fcc8eb886043f55}{Get\+Nz}} () const
+\begin{DoxyCompactList}\small\item\em get grid size Z \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classconverter_a28a15a04873f427990d76c49b595f468}{Get\+Nx\+\_\+0}} () const
+\begin{DoxyCompactList}\small\item\em get position at the grid of the duct particle X \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classconverter_a43a45f0717ab21a88349d6ea66be55f2}{Get\+Ny\+\_\+0}} () const
+\begin{DoxyCompactList}\small\item\em get position at the grid of the duct particle Y \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classconverter_afb26f3a944dc5bf3d0ec0bf1ab5e278d}{Get\+Nz\+\_\+0}} () const
+\begin{DoxyCompactList}\small\item\em get position at the grid of the duct particle Z \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_ae315d5d2305093804dc82ae96fed56e4}{Get\+Lx}} () const
+\begin{DoxyCompactList}\small\item\em get length of computational box X \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a0354538702fac302486d859d62afbcfc}{Get\+Ly}} () const
+\begin{DoxyCompactList}\small\item\em get length of computational box Y \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_af9260fc37b19c80b72fde252e6c71ef8}{Get\+Lz}} () const
+\begin{DoxyCompactList}\small\item\em get length of computational box Z \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_ab4f324a1ff9ac52d10a6b11ad588e6df}{Get\+Temperature}} () const
+\begin{DoxyCompactList}\small\item\em get temperature \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a638841356fabc1a3f3b2d1d4d4daed01}{Get\+Thermal\+Velocity}} () const
+\begin{DoxyCompactList}\small\item\em get thermal velocity \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a96c9c79210fcc04ac0ba358e7fa8cdf1}{Get\+Plasmas\+Frequency}} () const
+\begin{DoxyCompactList}\small\item\em get plasmas frequency \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a87a37cd0526fafb393e1fcf74a0884da}{Get\+Physical\+Ion\+Concentration}} () const
+\begin{DoxyCompactList}\small\item\em get Physical equilibrium ion concentration \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a4c56e589a4a71b7421a2523cb471b747}{Get\+Particle\+Charge}} () const
+\begin{DoxyCompactList}\small\item\em get particle charge \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_af57bd275b4cf7495a5bdf23e47bbcd15}{Get\+Strength}} () const
+\begin{DoxyCompactList}\small\item\em get external electricity strength \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a940ed6e249e1ba3be2d64e1502ea3e84}{Get\+Physical\+Tau}} () const
+\begin{DoxyCompactList}\small\item\em get physical relaxation time \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a93ee05bf68e6f98cefc0ec0236b9a58e}{Get\+Rd}} () const
+\begin{DoxyCompactList}\small\item\em get Debay radious \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a6153436879355be9e92b477918bd1e2b}{Get\+Elementary\+Charge}} () const
+\begin{DoxyCompactList}\small\item\em get elementary charge \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classconverter_a9d68bca358ad6090dbdac200c94c251b}{Get\+El}} () const
+\begin{DoxyCompactList}\small\item\em get longitudinal electricity field \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class is used to save and convert physical values. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classconverter_a739bb1c56d40ec92d168670fa96743eb}\label{classconverter_a739bb1c56d40ec92d168670fa96743eb}} 
+\index{converter@{converter}!converter@{converter}}
+\index{converter@{converter}!converter@{converter}}
+\subsubsection{\texorpdfstring{converter()}{converter()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily converter\+::converter (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+constuctor 
+
+\mbox{\Hypertarget{classconverter_ab0baf1f442a7119d458300f0d15ad526}\label{classconverter_ab0baf1f442a7119d458300f0d15ad526}} 
+\index{converter@{converter}!converter@{converter}}
+\index{converter@{converter}!converter@{converter}}
+\subsubsection{\texorpdfstring{converter()}{converter()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily converter\+::converter (\begin{DoxyParamCaption}\item[{double}]{T\+\_\+,  }\item[{double}]{tau\+\_\+,  }\item[{double}]{n\+\_\+0\+\_\+,  }\item[{double}]{q\+\_\+,  }\item[{double}]{El\+\_\+,  }\item[{double}]{Lx\+\_\+,  }\item[{double}]{Ly\+\_\+,  }\item[{double}]{Lz\+\_\+,  }\item[{int}]{Nx\+\_\+,  }\item[{int}]{Ny\+\_\+,  }\item[{int}]{Nz\+\_\+,  }\item[{int}]{Nx\+\_\+0,  }\item[{int}]{Ny\+\_\+0,  }\item[{int}]{Nz\+\_\+0 }\end{DoxyParamCaption})}
+
+
+
+constuctor 
+
+\mbox{\Hypertarget{classconverter_ad8feb2580c06b85cc60f643cc36c47ab}\label{classconverter_ad8feb2580c06b85cc60f643cc36c47ab}} 
+\index{converter@{converter}!````~converter@{$\sim$converter}}
+\index{````~converter@{$\sim$converter}!converter@{converter}}
+\subsubsection{\texorpdfstring{$\sim$converter()}{~converter()}}
+{\footnotesize\ttfamily converter\+::$\sim$converter (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+destructor 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classconverter_a52660e55a0c282351a0a764787587f79}\label{classconverter_a52660e55a0c282351a0a764787587f79}} 
+\index{converter@{converter}!Convert\+Potential@{Convert\+Potential}}
+\index{Convert\+Potential@{Convert\+Potential}!converter@{converter}}
+\subsubsection{\texorpdfstring{Convert\+Potential()}{ConvertPotential()}}
+{\footnotesize\ttfamily double converter\+::\+Convert\+Potential (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+convertion cofficent for dimensionless potential 
+
+\mbox{\Hypertarget{classconverter_a6701071c81bc345e3cfa096bebfeb291}\label{classconverter_a6701071c81bc345e3cfa096bebfeb291}} 
+\index{converter@{converter}!Get\+C\+Axeleration\+Cofficient@{Get\+C\+Axeleration\+Cofficient}}
+\index{Get\+C\+Axeleration\+Cofficient@{Get\+C\+Axeleration\+Cofficient}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+C\+Axeleration\+Cofficient()}{GetCAxelerationCofficient()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+C\+Axeleration\+Cofficient (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get cofficient near the Coloumb axeleration term 
+
+\mbox{\Hypertarget{classconverter_a3b867cd7429ebf9227a2c9442bb25124}\label{classconverter_a3b867cd7429ebf9227a2c9442bb25124}} 
+\index{converter@{converter}!Get\+Coordinate\+StepX@{Get\+Coordinate\+StepX}}
+\index{Get\+Coordinate\+StepX@{Get\+Coordinate\+StepX}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Coordinate\+Step\+X()}{GetCoordinateStepX()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Coordinate\+StepX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get coordinate step X 
+
+\mbox{\Hypertarget{classconverter_acaf40a138024b759fb53b58257a57c32}\label{classconverter_acaf40a138024b759fb53b58257a57c32}} 
+\index{converter@{converter}!Get\+Coordinate\+StepY@{Get\+Coordinate\+StepY}}
+\index{Get\+Coordinate\+StepY@{Get\+Coordinate\+StepY}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Coordinate\+Step\+Y()}{GetCoordinateStepY()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Coordinate\+StepY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get coordinate step Y 
+
+\mbox{\Hypertarget{classconverter_af2f9301cdbcd2a6686d57f70eaebde67}\label{classconverter_af2f9301cdbcd2a6686d57f70eaebde67}} 
+\index{converter@{converter}!Get\+Coordinate\+StepZ@{Get\+Coordinate\+StepZ}}
+\index{Get\+Coordinate\+StepZ@{Get\+Coordinate\+StepZ}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Coordinate\+Step\+Z()}{GetCoordinateStepZ()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Coordinate\+StepZ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get coordinate step Z 
+
+\mbox{\Hypertarget{classconverter_a89fabf7b30a0009ff92378357549846d}\label{classconverter_a89fabf7b30a0009ff92378357549846d}} 
+\index{converter@{converter}!Get\+Dimensionless\+Flow\+Velocity@{Get\+Dimensionless\+Flow\+Velocity}}
+\index{Get\+Dimensionless\+Flow\+Velocity@{Get\+Dimensionless\+Flow\+Velocity}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Dimensionless\+Flow\+Velocity()}{GetDimensionlessFlowVelocity()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Dimensionless\+Flow\+Velocity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get dimensionless flow velocity 
+
+\mbox{\Hypertarget{classconverter_aa856f42e3c480e1c0132fbd83c2b95e2}\label{classconverter_aa856f42e3c480e1c0132fbd83c2b95e2}} 
+\index{converter@{converter}!Get\+Dimensionless\+Ion\+Concentration@{Get\+Dimensionless\+Ion\+Concentration}}
+\index{Get\+Dimensionless\+Ion\+Concentration@{Get\+Dimensionless\+Ion\+Concentration}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Dimensionless\+Ion\+Concentration()}{GetDimensionlessIonConcentration()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Dimensionless\+Ion\+Concentration (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get dimensionless ion concentration 
+
+\mbox{\Hypertarget{classconverter_ac72a868ef0a7141d08db58a5cdb27c58}\label{classconverter_ac72a868ef0a7141d08db58a5cdb27c58}} 
+\index{converter@{converter}!Get\+Dimensionless\+Tau@{Get\+Dimensionless\+Tau}}
+\index{Get\+Dimensionless\+Tau@{Get\+Dimensionless\+Tau}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Dimensionless\+Tau()}{GetDimensionlessTau()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Dimensionless\+Tau (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+convert physical mean free time in dimensionless units 
+
+\mbox{\Hypertarget{classconverter_a9d68bca358ad6090dbdac200c94c251b}\label{classconverter_a9d68bca358ad6090dbdac200c94c251b}} 
+\index{converter@{converter}!Get\+El@{Get\+El}}
+\index{Get\+El@{Get\+El}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+El()}{GetEl()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+El (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get longitudinal electricity field 
+
+\mbox{\Hypertarget{classconverter_a6153436879355be9e92b477918bd1e2b}\label{classconverter_a6153436879355be9e92b477918bd1e2b}} 
+\index{converter@{converter}!Get\+Elementary\+Charge@{Get\+Elementary\+Charge}}
+\index{Get\+Elementary\+Charge@{Get\+Elementary\+Charge}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Elementary\+Charge()}{GetElementaryCharge()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Elementary\+Charge (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get elementary charge 
+
+\mbox{\Hypertarget{classconverter_a671ceabb409c6401cc3b84e1b56e9497}\label{classconverter_a671ceabb409c6401cc3b84e1b56e9497}} 
+\index{converter@{converter}!Get\+L\+Axeleration\+Cofficient@{Get\+L\+Axeleration\+Cofficient}}
+\index{Get\+L\+Axeleration\+Cofficient@{Get\+L\+Axeleration\+Cofficient}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+L\+Axeleration\+Cofficient()}{GetLAxelerationCofficient()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+L\+Axeleration\+Cofficient (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get cofficient near the longitudinal axeleration term 
+
+\mbox{\Hypertarget{classconverter_ae315d5d2305093804dc82ae96fed56e4}\label{classconverter_ae315d5d2305093804dc82ae96fed56e4}} 
+\index{converter@{converter}!Get\+Lx@{Get\+Lx}}
+\index{Get\+Lx@{Get\+Lx}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Lx()}{GetLx()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Lx (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get length of computational box X 
+
+\mbox{\Hypertarget{classconverter_a0354538702fac302486d859d62afbcfc}\label{classconverter_a0354538702fac302486d859d62afbcfc}} 
+\index{converter@{converter}!Get\+Ly@{Get\+Ly}}
+\index{Get\+Ly@{Get\+Ly}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Ly()}{GetLy()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Ly (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get length of computational box Y 
+
+\mbox{\Hypertarget{classconverter_af9260fc37b19c80b72fde252e6c71ef8}\label{classconverter_af9260fc37b19c80b72fde252e6c71ef8}} 
+\index{converter@{converter}!Get\+Lz@{Get\+Lz}}
+\index{Get\+Lz@{Get\+Lz}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Lz()}{GetLz()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Lz (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get length of computational box Z 
+
+\mbox{\Hypertarget{classconverter_a75d08969a972c30b96b5bfeb9fb39d03}\label{classconverter_a75d08969a972c30b96b5bfeb9fb39d03}} 
+\index{converter@{converter}!Get\+Nx@{Get\+Nx}}
+\index{Get\+Nx@{Get\+Nx}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Nx()}{GetNx()}}
+{\footnotesize\ttfamily int converter\+::\+Get\+Nx (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get grid size X 
+
+\mbox{\Hypertarget{classconverter_a28a15a04873f427990d76c49b595f468}\label{classconverter_a28a15a04873f427990d76c49b595f468}} 
+\index{converter@{converter}!Get\+Nx\+\_\+0@{Get\+Nx\+\_\+0}}
+\index{Get\+Nx\+\_\+0@{Get\+Nx\+\_\+0}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Nx\+\_\+0()}{GetNx\_0()}}
+{\footnotesize\ttfamily int converter\+::\+Get\+Nx\+\_\+0 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get position at the grid of the duct particle X 
+
+\mbox{\Hypertarget{classconverter_a01bbb22fc729f7ec1c48ffada82922aa}\label{classconverter_a01bbb22fc729f7ec1c48ffada82922aa}} 
+\index{converter@{converter}!Get\+Ny@{Get\+Ny}}
+\index{Get\+Ny@{Get\+Ny}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Ny()}{GetNy()}}
+{\footnotesize\ttfamily int converter\+::\+Get\+Ny (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get grid size Y 
+
+\mbox{\Hypertarget{classconverter_a43a45f0717ab21a88349d6ea66be55f2}\label{classconverter_a43a45f0717ab21a88349d6ea66be55f2}} 
+\index{converter@{converter}!Get\+Ny\+\_\+0@{Get\+Ny\+\_\+0}}
+\index{Get\+Ny\+\_\+0@{Get\+Ny\+\_\+0}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Ny\+\_\+0()}{GetNy\_0()}}
+{\footnotesize\ttfamily int converter\+::\+Get\+Ny\+\_\+0 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get position at the grid of the duct particle Y 
+
+\mbox{\Hypertarget{classconverter_ac9b3c0f9d011f2979fcc8eb886043f55}\label{classconverter_ac9b3c0f9d011f2979fcc8eb886043f55}} 
+\index{converter@{converter}!Get\+Nz@{Get\+Nz}}
+\index{Get\+Nz@{Get\+Nz}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Nz()}{GetNz()}}
+{\footnotesize\ttfamily int converter\+::\+Get\+Nz (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get grid size Z 
+
+\mbox{\Hypertarget{classconverter_afb26f3a944dc5bf3d0ec0bf1ab5e278d}\label{classconverter_afb26f3a944dc5bf3d0ec0bf1ab5e278d}} 
+\index{converter@{converter}!Get\+Nz\+\_\+0@{Get\+Nz\+\_\+0}}
+\index{Get\+Nz\+\_\+0@{Get\+Nz\+\_\+0}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Nz\+\_\+0()}{GetNz\_0()}}
+{\footnotesize\ttfamily int converter\+::\+Get\+Nz\+\_\+0 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get position at the grid of the duct particle Z 
+
+\mbox{\Hypertarget{classconverter_a4c56e589a4a71b7421a2523cb471b747}\label{classconverter_a4c56e589a4a71b7421a2523cb471b747}} 
+\index{converter@{converter}!Get\+Particle\+Charge@{Get\+Particle\+Charge}}
+\index{Get\+Particle\+Charge@{Get\+Particle\+Charge}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Particle\+Charge()}{GetParticleCharge()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Particle\+Charge (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get particle charge 
+
+\mbox{\Hypertarget{classconverter_a87a37cd0526fafb393e1fcf74a0884da}\label{classconverter_a87a37cd0526fafb393e1fcf74a0884da}} 
+\index{converter@{converter}!Get\+Physical\+Ion\+Concentration@{Get\+Physical\+Ion\+Concentration}}
+\index{Get\+Physical\+Ion\+Concentration@{Get\+Physical\+Ion\+Concentration}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Physical\+Ion\+Concentration()}{GetPhysicalIonConcentration()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Physical\+Ion\+Concentration (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get Physical equilibrium ion concentration 
+
+\mbox{\Hypertarget{classconverter_a940ed6e249e1ba3be2d64e1502ea3e84}\label{classconverter_a940ed6e249e1ba3be2d64e1502ea3e84}} 
+\index{converter@{converter}!Get\+Physical\+Tau@{Get\+Physical\+Tau}}
+\index{Get\+Physical\+Tau@{Get\+Physical\+Tau}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Physical\+Tau()}{GetPhysicalTau()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Physical\+Tau (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get physical relaxation time 
+
+\mbox{\Hypertarget{classconverter_a96c9c79210fcc04ac0ba358e7fa8cdf1}\label{classconverter_a96c9c79210fcc04ac0ba358e7fa8cdf1}} 
+\index{converter@{converter}!Get\+Plasmas\+Frequency@{Get\+Plasmas\+Frequency}}
+\index{Get\+Plasmas\+Frequency@{Get\+Plasmas\+Frequency}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Plasmas\+Frequency()}{GetPlasmasFrequency()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Plasmas\+Frequency (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get plasmas frequency 
+
+\mbox{\Hypertarget{classconverter_a93ee05bf68e6f98cefc0ec0236b9a58e}\label{classconverter_a93ee05bf68e6f98cefc0ec0236b9a58e}} 
+\index{converter@{converter}!Get\+Rd@{Get\+Rd}}
+\index{Get\+Rd@{Get\+Rd}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Rd()}{GetRd()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Rd (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get Debay radious 
+
+\mbox{\Hypertarget{classconverter_a560c30ce21d05ac22ab8dcb84caf2e43}\label{classconverter_a560c30ce21d05ac22ab8dcb84caf2e43}} 
+\index{converter@{converter}!Get\+S\+Axeleration\+Cofficient@{Get\+S\+Axeleration\+Cofficient}}
+\index{Get\+S\+Axeleration\+Cofficient@{Get\+S\+Axeleration\+Cofficient}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+S\+Axeleration\+Cofficient()}{GetSAxelerationCofficient()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+S\+Axeleration\+Cofficient (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get cofficient near the self-\/consistent axeleration term 
+
+\mbox{\Hypertarget{classconverter_af57bd275b4cf7495a5bdf23e47bbcd15}\label{classconverter_af57bd275b4cf7495a5bdf23e47bbcd15}} 
+\index{converter@{converter}!Get\+Strength@{Get\+Strength}}
+\index{Get\+Strength@{Get\+Strength}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Strength()}{GetStrength()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Strength (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get external electricity strength 
+
+\mbox{\Hypertarget{classconverter_ab4f324a1ff9ac52d10a6b11ad588e6df}\label{classconverter_ab4f324a1ff9ac52d10a6b11ad588e6df}} 
+\index{converter@{converter}!Get\+Temperature@{Get\+Temperature}}
+\index{Get\+Temperature@{Get\+Temperature}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Temperature()}{GetTemperature()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Temperature (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get temperature 
+
+\mbox{\Hypertarget{classconverter_a638841356fabc1a3f3b2d1d4d4daed01}\label{classconverter_a638841356fabc1a3f3b2d1d4d4daed01}} 
+\index{converter@{converter}!Get\+Thermal\+Velocity@{Get\+Thermal\+Velocity}}
+\index{Get\+Thermal\+Velocity@{Get\+Thermal\+Velocity}!converter@{converter}}
+\subsubsection{\texorpdfstring{Get\+Thermal\+Velocity()}{GetThermalVelocity()}}
+{\footnotesize\ttfamily double converter\+::\+Get\+Thermal\+Velocity (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+get thermal velocity 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{converter_8h}{converter.\+h}}\item 
+\mbox{\hyperlink{converter_8cpp}{converter.\+cpp}}\end{DoxyCompactItemize}

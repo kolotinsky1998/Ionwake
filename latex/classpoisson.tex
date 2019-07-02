@@ -1,0 +1,125 @@
+\hypertarget{classpoisson}{}\section{poisson Class Reference}
+\label{classpoisson}\index{poisson@{poisson}}
+
+
+In this class numerical scheme to solve Poisson equation is implemented.  
+
+
+
+
+{\ttfamily \#include $<$poisson.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classpoisson_a747dc597f8b38040bde8e40fc47054b4}{poisson}} (const \mbox{\hyperlink{classconverter}{converter}} \&Converter)
+\begin{DoxyCompactList}\small\item\em constructor \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classpoisson_abcc4fdb354830a10fb4e2e42a5fad718}{$\sim$poisson}} ()
+\begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{classpoisson_ac0aa69f7fc50385430fe4e4b90ad452e}{Get\+Self\+Consistent\+Force\+FieldX}} () const
+\begin{DoxyCompactList}\small\item\em using this you can acces to self-\/consistent force field x-\/component \end{DoxyCompactList}\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{classpoisson_abab1829dc556d57c2a156b6954dcc219}{Get\+Self\+Consistent\+Force\+FieldY}} () const
+\begin{DoxyCompactList}\small\item\em using this you can acces to self-\/consistent force field y-\/component \end{DoxyCompactList}\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{classpoisson_ac0891df30c3686bc0d8bef48cade2b62}{Get\+Self\+Consistent\+Force\+FieldZ}} () const
+\begin{DoxyCompactList}\small\item\em using this you can acces to self-\/consistent force field z-\/component \end{DoxyCompactList}\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{classpoisson_a63c221d801cfda8164b7ec6ebdbadbbb}{Get\+Potential}} () const
+\begin{DoxyCompactList}\small\item\em using this you can acces to self-\/consistent potential \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classpoisson_ae1e3d81634d4af806778d49e113f2405}{Poisson\+Scheme}} (double $\ast$$\ast$$\ast$density)
+\begin{DoxyCompactList}\small\item\em numerical scheme for solving the Poisson equation \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classpoisson_ab99b96968796501b381426609037c6b8}{Gradient\+Scheme}} ()
+\begin{DoxyCompactList}\small\item\em numerical scheme for taking gradient \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+In this class numerical scheme to solve Poisson equation is implemented. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classpoisson_a747dc597f8b38040bde8e40fc47054b4}\label{classpoisson_a747dc597f8b38040bde8e40fc47054b4}} 
+\index{poisson@{poisson}!poisson@{poisson}}
+\index{poisson@{poisson}!poisson@{poisson}}
+\subsubsection{\texorpdfstring{poisson()}{poisson()}}
+{\footnotesize\ttfamily poisson\+::poisson (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classconverter}{converter}} \&}]{Converter }\end{DoxyParamCaption})}
+
+
+
+constructor 
+
+\mbox{\Hypertarget{classpoisson_abcc4fdb354830a10fb4e2e42a5fad718}\label{classpoisson_abcc4fdb354830a10fb4e2e42a5fad718}} 
+\index{poisson@{poisson}!````~poisson@{$\sim$poisson}}
+\index{````~poisson@{$\sim$poisson}!poisson@{poisson}}
+\subsubsection{\texorpdfstring{$\sim$poisson()}{~poisson()}}
+{\footnotesize\ttfamily poisson\+::$\sim$poisson (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+destructor 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classpoisson_a63c221d801cfda8164b7ec6ebdbadbbb}\label{classpoisson_a63c221d801cfda8164b7ec6ebdbadbbb}} 
+\index{poisson@{poisson}!Get\+Potential@{Get\+Potential}}
+\index{Get\+Potential@{Get\+Potential}!poisson@{poisson}}
+\subsubsection{\texorpdfstring{Get\+Potential()}{GetPotential()}}
+{\footnotesize\ttfamily double $\ast$$\ast$$\ast$ poisson\+::\+Get\+Potential (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+using this you can acces to self-\/consistent potential 
+
+\mbox{\Hypertarget{classpoisson_ac0aa69f7fc50385430fe4e4b90ad452e}\label{classpoisson_ac0aa69f7fc50385430fe4e4b90ad452e}} 
+\index{poisson@{poisson}!Get\+Self\+Consistent\+Force\+FieldX@{Get\+Self\+Consistent\+Force\+FieldX}}
+\index{Get\+Self\+Consistent\+Force\+FieldX@{Get\+Self\+Consistent\+Force\+FieldX}!poisson@{poisson}}
+\subsubsection{\texorpdfstring{Get\+Self\+Consistent\+Force\+Field\+X()}{GetSelfConsistentForceFieldX()}}
+{\footnotesize\ttfamily double $\ast$$\ast$$\ast$ poisson\+::\+Get\+Self\+Consistent\+Force\+FieldX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+using this you can acces to self-\/consistent force field x-\/component 
+
+\mbox{\Hypertarget{classpoisson_abab1829dc556d57c2a156b6954dcc219}\label{classpoisson_abab1829dc556d57c2a156b6954dcc219}} 
+\index{poisson@{poisson}!Get\+Self\+Consistent\+Force\+FieldY@{Get\+Self\+Consistent\+Force\+FieldY}}
+\index{Get\+Self\+Consistent\+Force\+FieldY@{Get\+Self\+Consistent\+Force\+FieldY}!poisson@{poisson}}
+\subsubsection{\texorpdfstring{Get\+Self\+Consistent\+Force\+Field\+Y()}{GetSelfConsistentForceFieldY()}}
+{\footnotesize\ttfamily double $\ast$$\ast$$\ast$ poisson\+::\+Get\+Self\+Consistent\+Force\+FieldY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+using this you can acces to self-\/consistent force field y-\/component 
+
+\mbox{\Hypertarget{classpoisson_ac0891df30c3686bc0d8bef48cade2b62}\label{classpoisson_ac0891df30c3686bc0d8bef48cade2b62}} 
+\index{poisson@{poisson}!Get\+Self\+Consistent\+Force\+FieldZ@{Get\+Self\+Consistent\+Force\+FieldZ}}
+\index{Get\+Self\+Consistent\+Force\+FieldZ@{Get\+Self\+Consistent\+Force\+FieldZ}!poisson@{poisson}}
+\subsubsection{\texorpdfstring{Get\+Self\+Consistent\+Force\+Field\+Z()}{GetSelfConsistentForceFieldZ()}}
+{\footnotesize\ttfamily double $\ast$$\ast$$\ast$ poisson\+::\+Get\+Self\+Consistent\+Force\+FieldZ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+using this you can acces to self-\/consistent force field z-\/component 
+
+\mbox{\Hypertarget{classpoisson_ab99b96968796501b381426609037c6b8}\label{classpoisson_ab99b96968796501b381426609037c6b8}} 
+\index{poisson@{poisson}!Gradient\+Scheme@{Gradient\+Scheme}}
+\index{Gradient\+Scheme@{Gradient\+Scheme}!poisson@{poisson}}
+\subsubsection{\texorpdfstring{Gradient\+Scheme()}{GradientScheme()}}
+{\footnotesize\ttfamily void poisson\+::\+Gradient\+Scheme (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+numerical scheme for taking gradient 
+
+\mbox{\Hypertarget{classpoisson_ae1e3d81634d4af806778d49e113f2405}\label{classpoisson_ae1e3d81634d4af806778d49e113f2405}} 
+\index{poisson@{poisson}!Poisson\+Scheme@{Poisson\+Scheme}}
+\index{Poisson\+Scheme@{Poisson\+Scheme}!poisson@{poisson}}
+\subsubsection{\texorpdfstring{Poisson\+Scheme()}{PoissonScheme()}}
+{\footnotesize\ttfamily void poisson\+::\+Poisson\+Scheme (\begin{DoxyParamCaption}\item[{double $\ast$$\ast$$\ast$}]{density }\end{DoxyParamCaption})}
+
+
+
+numerical scheme for solving the Poisson equation 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{poisson_8h}{poisson.\+h}}\item 
+\mbox{\hyperlink{poisson_8cpp}{poisson.\+cpp}}\end{DoxyCompactItemize}

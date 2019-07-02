@@ -9,7 +9,7 @@ converter::converter(){
 
 }
 converter::converter(double T_, double tau_, double n_0_, double q_, 
-                      double El_, double Lx_, double Ly_, double Lz_, int Nx_, int Ny_, int Nz_):
+                      double El_, double Lx_, double Ly_, double Lz_, int Nx_, int Ny_, int Nz_, int Nx_0_, int Ny_0_, int Nz_0_):
 T(T_),
 tau(tau_),
 n_0(n_0_),
@@ -20,7 +20,10 @@ Ly(Ly_),
 Lz(Lz_),
 Nx(Nx_),
 Ny(Ny_),
-Nz(Nz_)
+Nz(Nz_),
+Nx_0(Nx_0_),
+Ny_0(Ny_0_),
+Nz_0(Nz_0_)
 {
     pi = 3.1415926535897932;
     e = 4.8032*pow(10.,-10.);
@@ -115,6 +118,30 @@ int converter::GetNz() const{
     return Nz;
 }
 
+int converter::GetNx_0()const {
+    return Nx_0;
+}
+
+int converter::GetNy_0()const {
+    return Ny_0;
+}
+
+int converter::GetNz_0()const {
+    return Nz_0;
+}
+
+double converter::GetLx()const {
+    return Lx;
+}
+
+double converter::GetLy()const {
+    return Ly;
+}
+
+double converter::GetLz()const {
+    return Lz;
+}
+
 
 double converter::GetTemperature()const {
     return T;
@@ -154,4 +181,13 @@ double converter::GetPhysicalTau() const{
 
 double converter::GetRd() const {
     return rd;
+}
+
+double converter::GetElementaryCharge() const{
+    return e;
+}
+
+
+double converter::GetEl() const{
+    return El;
 }

@@ -1,0 +1,362 @@
+\hypertarget{classkinetic}{}\section{kinetic Class Reference}
+\label{classkinetic}\index{kinetic@{kinetic}}
+
+
+This class is used to solve kinetic equation for ions numericaly.  
+
+
+
+
+{\ttfamily \#include $<$kinetic.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classkinetic_a9cb6588c4a9e87619ed78269299e07ca}{kinetic}} (const \mbox{\hyperlink{classconverter}{converter}} \&Converter, const \mbox{\hyperlink{classpoisson}{poisson}} \&Poisson)
+\begin{DoxyCompactList}\small\item\em kinetic constructor \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classkinetic_a68a20ffcf1b59f154d2ca37c9776f35a}{$\sim$kinetic}} ()
+\begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{classkinetic_add83c6ebb9fbceed77e42abff478d56a}{Get\+Density}} () const
+\begin{DoxyCompactList}\small\item\em you can get density using this function \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classkinetic_a76cf34444249efa97fb73f710cc924ad}{Integrate\+All}} ()
+\begin{DoxyCompactList}\small\item\em integrate the hole system \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classkinetic_ab157d454b4a32922a97814ef768a2066}{Get\+Nvx}} () const
+\begin{DoxyCompactList}\small\item\em return number of sells in velocity space X \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classkinetic_accc79e8415db86b99fba2dae741ecd92}{Get\+Nvy}} () const
+\begin{DoxyCompactList}\small\item\em return number of sells in velocity space Y \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classkinetic_a38b631033dd32eebf0ba3f4cc1bb0e9d}{Get\+Nvz}} () const
+\begin{DoxyCompactList}\small\item\em return number of sells in velocity space Z \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classkinetic_a383622d22e32de911bb9866f306ab236}{Gethvx}} () const
+\begin{DoxyCompactList}\small\item\em return velocity integration step X \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classkinetic_aed79c6b3b6a1a8c496bb104431f36b37}{Gethvy}} () const
+\begin{DoxyCompactList}\small\item\em return velocity integration step Y \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classkinetic_a057c3a53aa31d290367e3c8466184743}{Gethvz}} () const
+\begin{DoxyCompactList}\small\item\em return velocity integration step Z \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classkinetic_a66377a85ab8a6672fa84c1c03a9a0c2a}{Get\+Cut\+Velocity\+Along}} () const
+\begin{DoxyCompactList}\small\item\em return cut velocity along the flow \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classkinetic_a9ee5f7ffa87b177cda2532ffc56ac1ed}{Get\+Cut\+Velocity\+Normal}} () const
+\begin{DoxyCompactList}\small\item\em return cut velocity normal the flow \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classkinetic_af8c37c8a479f30dc2f5a5a25cd4b37b0}{Get\+Current\+Time}} () const
+\begin{DoxyCompactList}\small\item\em return current time \end{DoxyCompactList}\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{classkinetic_ad7344c18f324d71b943928da869c9a09}{Get\+Flow\+VelocityX}} () const
+\begin{DoxyCompactList}\small\item\em return velocity field x-\/component \end{DoxyCompactList}\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{classkinetic_a7c07f65ef9e49e1a513925f6280ae0bc}{Get\+Flow\+VelocityY}} () const
+\begin{DoxyCompactList}\small\item\em return velocity field y-\/component \end{DoxyCompactList}\item 
+double $\ast$$\ast$$\ast$ \mbox{\hyperlink{classkinetic_ab2c9e6ba7a4a3c1cb731368c222ecb31}{Get\+Flow\+VelocityZ}} () const
+\begin{DoxyCompactList}\small\item\em return velocity field z-\/component \end{DoxyCompactList}\item 
+double $\ast$ \mbox{\hyperlink{classkinetic_ab994b8c6236881440ac410168bc9405e}{Get\+ProfileX}} () const
+\begin{DoxyCompactList}\small\item\em return profile of the distribution function x-\/component \end{DoxyCompactList}\item 
+double $\ast$ \mbox{\hyperlink{classkinetic_a73c1b7ab68870948599682f999e82fa6}{Get\+ProfileY}} () const
+\begin{DoxyCompactList}\small\item\em return profile of the distribution function y-\/component \end{DoxyCompactList}\item 
+double $\ast$ \mbox{\hyperlink{classkinetic_aa4c537077cc449d37cb152e972a4811b}{Get\+ProfileZ}} () const
+\begin{DoxyCompactList}\small\item\em return profile of the distribution function z-\/component \end{DoxyCompactList}\item 
+double $\ast$ \mbox{\hyperlink{classkinetic_aecfcf87f283eb405fcfda20e40bb9868}{Get\+Analytical\+ProfileX}} () const
+\begin{DoxyCompactList}\small\item\em return analytical profile of the distribution function z-\/component \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classkinetic_a7c0840510c51dc520d28db3080d6ed73}{Set\+ProfileX}} (int i, int j, int k)
+\begin{DoxyCompactList}\small\item\em set profile of the distribution function x-\/component \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classkinetic_a93a573e6be25179788110632d4eac6e5}{Set\+ProfileY}} (int i, int j, int k)
+\begin{DoxyCompactList}\small\item\em set profile of the distribution function y-\/component \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classkinetic_af3dcca37fa51324f1f361665f3ada0d6}{Set\+ProfileZ}} (int i, int j, int k)
+\begin{DoxyCompactList}\small\item\em set profile of the distribution function z-\/component \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classkinetic_a99d22d7ef6a68fb16f1873ba0a91e55b}{Get\+DeltaT}} () const
+\begin{DoxyCompactList}\small\item\em return set delta t \end{DoxyCompactList}\item 
+double $\ast$ \mbox{\hyperlink{classkinetic_ac19955de68dae320c6340259e8f8a700}{Get\+Velocity\+SetX}} () const
+\item 
+double $\ast$ \mbox{\hyperlink{classkinetic_a2a7f9c38c1f9f6fac18ff121e1b2177e}{Get\+Velocity\+SetY}} () const
+\item 
+double $\ast$ \mbox{\hyperlink{classkinetic_a596368db571a795a6c3476f0ac0006bc}{Get\+Velocity\+SetZ}} () const
+\item 
+void \mbox{\hyperlink{classkinetic_a81e02890b75dcffc4a9e2053a4617877}{Define\+Density}} ()
+\begin{DoxyCompactList}\small\item\em define density as ((pi/\+Lx)$^\wedge$2+(pi/\+Lx)$^\wedge$2+(pi/\+Lz)$^\wedge$2 $\ast$ sin(pi$\ast$x/\+Lx)$\ast$sin(pi$\ast$y/\+Ly)$\ast$sin(pi$\ast$z/\+Lz) / 4pi + n\+\_\+i/4pi \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class is used to solve kinetic equation for ions numericaly. 
+
+\[ \frac{\partial f}{\partial t} + \overline{v}\bigtriangledown f+\frac{\overline{F}}{m}\frac{\partial f}{\partial \overline{v}}=St[f] \] \[ St[f] = \nu (f - n_i \Phi_M) \] \[ \Phi_M = \frac{1}{(2 \pi v_T^2)^{\frac{3}{2}}} \exp(-\frac{v^2}{2v_T^2}) \] \[ n_i = \int f dv \] 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classkinetic_a9cb6588c4a9e87619ed78269299e07ca}\label{classkinetic_a9cb6588c4a9e87619ed78269299e07ca}} 
+\index{kinetic@{kinetic}!kinetic@{kinetic}}
+\index{kinetic@{kinetic}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{kinetic()}{kinetic()}}
+{\footnotesize\ttfamily kinetic\+::kinetic (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classconverter}{converter}} \&}]{Converter,  }\item[{const \mbox{\hyperlink{classpoisson}{poisson}} \&}]{Poisson }\end{DoxyParamCaption})}
+
+
+
+kinetic constructor 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \&\+Converter} & the link on the object which store the information about system parameters \\
+\hline
+{\em \&\+Poisson} & the link on the object which solve Poisson equation \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classkinetic_a68a20ffcf1b59f154d2ca37c9776f35a}\label{classkinetic_a68a20ffcf1b59f154d2ca37c9776f35a}} 
+\index{kinetic@{kinetic}!````~kinetic@{$\sim$kinetic}}
+\index{````~kinetic@{$\sim$kinetic}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{$\sim$kinetic()}{~kinetic()}}
+{\footnotesize\ttfamily kinetic\+::$\sim$kinetic (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+destructor 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classkinetic_a81e02890b75dcffc4a9e2053a4617877}\label{classkinetic_a81e02890b75dcffc4a9e2053a4617877}} 
+\index{kinetic@{kinetic}!Define\+Density@{Define\+Density}}
+\index{Define\+Density@{Define\+Density}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Define\+Density()}{DefineDensity()}}
+{\footnotesize\ttfamily void kinetic\+::\+Define\+Density (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+define density as ((pi/\+Lx)$^\wedge$2+(pi/\+Lx)$^\wedge$2+(pi/\+Lz)$^\wedge$2 $\ast$ sin(pi$\ast$x/\+Lx)$\ast$sin(pi$\ast$y/\+Ly)$\ast$sin(pi$\ast$z/\+Lz) / 4pi + n\+\_\+i/4pi 
+
+\mbox{\Hypertarget{classkinetic_aecfcf87f283eb405fcfda20e40bb9868}\label{classkinetic_aecfcf87f283eb405fcfda20e40bb9868}} 
+\index{kinetic@{kinetic}!Get\+Analytical\+ProfileX@{Get\+Analytical\+ProfileX}}
+\index{Get\+Analytical\+ProfileX@{Get\+Analytical\+ProfileX}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Analytical\+Profile\+X()}{GetAnalyticalProfileX()}}
+{\footnotesize\ttfamily double $\ast$ kinetic\+::\+Get\+Analytical\+ProfileX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return analytical profile of the distribution function z-\/component 
+
+\mbox{\Hypertarget{classkinetic_af8c37c8a479f30dc2f5a5a25cd4b37b0}\label{classkinetic_af8c37c8a479f30dc2f5a5a25cd4b37b0}} 
+\index{kinetic@{kinetic}!Get\+Current\+Time@{Get\+Current\+Time}}
+\index{Get\+Current\+Time@{Get\+Current\+Time}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Current\+Time()}{GetCurrentTime()}}
+{\footnotesize\ttfamily double kinetic\+::\+Get\+Current\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return current time 
+
+\mbox{\Hypertarget{classkinetic_a66377a85ab8a6672fa84c1c03a9a0c2a}\label{classkinetic_a66377a85ab8a6672fa84c1c03a9a0c2a}} 
+\index{kinetic@{kinetic}!Get\+Cut\+Velocity\+Along@{Get\+Cut\+Velocity\+Along}}
+\index{Get\+Cut\+Velocity\+Along@{Get\+Cut\+Velocity\+Along}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Cut\+Velocity\+Along()}{GetCutVelocityAlong()}}
+{\footnotesize\ttfamily double kinetic\+::\+Get\+Cut\+Velocity\+Along (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return cut velocity along the flow 
+
+\mbox{\Hypertarget{classkinetic_a9ee5f7ffa87b177cda2532ffc56ac1ed}\label{classkinetic_a9ee5f7ffa87b177cda2532ffc56ac1ed}} 
+\index{kinetic@{kinetic}!Get\+Cut\+Velocity\+Normal@{Get\+Cut\+Velocity\+Normal}}
+\index{Get\+Cut\+Velocity\+Normal@{Get\+Cut\+Velocity\+Normal}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Cut\+Velocity\+Normal()}{GetCutVelocityNormal()}}
+{\footnotesize\ttfamily double kinetic\+::\+Get\+Cut\+Velocity\+Normal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return cut velocity normal the flow 
+
+\mbox{\Hypertarget{classkinetic_a99d22d7ef6a68fb16f1873ba0a91e55b}\label{classkinetic_a99d22d7ef6a68fb16f1873ba0a91e55b}} 
+\index{kinetic@{kinetic}!Get\+DeltaT@{Get\+DeltaT}}
+\index{Get\+DeltaT@{Get\+DeltaT}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Delta\+T()}{GetDeltaT()}}
+{\footnotesize\ttfamily double kinetic\+::\+Get\+DeltaT (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return set delta t 
+
+\mbox{\Hypertarget{classkinetic_add83c6ebb9fbceed77e42abff478d56a}\label{classkinetic_add83c6ebb9fbceed77e42abff478d56a}} 
+\index{kinetic@{kinetic}!Get\+Density@{Get\+Density}}
+\index{Get\+Density@{Get\+Density}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Density()}{GetDensity()}}
+{\footnotesize\ttfamily double $\ast$$\ast$$\ast$ kinetic\+::\+Get\+Density (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+you can get density using this function 
+
+\mbox{\Hypertarget{classkinetic_ad7344c18f324d71b943928da869c9a09}\label{classkinetic_ad7344c18f324d71b943928da869c9a09}} 
+\index{kinetic@{kinetic}!Get\+Flow\+VelocityX@{Get\+Flow\+VelocityX}}
+\index{Get\+Flow\+VelocityX@{Get\+Flow\+VelocityX}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Flow\+Velocity\+X()}{GetFlowVelocityX()}}
+{\footnotesize\ttfamily double $\ast$$\ast$$\ast$ kinetic\+::\+Get\+Flow\+VelocityX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return velocity field x-\/component 
+
+\mbox{\Hypertarget{classkinetic_a7c07f65ef9e49e1a513925f6280ae0bc}\label{classkinetic_a7c07f65ef9e49e1a513925f6280ae0bc}} 
+\index{kinetic@{kinetic}!Get\+Flow\+VelocityY@{Get\+Flow\+VelocityY}}
+\index{Get\+Flow\+VelocityY@{Get\+Flow\+VelocityY}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Flow\+Velocity\+Y()}{GetFlowVelocityY()}}
+{\footnotesize\ttfamily double $\ast$$\ast$$\ast$ kinetic\+::\+Get\+Flow\+VelocityY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return velocity field y-\/component 
+
+\mbox{\Hypertarget{classkinetic_ab2c9e6ba7a4a3c1cb731368c222ecb31}\label{classkinetic_ab2c9e6ba7a4a3c1cb731368c222ecb31}} 
+\index{kinetic@{kinetic}!Get\+Flow\+VelocityZ@{Get\+Flow\+VelocityZ}}
+\index{Get\+Flow\+VelocityZ@{Get\+Flow\+VelocityZ}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Flow\+Velocity\+Z()}{GetFlowVelocityZ()}}
+{\footnotesize\ttfamily double $\ast$$\ast$$\ast$ kinetic\+::\+Get\+Flow\+VelocityZ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return velocity field z-\/component 
+
+\mbox{\Hypertarget{classkinetic_a383622d22e32de911bb9866f306ab236}\label{classkinetic_a383622d22e32de911bb9866f306ab236}} 
+\index{kinetic@{kinetic}!Gethvx@{Gethvx}}
+\index{Gethvx@{Gethvx}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Gethvx()}{Gethvx()}}
+{\footnotesize\ttfamily double kinetic\+::\+Gethvx (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return velocity integration step X 
+
+\mbox{\Hypertarget{classkinetic_aed79c6b3b6a1a8c496bb104431f36b37}\label{classkinetic_aed79c6b3b6a1a8c496bb104431f36b37}} 
+\index{kinetic@{kinetic}!Gethvy@{Gethvy}}
+\index{Gethvy@{Gethvy}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Gethvy()}{Gethvy()}}
+{\footnotesize\ttfamily double kinetic\+::\+Gethvy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return velocity integration step Y 
+
+\mbox{\Hypertarget{classkinetic_a057c3a53aa31d290367e3c8466184743}\label{classkinetic_a057c3a53aa31d290367e3c8466184743}} 
+\index{kinetic@{kinetic}!Gethvz@{Gethvz}}
+\index{Gethvz@{Gethvz}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Gethvz()}{Gethvz()}}
+{\footnotesize\ttfamily double kinetic\+::\+Gethvz (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return velocity integration step Z 
+
+\mbox{\Hypertarget{classkinetic_ab157d454b4a32922a97814ef768a2066}\label{classkinetic_ab157d454b4a32922a97814ef768a2066}} 
+\index{kinetic@{kinetic}!Get\+Nvx@{Get\+Nvx}}
+\index{Get\+Nvx@{Get\+Nvx}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Nvx()}{GetNvx()}}
+{\footnotesize\ttfamily int kinetic\+::\+Get\+Nvx (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return number of sells in velocity space X 
+
+\mbox{\Hypertarget{classkinetic_accc79e8415db86b99fba2dae741ecd92}\label{classkinetic_accc79e8415db86b99fba2dae741ecd92}} 
+\index{kinetic@{kinetic}!Get\+Nvy@{Get\+Nvy}}
+\index{Get\+Nvy@{Get\+Nvy}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Nvy()}{GetNvy()}}
+{\footnotesize\ttfamily int kinetic\+::\+Get\+Nvy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return number of sells in velocity space Y 
+
+\mbox{\Hypertarget{classkinetic_a38b631033dd32eebf0ba3f4cc1bb0e9d}\label{classkinetic_a38b631033dd32eebf0ba3f4cc1bb0e9d}} 
+\index{kinetic@{kinetic}!Get\+Nvz@{Get\+Nvz}}
+\index{Get\+Nvz@{Get\+Nvz}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Nvz()}{GetNvz()}}
+{\footnotesize\ttfamily int kinetic\+::\+Get\+Nvz (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return number of sells in velocity space Z 
+
+\mbox{\Hypertarget{classkinetic_ab994b8c6236881440ac410168bc9405e}\label{classkinetic_ab994b8c6236881440ac410168bc9405e}} 
+\index{kinetic@{kinetic}!Get\+ProfileX@{Get\+ProfileX}}
+\index{Get\+ProfileX@{Get\+ProfileX}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Profile\+X()}{GetProfileX()}}
+{\footnotesize\ttfamily double $\ast$ kinetic\+::\+Get\+ProfileX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return profile of the distribution function x-\/component 
+
+\mbox{\Hypertarget{classkinetic_a73c1b7ab68870948599682f999e82fa6}\label{classkinetic_a73c1b7ab68870948599682f999e82fa6}} 
+\index{kinetic@{kinetic}!Get\+ProfileY@{Get\+ProfileY}}
+\index{Get\+ProfileY@{Get\+ProfileY}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Profile\+Y()}{GetProfileY()}}
+{\footnotesize\ttfamily double $\ast$ kinetic\+::\+Get\+ProfileY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return profile of the distribution function y-\/component 
+
+\mbox{\Hypertarget{classkinetic_aa4c537077cc449d37cb152e972a4811b}\label{classkinetic_aa4c537077cc449d37cb152e972a4811b}} 
+\index{kinetic@{kinetic}!Get\+ProfileZ@{Get\+ProfileZ}}
+\index{Get\+ProfileZ@{Get\+ProfileZ}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Profile\+Z()}{GetProfileZ()}}
+{\footnotesize\ttfamily double $\ast$ kinetic\+::\+Get\+ProfileZ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+return profile of the distribution function z-\/component 
+
+\mbox{\Hypertarget{classkinetic_ac19955de68dae320c6340259e8f8a700}\label{classkinetic_ac19955de68dae320c6340259e8f8a700}} 
+\index{kinetic@{kinetic}!Get\+Velocity\+SetX@{Get\+Velocity\+SetX}}
+\index{Get\+Velocity\+SetX@{Get\+Velocity\+SetX}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Velocity\+Set\+X()}{GetVelocitySetX()}}
+{\footnotesize\ttfamily double $\ast$ kinetic\+::\+Get\+Velocity\+SetX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classkinetic_a2a7f9c38c1f9f6fac18ff121e1b2177e}\label{classkinetic_a2a7f9c38c1f9f6fac18ff121e1b2177e}} 
+\index{kinetic@{kinetic}!Get\+Velocity\+SetY@{Get\+Velocity\+SetY}}
+\index{Get\+Velocity\+SetY@{Get\+Velocity\+SetY}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Velocity\+Set\+Y()}{GetVelocitySetY()}}
+{\footnotesize\ttfamily double $\ast$ kinetic\+::\+Get\+Velocity\+SetY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classkinetic_a596368db571a795a6c3476f0ac0006bc}\label{classkinetic_a596368db571a795a6c3476f0ac0006bc}} 
+\index{kinetic@{kinetic}!Get\+Velocity\+SetZ@{Get\+Velocity\+SetZ}}
+\index{Get\+Velocity\+SetZ@{Get\+Velocity\+SetZ}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Get\+Velocity\+Set\+Z()}{GetVelocitySetZ()}}
+{\footnotesize\ttfamily double $\ast$ kinetic\+::\+Get\+Velocity\+SetZ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classkinetic_a76cf34444249efa97fb73f710cc924ad}\label{classkinetic_a76cf34444249efa97fb73f710cc924ad}} 
+\index{kinetic@{kinetic}!Integrate\+All@{Integrate\+All}}
+\index{Integrate\+All@{Integrate\+All}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Integrate\+All()}{IntegrateAll()}}
+{\footnotesize\ttfamily void kinetic\+::\+Integrate\+All (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+integrate the hole system 
+
+\mbox{\Hypertarget{classkinetic_a7c0840510c51dc520d28db3080d6ed73}\label{classkinetic_a7c0840510c51dc520d28db3080d6ed73}} 
+\index{kinetic@{kinetic}!Set\+ProfileX@{Set\+ProfileX}}
+\index{Set\+ProfileX@{Set\+ProfileX}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Set\+Profile\+X()}{SetProfileX()}}
+{\footnotesize\ttfamily void kinetic\+::\+Set\+ProfileX (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k }\end{DoxyParamCaption})}
+
+
+
+set profile of the distribution function x-\/component 
+
+\mbox{\Hypertarget{classkinetic_a93a573e6be25179788110632d4eac6e5}\label{classkinetic_a93a573e6be25179788110632d4eac6e5}} 
+\index{kinetic@{kinetic}!Set\+ProfileY@{Set\+ProfileY}}
+\index{Set\+ProfileY@{Set\+ProfileY}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Set\+Profile\+Y()}{SetProfileY()}}
+{\footnotesize\ttfamily void kinetic\+::\+Set\+ProfileY (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k }\end{DoxyParamCaption})}
+
+
+
+set profile of the distribution function y-\/component 
+
+\mbox{\Hypertarget{classkinetic_af3dcca37fa51324f1f361665f3ada0d6}\label{classkinetic_af3dcca37fa51324f1f361665f3ada0d6}} 
+\index{kinetic@{kinetic}!Set\+ProfileZ@{Set\+ProfileZ}}
+\index{Set\+ProfileZ@{Set\+ProfileZ}!kinetic@{kinetic}}
+\subsubsection{\texorpdfstring{Set\+Profile\+Z()}{SetProfileZ()}}
+{\footnotesize\ttfamily void kinetic\+::\+Set\+ProfileZ (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k }\end{DoxyParamCaption})}
+
+
+
+set profile of the distribution function z-\/component 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{kinetic_8h}{kinetic.\+h}}\item 
+\mbox{\hyperlink{kinetic_8cpp}{kinetic.\+cpp}}\end{DoxyCompactItemize}

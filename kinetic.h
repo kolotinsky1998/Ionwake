@@ -3,10 +3,28 @@
 #include "poisson.h"
 
 
-///This class is used to solve kinetic equation
+///\brief This class is used to solve kinetic equation for ions numericaly
+/*!
+\f[
+\frac{\partial f}{\partial t} + \overline{v}\bigtriangledown f+\frac{\overline{F}}{m}\frac{\partial f}{\partial \overline{v}}=St[f]
+\f]
+\f[
+St[f] = \nu (f - n_i \Phi_M)
+\f]
+\f[
+\Phi_M = \frac{1}{(2 \pi v_T^2)^{\frac{3}{2}}} \exp(-\frac{v^2}{2v_T^2}) 
+\f]
+\f[
+n_i = \int f dv
+\f]
+*/ 
 class kinetic{
     public:
-            ///constructor
+            /// \brief kinetic constructor
+            /*!
+            \param &Converter the link on the object which store the information about system parameters
+            \param &Poisson the link on the object which solve Poisson equation
+             */
             kinetic(const converter &Converter, const poisson &Poisson);
             ///destructor
             ~kinetic();
@@ -62,12 +80,6 @@ class kinetic{
             double *GetVelocitySetZ() const;
             ///define density as ((pi/Lx)^2+(pi/Lx)^2+(pi/Lz)^2 * sin(pi*x/Lx)*sin(pi*y/Ly)*sin(pi*z/Lz) / 4pi + n_i/4pi
             void DefineDensity();
-            ///get Coloumb force field x-component
-            double*** GetColoumbForceFieldX() const;
-            ///get Coloumb force field y-component
-            double*** GetColoumbForceFieldY() const;
-            ///get Coloumb force field z-component
-            double*** GetColoumbForceFieldZ() const;
 
 
     private:

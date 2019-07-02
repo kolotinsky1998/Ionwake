@@ -7,7 +7,7 @@ class converter{
             converter();
             ///constuctor
             converter(double T_, double tau_, double n_0_, double q_, 
-                      double El_, double Lx_, double Ly_, double Lz_, int Nx_, int Ny_, int Nz_);
+                      double El_, double Lx_, double Ly_, double Lz_, int Nx_, int Ny_, int Nz_, int Nx_0, int Ny_0, int Nz_0);
             ///destructor
             ~converter();
             ///get cofficient near the self-consistent axeleration term
@@ -36,6 +36,18 @@ class converter{
             int GetNy()const ;
             ///get grid size Z
             int GetNz()const ;
+            ///get position at the grid of the duct particle X
+            int GetNx_0()const ;
+            ///get position at the grid of the duct particle Y
+            int GetNy_0()const ;
+            ///get position at the grid of the duct particle Z
+            int GetNz_0()const ;
+            ///get length of computational box X
+            double GetLx()const ;
+            ///get length of computational box Y
+            double GetLy()const ;
+            ///get length of computational box Z
+            double GetLz()const ;
             ///get temperature
             double GetTemperature()const ;
             ///get thermal velocity
@@ -52,6 +64,10 @@ class converter{
             double GetPhysicalTau() const;
             ///get Debay radious 
             double GetRd() const ;
+            ///get elementary charge
+            double GetElementaryCharge() const;
+            ///get longitudinal electricity field
+            double GetEl() const;
 
 
             
@@ -70,23 +86,21 @@ class converter{
             double pi;
 
     /******* system quantities in physical units *******/
-            //temperature of neutrals
+            //temperature of neutrals in Kelvin
             double T;
-            //debay radious
+            //debay radious [cm]
             double rd;
-            ///plasmas frequency
+            ///plasmas frequency  [Hz]
             double wp;
-            //mean free time
+            //mean free time [s]
             double tau;
-            //ion equillibrium concentration
+            //ion equillibrium concentration [1/cm^3] 
             double n_0;
-            //dust particle charge
-            double q;
-            //External electricity force
+            //External electricity field [gauss units]
             double El;
-    /******* derivative quantities in physical units *******/
-            //thermal velocity of neutrals
+            //thermal velocity of neutrals [cm/s]
             double vt;
+  /******* The coefficient between physical and dimmension units *******/
             //cofficient near the self-consistent axeleration term
             double as;
             //cofficient near the longitudinal axeleration term
@@ -102,12 +116,20 @@ class converter{
             double Ly;
             //size of computational box in debay units Z
             double Lz;
+            //position at the grid of the dust particle X
+            int Nx_0;
+            //position at the grid of the dust particle Y
+            int Ny_0;
+            //position at the grid of the dust particle Z
+            int Nz_0;
             //grid size X
             int Nx;
             //grid size Y
             int Ny;
             //grid size Z
             int Nz;
+            // dust particle charge
+            double q;
             //dimensionless relaxation time
             double tau_d;
             //dimensionless ion concentration

@@ -81,36 +81,37 @@ void output::VTKoutput(int output_time){
     ny = Converter->GetNy();
     nz = Converter->GetNz();
 
+    double Density;
+    double Potential;
+
     double ***density = Kinetic->GetDensity();
     double ***potential = Poisson->GetPotential();
     double ***vfl_x = Kinetic->GetFlowVelocityX();
     double ***vfl_y = Kinetic->GetFlowVelocityY();
     double ***vfl_z = Kinetic->GetFlowVelocityZ();
 
-    /* This part for testing Poisson solver*/
-    //double pi = 3.14159265359;
-    /*****************************************/
     stringstream density_filename;
     stringstream potential_filename;
     stringstream velocity_filename;
-    density_filename << "data/density_t" << Time << ".dat";
-    potential_filename << "data/potential_t" << Time << ".dat";
-    velocity_filename << "data/velocity_t" << Time << ".dat";
+
+    density_filename << data << "/density_t" << Time << ".dat";
+    potential_filename << data << "/potential_t" << Time << ".dat";
+    velocity_filename << data << "/velocity_t" << Time << ".dat";
 
     ofstream output_density;
     ofstream output_potential;
     ofstream output_velocity;
 
-    //cout << "*** Starting VTK output ***" << endl;
 
     if(Time % output_time == 0){
         output_density.open(density_filename.str().c_str());
    
-        output_density << Converter->GetNx()<< "\n";
+        output_density << nx << "\t" << ny << "\t" << nz <<  "\n";
         for(int k = 0; k < nz; k++){
             for(int j = 0; j < ny; j++) {
                 for(int i = 0; i < nx; i++) {
-                    output_density <<  density[i][j][k] << "\n";
+                    Density = density[i][j][k] * pow(Converter->GetRd()/Converter->GetThermalVelocity(),3.);
+                    output_density <<  Density << "\n";
                 }
             }
         }
@@ -118,7 +119,7 @@ void output::VTKoutput(int output_time){
 
         output_velocity.open(velocity_filename.str().c_str());
 
-        output_velocity << Converter->GetNx()<< "\n";
+        output_velocity << nx << "\t" << ny << "\t" << nz <<  "\n";
         for(int k = 0; k < nz; k++){
             for(int j = 0; j < ny; j++) {
                 for(int i = 0; i < nx; i++) {
@@ -130,14 +131,12 @@ void output::VTKoutput(int output_time){
 
         output_potential.open(potential_filename.str().c_str());
 
-        output_potential << Converter->GetNx()<< "\n";
+        output_potential << nx << "\t" << ny << "\t" << nz <<  "\n";
         for(int k = 0; k < nz; k++){
             for(int j = 0; j < ny; j++) { 
                 for(int i = 0; i < nx; i++) {  
-                    output_potential <<  potential[i][j][k] << "\n";
-                    /* This part for testing Poisson solver*/
-                    //output_potential <<  potential[i][j][k] - sin(pi*i/double(nx-1))*sin(pi*j/double(ny-1))*sin(pi*k/double(nz-1))<< "\n";
-                    /*****************************************/
+                    Potential = Converter->GetDimensionlessIonConcentration() * Converter->ConvertPotential() * potential[i][j][k];
+                    output_potential <<  Potential << "\n";
                 }
             }
         }
@@ -146,23 +145,10 @@ void output::VTKoutput(int output_time){
 
     Time ++;
 
-    //cout << "*** Finalizing VTK output ***" << endl;
-
 }
 
 
-void output::CleanData(){
-    
-    system("rm data/density_t*");
-    system("rm data/potential_t*");
-    system("rm data/velocity_t*");
-    system("rm data/gnuplot/profile_x*");
-    system("rm data/gnuplot/profile_y*");
-    system("rm data/gnuplot/profile_z*");
-    system("rm data/gnuplot/analytial_profile.dat");
 
-
-}
 
 
 void output::PlotDistributionFunction(int i, int j, int k, int output_time){
@@ -188,10 +174,6 @@ void output::PlotDistributionFunction(int i, int j, int k, int output_time){
     velocity_y = Kinetic->GetVelocitySetY();
     velocity_z = Kinetic->GetVelocitySetZ();
 
-    double time;
-
-    time = Kinetic->GetCurrentTime();
-
     nvx = Kinetic->GetNvx();
     nvy = Kinetic->GetNvy();
     nvz = Kinetic->GetNvz();
@@ -204,20 +186,10 @@ void output::PlotDistributionFunction(int i, int j, int k, int output_time){
     stringstream profile_y_filename;
     stringstream profile_z_filename;
 
-    stringstream gnuplot_command_x;
-    stringstream gnuplot_command_y;
-    stringstream gnuplot_command_z;
+    profile_x_filename << data << "/gnuplot/profile_x_t" << Time << ".dat";
+    profile_y_filename << data << "/gnuplot/profile_y_t" << Time << ".dat";
+    profile_z_filename << data << "/gnuplot/profile_z_t" << Time << ".dat";
 
-    profile_x_filename << "data/gnuplot/profile_x_t" << Time << ".dat";
-    profile_y_filename << "data/gnuplot/profile_y_t" << Time << ".dat";
-    profile_z_filename << "data/gnuplot/profile_z_t" << Time << ".dat";
-    
-        ofstream analytical_profile("data/gnuplot/analytial_profile.dat");
-        for (int a=0; a<nvx; a++){
-            analytical_profile << velocity_x[a] << "\t" <<  Kinetic->GetAnalyticalProfileX()[a] << endl;
-        }
-        analytical_profile.close();
-    
 
     if (Time % output_time == 0){
         output_profile_x.open(profile_x_filename.str().c_str());
@@ -239,38 +211,59 @@ void output::PlotDistributionFunction(int i, int j, int k, int output_time){
         output_profile_z.close();
 
     }
-    
-    
 
 }
 
 
-void output::WriteColoumbForceField(){
+void output::WriteInitialPotential(){
 
 
     int nx, ny, nz;
+    double lx, ly, lz;
 
+    double potential;
+    double r;
+    double rd;
 
     nx = Converter->GetNx();
     ny = Converter->GetNy();
     nz = Converter->GetNz();
 
-    ofstream output_field;
+    lx = Converter->GetLx();
+    ly = Converter->GetLy();
+    lz = Converter->GetLz();
+
+    rd = Converter->GetRd();
+
+    stringstream output_potential_filename;
+    ofstream output_potential;
     
-    output_field.open("data/ForceField.dat");
+    output_potential_filename << data << "/InitialPotential.dat";
+    output_potential.open(output_potential_filename.str().c_str());
 
-    double*** force_field_x = Kinetic->GetColoumbForceFieldX();
-    double*** force_field_y = Kinetic->GetColoumbForceFieldY();
-    double*** force_field_z = Kinetic->GetColoumbForceFieldZ();
 
-    output_field << Converter->GetNx()<< "\n";
+    output_potential << Converter->GetNx()<< "\t" << Converter->GetNy() << "\t" << Converter->GetNz() << "\n";
     for(int k = 0; k < nz; k++){
         for(int j = 0; j < ny; j++) {
             for(int i = 0; i < nx; i++) {
-                output_field <<  force_field_x[i][j][k] << "\t" <<  force_field_y[i][j][k] << "\t" << force_field_z[i][j][k] <<"\n";
+                r = (i - Converter->GetNx_0())*(i - Converter->GetNx_0()) * (lx * rd /double(nx)) * (lx * rd /double(nx));  
+                r = r + (j - Converter->GetNy_0())*(j - Converter->GetNy_0()) * (ly * rd /double(ny)) * (ly * rd /double(ny));
+                r = r + (k - Converter->GetNz_0())*(k - Converter->GetNz_0()) * (lz * rd /double(nz)) * (lz * rd /double(nz));
+                r = sqrt(r);
+                potential = - Converter->GetParticleCharge() * Converter->GetElementaryCharge() / r;
+                potential = potential - Converter->GetEl() * (k * lz * rd /double(nz)); 
+                output_potential << potential << "\n";
             }
         }
     }
-    output_field.close();
+    output_potential.close();
     
+}
+
+
+void output::CreateOutputDirectory(string data_){
+    stringstream command;
+    data = data_;
+    command << "mkdir " << data;
+    system(command.str().c_str());
 }

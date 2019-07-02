@@ -2,6 +2,9 @@
 #include "kinetic.h"
 #include "poisson.h"
 #include "converter.h"
+#include "string"
+
+using namespace std;
 
 
 ///This class provides output options
@@ -15,14 +18,28 @@ class output{
             void StartOutput();
             ///write down current simulation parameters in the output
             void TerminalOutput(int term_time);
-            ///write down in the VTK file denstity and potential
+            ///This function writes down data.
+            /*! 
+            The output files contain ion concentration, self-consistent potential and momenta flow.
+            All these files will be avaible in created data directory.
+             */
             void VTKoutput(int output_time);
-            /// Clean directory with data files
-            void CleanData();
             /// Plot distribution function inside the  (i, j, k)-cell
             void PlotDistributionFunction(int i, int j, int k, int output_time);
-            /// Write Coloumb force field
-            void WriteColoumbForceField();
+            /// \brief This function creates data file with initial potential around the dust particle.
+            /*!
+            The initial potential is an external homogenious field potential and coloumb potential due to the dust particle.
+            The potential is written in sgc units.
+            \f[
+                \phi = - E_{ext}z - \frac{Q}{r}
+            \f]
+            */
+            void WriteInitialPotential();
+            ///\brief This founction creates a directory in which all output files will be saved.
+            /*!
+            The name of the directory define the user.
+             */
+            void CreateOutputDirectory(string data_);
 
     private:
             // access to converter members
@@ -33,5 +50,6 @@ class output{
             kinetic *Kinetic;
             //current time
             int Time;
-            
+            /// directory for the output data
+            string data;
 };

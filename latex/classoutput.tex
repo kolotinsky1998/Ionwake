@@ -1,0 +1,125 @@
+\hypertarget{classoutput}{}\section{output Class Reference}
+\label{classoutput}\index{output@{output}}
+
+
+This class provides output options.  
+
+
+
+
+{\ttfamily \#include $<$output.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classoutput_ac5bcde3beae53d810e9e876d41bea2ac}{output}} (const \mbox{\hyperlink{classconverter}{converter}} \&, const \mbox{\hyperlink{classpoisson}{poisson}} \&, \mbox{\hyperlink{classkinetic}{kinetic}} \&)
+\begin{DoxyCompactList}\small\item\em constructor \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classoutput_a521a9799a4d0bc73b860ca8c3694ef7c}{$\sim$output}} ()
+\begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classoutput_a966b89dee3e30057e3dd35e217207256}{Start\+Output}} ()
+\begin{DoxyCompactList}\small\item\em output initial simulation parameter \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classoutput_a2faa52f88e4391dc693e46324f071b0a}{Terminal\+Output}} (int term\+\_\+time)
+\begin{DoxyCompactList}\small\item\em write down current simulation parameters in the output \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classoutput_ab34128a74d16450b92b1f42e89141aa7}{V\+T\+Koutput}} (int output\+\_\+time)
+\begin{DoxyCompactList}\small\item\em This function writes down data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classoutput_a6741e4645701f96a3b9174fb5ab9dd54}{Plot\+Distribution\+Function}} (int i, int j, int k, int output\+\_\+time)
+\begin{DoxyCompactList}\small\item\em Plot distribution function inside the (i, j, k)-\/cell. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classoutput_ade7c2bfb9b6276529405d60ed59e5fb1}{Write\+Initial\+Potential}} ()
+\begin{DoxyCompactList}\small\item\em This function creates data file with initial potential around the dust particle. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classoutput_ad0585ef8d22cf587dfe95acb9445bab8}{Create\+Output\+Directory}} (string data\+\_\+)
+\begin{DoxyCompactList}\small\item\em This founction creates a directory in which all output files will be saved. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class provides output options. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classoutput_ac5bcde3beae53d810e9e876d41bea2ac}\label{classoutput_ac5bcde3beae53d810e9e876d41bea2ac}} 
+\index{output@{output}!output@{output}}
+\index{output@{output}!output@{output}}
+\subsubsection{\texorpdfstring{output()}{output()}}
+{\footnotesize\ttfamily output\+::output (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classconverter}{converter}} \&}]{Converter\+\_\+,  }\item[{const \mbox{\hyperlink{classpoisson}{poisson}} \&}]{Poisson\+\_\+,  }\item[{\mbox{\hyperlink{classkinetic}{kinetic}} \&}]{Kinetic\+\_\+ }\end{DoxyParamCaption})}
+
+
+
+constructor 
+
+\mbox{\Hypertarget{classoutput_a521a9799a4d0bc73b860ca8c3694ef7c}\label{classoutput_a521a9799a4d0bc73b860ca8c3694ef7c}} 
+\index{output@{output}!````~output@{$\sim$output}}
+\index{````~output@{$\sim$output}!output@{output}}
+\subsubsection{\texorpdfstring{$\sim$output()}{~output()}}
+{\footnotesize\ttfamily output\+::$\sim$output (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+destructor 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classoutput_ad0585ef8d22cf587dfe95acb9445bab8}\label{classoutput_ad0585ef8d22cf587dfe95acb9445bab8}} 
+\index{output@{output}!Create\+Output\+Directory@{Create\+Output\+Directory}}
+\index{Create\+Output\+Directory@{Create\+Output\+Directory}!output@{output}}
+\subsubsection{\texorpdfstring{Create\+Output\+Directory()}{CreateOutputDirectory()}}
+{\footnotesize\ttfamily void output\+::\+Create\+Output\+Directory (\begin{DoxyParamCaption}\item[{string}]{data\+\_\+ }\end{DoxyParamCaption})}
+
+
+
+This founction creates a directory in which all output files will be saved. 
+
+The name of the directory define the user. \mbox{\Hypertarget{classoutput_a6741e4645701f96a3b9174fb5ab9dd54}\label{classoutput_a6741e4645701f96a3b9174fb5ab9dd54}} 
+\index{output@{output}!Plot\+Distribution\+Function@{Plot\+Distribution\+Function}}
+\index{Plot\+Distribution\+Function@{Plot\+Distribution\+Function}!output@{output}}
+\subsubsection{\texorpdfstring{Plot\+Distribution\+Function()}{PlotDistributionFunction()}}
+{\footnotesize\ttfamily void output\+::\+Plot\+Distribution\+Function (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j,  }\item[{int}]{k,  }\item[{int}]{output\+\_\+time }\end{DoxyParamCaption})}
+
+
+
+Plot distribution function inside the (i, j, k)-\/cell. 
+
+\mbox{\Hypertarget{classoutput_a966b89dee3e30057e3dd35e217207256}\label{classoutput_a966b89dee3e30057e3dd35e217207256}} 
+\index{output@{output}!Start\+Output@{Start\+Output}}
+\index{Start\+Output@{Start\+Output}!output@{output}}
+\subsubsection{\texorpdfstring{Start\+Output()}{StartOutput()}}
+{\footnotesize\ttfamily void output\+::\+Start\+Output (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+output initial simulation parameter 
+
+\mbox{\Hypertarget{classoutput_a2faa52f88e4391dc693e46324f071b0a}\label{classoutput_a2faa52f88e4391dc693e46324f071b0a}} 
+\index{output@{output}!Terminal\+Output@{Terminal\+Output}}
+\index{Terminal\+Output@{Terminal\+Output}!output@{output}}
+\subsubsection{\texorpdfstring{Terminal\+Output()}{TerminalOutput()}}
+{\footnotesize\ttfamily void output\+::\+Terminal\+Output (\begin{DoxyParamCaption}\item[{int}]{term\+\_\+time }\end{DoxyParamCaption})}
+
+
+
+write down current simulation parameters in the output 
+
+\mbox{\Hypertarget{classoutput_ab34128a74d16450b92b1f42e89141aa7}\label{classoutput_ab34128a74d16450b92b1f42e89141aa7}} 
+\index{output@{output}!V\+T\+Koutput@{V\+T\+Koutput}}
+\index{V\+T\+Koutput@{V\+T\+Koutput}!output@{output}}
+\subsubsection{\texorpdfstring{V\+T\+Koutput()}{VTKoutput()}}
+{\footnotesize\ttfamily void output\+::\+V\+T\+Koutput (\begin{DoxyParamCaption}\item[{int}]{output\+\_\+time }\end{DoxyParamCaption})}
+
+
+
+This function writes down data. 
+
+The output files contain ion concentration, self-\/consistent potential and momenta flow. All these files will be avaible in created data directory. \mbox{\Hypertarget{classoutput_ade7c2bfb9b6276529405d60ed59e5fb1}\label{classoutput_ade7c2bfb9b6276529405d60ed59e5fb1}} 
+\index{output@{output}!Write\+Initial\+Potential@{Write\+Initial\+Potential}}
+\index{Write\+Initial\+Potential@{Write\+Initial\+Potential}!output@{output}}
+\subsubsection{\texorpdfstring{Write\+Initial\+Potential()}{WriteInitialPotential()}}
+{\footnotesize\ttfamily void output\+::\+Write\+Initial\+Potential (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+This function creates data file with initial potential around the dust particle. 
+
+The initial potential is an external homogenious field potential and coloumb potential due to the dust particle. The potential is written in sgc units. \[ \phi = - E_{ext}z - \frac{Q}{r} \] 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{output_8h}{output.\+h}}\item 
+\mbox{\hyperlink{output_8cpp}{output.\+cpp}}\end{DoxyCompactItemize}

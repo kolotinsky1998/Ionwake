@@ -882,18 +882,3 @@ void kinetic::DefineDensity() {
     }
 
 }
-
-
-double*** kinetic::GetColoumbForceFieldX() const{
-    return acx;
-}
-
-
-double*** kinetic::GetColoumbForceFieldY() const{
-    return acy;
-}
-
-
-double*** kinetic::GetColoumbForceFieldZ() const{
-    return acz;
-}

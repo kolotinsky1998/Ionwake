@@ -49,6 +49,12 @@ class poisson {
             double n_i;
             ///particle charge
             double q;
+            //position at the grid of the dust particle X
+            double Nx_0;
+            //position at the grid of the dust particle Y
+            double Ny_0;
+            //position at the grid of the dust particle Z
+            double Nz_0;
             
 
 };
