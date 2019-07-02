@@ -8,7 +8,7 @@
 #include <algorithm>  
 using namespace std;
 using namespace std::chrono;
-int main(){
+int main(int argc, char *argv[]){
 
     //#######################################//
     //## Physical parameters of the system ##//
@@ -20,7 +20,7 @@ int main(){
     // time between ion-neutral collisions in seconds                  
     const double tau = 0.4 * pow(10.,-3.);                       
     //equilibrium concentaration of ions [1/cm^3]  
-    const double n_0 = 2. * pow(10.,4.);                        
+    const double n_0 = 2. * pow(10.,6.);                        
     //particle charge in electron units                      
     const double q = 0*100;                               
     //electricity field in cgs units                     
@@ -70,7 +70,7 @@ int main(){
     kinetic Kinetic(Converter, Poisson);
     output Output(Converter, Poisson, Kinetic);
     Output.StartOutput();
-    Output.CreateOutputDirectory("data");
+    Output.CreateOutputDirectory(argv[1]);
     Output.WriteInitialPotential();
 
     auto stop = high_resolution_clock::now();

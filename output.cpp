@@ -261,7 +261,7 @@ void output::WriteInitialPotential(){
 }
 
 
-void output::CreateOutputDirectory(string data_){
+void output::CreateOutputDirectory(string data_="data"){
     stringstream command;
     data = data_;
     command << "mkdir " << data;

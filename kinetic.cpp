@@ -47,7 +47,6 @@ Converter(&Converter_)
     CurT = 0;
     tau = Converter->GetDimensionlessTau();
 
-
     f = new double *****[nx];
     for (int i=0; i<nx; i++){
         f[i] = new double**** [ny];
@@ -491,7 +490,7 @@ double kinetic::Relaxation(int i, int j, int k, int a, int b, int c){
 void kinetic::IntegrateAll(){
 
     CoordinatePart();
-    
+
     VelocityPart();
     
     for (int i=0; i<nx; i++){    
