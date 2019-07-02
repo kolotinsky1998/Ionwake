@@ -89,8 +89,6 @@ class kinetic{
             double ******f;
             ///temporal distribution function
             double ******f_time;
-	    ///averageng of sphere distributiob function
-            double ****f_lorenz;
             ///distribution function of neutrals
             double ***f_n;
             ///velocity field (x component)
@@ -197,8 +195,6 @@ class kinetic{
             void VelocityPart();
             ///relaxation due to collisions
             double Relaxation(int i, int j, int k, int a, int b, int c);
-            ///Lorenz collision model
-            void Lorenz();
             ///set initial distribution function
             void InitialConditions();
             ///compute density 

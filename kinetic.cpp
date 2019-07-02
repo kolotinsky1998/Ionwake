@@ -82,19 +82,6 @@ Converter(&Converter_)
         }
     }
 
-    int N = nvx - nvy + nvy / 2 + nvy % 2;
-    f_lorenz = new double ***[nx];
-    for (int i=0; i<nx; i++){
-        f_lorenz[i] = new double** [ny];
-        for (int j=0; j<ny; j++){
-            f_lorenz[i][j] = new double* [nz];
-            for (int k=0; k<nz; k++){
-                f_lorenz[i][j][k] = new double[N];
-            }
-        }
-    } 
-
-
     vx = new double [nvx];
     vy = new double [nvy];
     vz = new double [nvz];
@@ -298,17 +285,6 @@ kinetic::~kinetic(){
 
     delete[] f_time;
     
-    for (int i=0; i<nx; i++){
-        for (int j=0; j<ny; j++){
-            for (int k=0; k<nz; k++){
-                delete[] f_lorenz[i][j][k];
-            }
-            delete[] f_lorenz[i][j];
-        }
-        delete[] f_lorenz[i];
-    }
-
-    delete[] f_lorenz;
 
     for (int a=0; a<nvx; a++){
         for (int b=0; b<nvy; b++){
@@ -409,8 +385,6 @@ void kinetic::VelocityPart(){
 
    double fx_, fy_, fz_;
 
-   //cout << "***  Starting velocity part ***" << endl;
-
    SaveState();
 
    for (int i=0; i<nx; i++){    
@@ -507,80 +481,18 @@ void kinetic::VelocityPart(){
         }
     }
 
-    //cout << "***  Starting velocity part ***" << endl;
-
 }
 
 double kinetic::Relaxation(int i, int j, int k, int a, int b, int c){
     return f[i][j][k][a][b][c] + deltaT * (density[i][j][k] * f_n[a][b][c] - f[i][j][k][a][b][c]) / tau;
 }
 
-void kinetic::Lorenz(){
-
-    int N = nvx - nvy + nvy / 2 + nvy % 2;
-    double N_0_X = double(nvy - 1) / 2.0; ///it is ok but not good
-    double N_0_Y = double(nvy - 1) / 2.0;
-    double N_0_Z = double(nvz - 1) / 2.0;
-    double r; 
-
-    int counter[N];
-
-    for (int i=0; i<nx; i++){
-        for (int j=0; j<ny; j++){
-            for (int k=0; k<nz; k++){
-                for (int R=0; R<N; R++){
-                    f_lorenz[i][j][k][R] = 0;
-                }
-            }
-        }
-    }
-
-    for (int i=0; i<nx; i++){
-        for (int j=0; j<ny; j++){
-            for (int k=0; k<nz; k++){
-                for (int R=0; R<N; R++){
-                    counter[R] = 0;
-                }
-                for (int a=0; a<nvx; a++){
-                    for (int b=0; b<nvy; b++){
-                        for ( int c=0; c<nvz; c++){
-                            r = sqrt((a-N_0_X)*(a-N_0_X) + (b-N_0_Y)*(b-N_0_Y) + (c-N_0_Z)*(c-N_0_Z));
-                            f_lorenz[i][j][k][int(r)%N] = f_lorenz[i][j][k][int(r)%N] + f[i][j][k][a][b][c];
-                            counter[int(r)%N] ++;
-                        }
-                    }
-                }
-                for (int R=0; R<N; R++){
-                    f_lorenz[i][j][k][int(r)%N] = f_lorenz[i][j][k][int(r)%N] / counter[R];
-                }
-            }
-        }
-    }
-    
-    for (int i=0; i<nx; i++){
-        for (int j=0; j<ny; j++){
-            for (int k=0; k<nz; k++){
-                for (int a=0; a<nvx; a++){
-                    for (int b=0; b<nvy; b++){
-                        for ( int c=0; c<nvz; c++){
-                            r = sqrt((a-N_0_X)*(a-N_0_X) + (b-N_0_Y)*(b-N_0_Y) + (c-N_0_Z)*(c-N_0_Z));
-                            f[i][j][k][a][b][c] = f[i][j][k][a][b][c] + 
-                            deltaT * (f_lorenz[i][j][k][int(r)%N] * f_n[a][b][c] - f[i][j][k][a][b][c]) / tau;
-                        }
-                    }
-                } 
-            }
-        }
-    }
-
-}
 
 void kinetic::IntegrateAll(){
 
-
     CoordinatePart();
+    
     VelocityPart();
-    //cout << "*** Starting relaxation ***" << endl;
     
     for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
@@ -595,16 +507,11 @@ void kinetic::IntegrateAll(){
             }
         }
     } 
-    
-    //Lorenz();
-
-    //cout << "*** Finalizing relaxation ***" << endl;
-
 
     CurT+=deltaT;
-
     
     ComputeDensity();
+
     ComputeFlowVelocity();
 
 }
