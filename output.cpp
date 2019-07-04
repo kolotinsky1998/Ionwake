@@ -143,8 +143,6 @@ void output::VTKoutput(int output_time){
         output_potential.close();
     }
 
-    Time ++;
-
 }
 
 
@@ -189,7 +187,6 @@ void output::PlotDistributionFunction(int i, int j, int k, int output_time){
     profile_x_filename << data << "/gnuplot/profile_x_t" << Time << ".dat";
     profile_y_filename << data << "/gnuplot/profile_y_t" << Time << ".dat";
     profile_z_filename << data << "/gnuplot/profile_z_t" << Time << ".dat";
-
 
     if (Time % output_time == 0){
         output_profile_x.open(profile_x_filename.str().c_str());
@@ -262,8 +259,16 @@ void output::WriteInitialPotential(){
 
 
 void output::CreateOutputDirectory(string data_="data"){
-    stringstream command;
+    stringstream command, command1;
     data = data_;
     command << "mkdir " << data;
+    command1 << "mkdir " << data << "/gnuplot";
     system(command.str().c_str());
+    system(command1.str().c_str());
+}
+
+void output::UpdateTime(){
+
+	Time ++;
+
 }

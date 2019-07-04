@@ -1,6 +1,6 @@
-CC=g++
+CC=icc
 
-CFLAGS=-c -Wall -O2
+CFLAGS=-c -fast
 
 all: project
 

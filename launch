@@ -2,9 +2,10 @@
 #SBATCH --time=3-00:00:00
 #SBATCH --job-name=ionwake
 #SBATCH --partition=max1
-#SBATCH --error=error.%J
-#SBATCH --output=log.%J
+#SBATCH --error=error
+#SBATCH --output=log
 #SBATCH -N 1
 #SBATCH -n 1
-./project 
-
+./project $1
+mv log $1
+mv error $1

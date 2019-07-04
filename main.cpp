@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){
     //equilibrium concentaration of ions [1/cm^3]  
     const double n_0 = 2. * pow(10.,6.);                        
     //particle charge in electron units                      
-    const double q = 0*100;                               
+    const double q = 2000;                               
     //electricity field in cgs units                     
     const double El= 2*pow(10.,-5.);                        
     //In debay radious units                 
@@ -33,17 +33,17 @@ int main(int argc, char *argv[]){
     //x-dimension of the computational box in Debye radious   
     const double Lz=6;                        
     //number of sells in cordinate space x   
-    const int Nx=40;                           
+    const int Nx=5;                           
     //number of sells in cordinate space y   
-    const int Ny=40;                           
+    const int Ny=5;                           
     //number of sells in cordinate space z   
-    const int Nz=40;         
+    const int Nz=5;         
     //position of dust particle at the grid
-    const int Nx_0=20;       
+    const int Nx_0=2;       
     //position of dust particle at the grid
-    const int Ny_0=20;   
+    const int Ny_0=2;   
     //position of dust particle at the grid
-    const int Nz_0=20;              
+    const int Nz_0=2;              
     ///////////////////////////////////////////
 
 
@@ -52,9 +52,9 @@ int main(int argc, char *argv[]){
     //#######################################//
 
     ///////////////////////////////////////////
-    int ITmax = 1000;
+    int ITmax = 5;
     int T_term = 1;
-    int T_output = 10;
+    int T_output = 1;
     ///////////////////////////////////////////
 
 
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     cout << "Time taken by inizialisation: "
-         << duration.count() << " microseconds" << endl;
+         << duration.count()/1000000.0 << " seconds" << endl;
     ///////////////////////////////////////////
 
     //#######################################//
@@ -91,11 +91,12 @@ int main(int argc, char *argv[]){
         Kinetic.IntegrateAll();
         Output.VTKoutput(T_output);
         Output.PlotDistributionFunction(1,1,1,T_output);
+	Output.UpdateTime();
     }
     stop = high_resolution_clock::now();
     duration = duration_cast<microseconds>(stop - start);
     cout << "Time taken by numerical scheme: "
-         << duration.count() << " microseconds" << endl;
+         << duration.count()/1000000.0 << " seconds" << endl;
     
     return 0;
 

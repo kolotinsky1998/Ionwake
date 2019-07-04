@@ -40,6 +40,8 @@ class output{
             The name of the directory define the user.
              */
             void CreateOutputDirectory(string data_);
+	    ///\brief This function updates class member "Time" which is reasponseble for output
+	    void UpdateTime();
 
     private:
             // access to converter members
