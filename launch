@@ -6,6 +6,7 @@
 #SBATCH --output=log
 #SBATCH -N 1
 #SBATCH -n 1
+export OMP_NUM_THREADS=$SBATCH_NUM_PPN
 ./project $1
 mv log $1
 mv error $1

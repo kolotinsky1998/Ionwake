@@ -2,6 +2,7 @@
 #include "poisson.h"
 #include "math.h"
 #include <iostream>
+#include "omp.h"
 using namespace std;
 
 kinetic::kinetic(const converter &Converter_, const poisson &Poisson):
@@ -309,10 +310,14 @@ void kinetic::CoordinatePart(){
                     if (vx[a] > 0){
                         if(abs(vx[a]*deltaT/hx)>1) cout << "x"<< vx[a]*deltaT/hx << endl;
                         for (int b=1; b<nvy-1; b++){
+			    #pragma omp parallel
+			    {
+			    #pragma omp for
                             for (int c=1; c<nvz-1; c++){
                                 f[i][j][k][a][b][c] = f_time[i][j][k][a][b][c] - (deltaT * vx[a] / hx)
                                  * (f_time[i][j][k][a][b][c] - f_time[(nx+i-1)%nx][j][k][a][b][c]);
-                            }   
+                            } 
+                            }  
                         }
                     } 
                     else{
