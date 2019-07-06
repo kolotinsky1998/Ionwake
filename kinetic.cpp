@@ -303,6 +303,9 @@ void kinetic::CoordinatePart(){
 
   //cout << "***  Starting coordinate part ***" << endl; 
   SaveState();
+#pragma omp parallel
+{
+#pragma omp for
   for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -310,14 +313,10 @@ void kinetic::CoordinatePart(){
                     if (vx[a] > 0){
                         if(abs(vx[a]*deltaT/hx)>1) cout << "x"<< vx[a]*deltaT/hx << endl;
                         for (int b=1; b<nvy-1; b++){
-			    #pragma omp parallel
-			    {
-			    #pragma omp for
                             for (int c=1; c<nvz-1; c++){
                                 f[i][j][k][a][b][c] = f_time[i][j][k][a][b][c] - (deltaT * vx[a] / hx)
                                  * (f_time[i][j][k][a][b][c] - f_time[(nx+i-1)%nx][j][k][a][b][c]);
                             } 
-                            }  
                         }
                     } 
                     else{
@@ -332,6 +331,7 @@ void kinetic::CoordinatePart(){
             }
         }
     }
+}
     SaveState();
     for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
