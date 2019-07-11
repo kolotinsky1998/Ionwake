@@ -6,6 +6,5 @@ error*
 project
 data*
 .vscode
-Makefile
 data*/*
 
