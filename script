@@ -10,10 +10,9 @@ echo "#SBATCH --partition=max1" >> launch
 echo "#SBATCH --error=error" >> launch
 echo "#SBATCH --output=log" >> launch
 echo "#SBATCH -N 1" >> launch 
-echo "#SBATCH -n 10" >> launch 
+echo "#SBATCH -n 44" >> launch 
 echo "#SBATCH --chdir=$1" >> launch
 
-echo "export OMP_NUM_THREADS=\$SBATCH_NUM_PPN" >> launch
 echo "./project $1" >> launch
 
 chmod +x launch

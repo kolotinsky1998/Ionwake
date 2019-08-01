@@ -6,6 +6,7 @@
 #include "iostream"
 #include <chrono>
 #include <algorithm>  
+#include "omp.h"
 using namespace std;
 using namespace std::chrono;
 int main(int argc, char *argv[]){
@@ -24,7 +25,7 @@ int main(int argc, char *argv[]){
     //particle charge in electron units                      
     const double q = 2000;                               
     //electricity field in cgs units                     
-    const double El= 2*pow(10.,-5.);                        
+    const double El= 3*pow(10.,-5.);                        
     //In debay radious units                 
     //x-dimension of the computational box in Debye radious  
     const double Lx=6;                       
@@ -33,17 +34,17 @@ int main(int argc, char *argv[]){
     //x-dimension of the computational box in Debye radious   
     const double Lz=6;                        
     //number of sells in cordinate space x   
-    const int Nx=5;                           
+    const int Nx=60;                           
     //number of sells in cordinate space y   
-    const int Ny=5;                           
+    const int Ny=60;                           
     //number of sells in cordinate space z   
-    const int Nz=5;         
+    const int Nz=60;         
     //position of dust particle at the grid
-    const int Nx_0=2;       
+    const int Nx_0=30;       
     //position of dust particle at the grid
-    const int Ny_0=2;   
+    const int Ny_0=30;   
     //position of dust particle at the grid
-    const int Nz_0=2;              
+    const int Nz_0=20;              
     ///////////////////////////////////////////
 
 
@@ -52,16 +53,16 @@ int main(int argc, char *argv[]){
     //#######################################//
 
     ///////////////////////////////////////////
-    int ITmax = 5;
+    int ITmax = 2000;
     int T_term = 1;
-    int T_output = 1;
+    int T_output = 10;
     ///////////////////////////////////////////
 
 
     //#######################################//
     //##         Inizialization            ##//
     //#######################################//
-
+    omp_set_num_threads(44);
     ///////////////////////////////////////////
     auto start = high_resolution_clock::now();
 
@@ -70,7 +71,7 @@ int main(int argc, char *argv[]){
     kinetic Kinetic(Converter, Poisson);
     output Output(Converter, Poisson, Kinetic);
     Output.StartOutput();
-    Output.CreateOutputDirectory(argv[1]);
+    Output.CreateOutputDirectory();
     Output.WriteInitialPotential();
 
     auto stop = high_resolution_clock::now();

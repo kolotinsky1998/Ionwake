@@ -39,9 +39,15 @@ class output{
             /*!
             The name of the directory define the user.
              */
-            void CreateOutputDirectory(string data_);
+            void CreateOutputDirectory();
 	    ///\brief This function updates class member "Time" which is reasponseble for output
 	    void UpdateTime();
+	    ///\brief This function is responsible for output of distribution function
+	    /*!
+ 	    The output is nessesary to continue calcalution after the reaching the permitted time for the job on queue.
+	    The distribution from the output will be used as initial conditions for further calculation.  
+ 	    */
+	    void WriteDistribution();
 
     private:
             // access to converter members

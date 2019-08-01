@@ -5,7 +5,6 @@
 #SBATCH --error=error
 #SBATCH --output=log
 #SBATCH -N 1
-#SBATCH -n 10
+#SBATCH -n 44
 #SBATCH --chdir=data1
-export OMP_NUM_THREADS=$SBATCH_NUM_PPN
 ./project data1

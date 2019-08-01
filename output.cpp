@@ -258,13 +258,9 @@ void output::WriteInitialPotential(){
 }
 
 
-void output::CreateOutputDirectory(string data_="data"){
-    stringstream command, command1;
-    data = data_;
-    //command << "mkdir " << data;
-    command1 << "mkdir " << data << "/gnuplot";
-    //system(command.str().c_str());
-    system(command1.str().c_str());
+void output::CreateOutputDirectory(){
+    data = "./";
+    system("mkdir gnuplot");
 }
 
 void output::UpdateTime(){

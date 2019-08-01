@@ -1,15 +1,15 @@
 CC=icc
 
-CFLAGS=-c -fast
+CFLAGS=-c -fast 
 
-PFLAGS=-openmp-report=1
+PFLAGS=-qopenmp
 
 all: project
 
 project: main.o  kinetic.o converter.o poisson.o output.o
 	$(CC) main.o kinetic.o converter.o poisson.o output.o $(PFLAGS) -o project
 main.o: main.cpp
-	$(CC) $(CFLAGS) main.cpp 
+	$(CC) $(CFLAGS) main.cpp $(PFLAGS)
 kinetic.o: kinetic.cpp
 	$(CC) $(CFLAGS) kinetic.cpp $(PFLAGS)
 converter.o: converter.cpp

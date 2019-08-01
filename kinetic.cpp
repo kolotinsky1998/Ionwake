@@ -303,9 +303,7 @@ void kinetic::CoordinatePart(){
 
   //cout << "***  Starting coordinate part ***" << endl; 
   SaveState();
-#pragma omp parallel
-{
-#pragma omp for
+  #pragma omp parallel for collapse(3)
   for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -331,8 +329,9 @@ void kinetic::CoordinatePart(){
             }
         }
     }
-}
+
     SaveState();
+    #pragma omp parallel for collapse(3)
     for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -357,6 +356,7 @@ void kinetic::CoordinatePart(){
         }
     } 
     SaveState();
+    #pragma omp parallel for collapse(3)
     for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -390,7 +390,7 @@ void kinetic::VelocityPart(){
    double fx_, fy_, fz_;
 
    SaveState();
-
+   #pragma omp parallel for collapse(3)
    for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -422,7 +422,7 @@ void kinetic::VelocityPart(){
     }  
 
     SaveState();
-
+    #pragma omp parallel for collapse(3)
     for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -454,7 +454,7 @@ void kinetic::VelocityPart(){
     }
 
     SaveState();
-
+    #pragma omp parallel for collapse(3)
     for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -497,7 +497,7 @@ void kinetic::IntegrateAll(){
     CoordinatePart();
 
     VelocityPart();
-    
+    #pragma omp parallel for collapse(3)
     for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -523,7 +523,7 @@ void kinetic::IntegrateAll(){
 void kinetic::ComputeDensity(){
 
     //cout << "*** Compute density ***" << endl;
-
+    #pragma omp parallel for collapse(3)
     for (int i=0; i<nx; i++){
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -549,7 +549,7 @@ void kinetic::ComputeDensity(){
 void kinetic::ComputeFlowVelocity(){
 
     //cout << "*** Compute flow velocity ***" << endl;
-
+    #pragma omp parallel for collapse(3)
     for (int i=0; i<nx; i++){
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
@@ -749,7 +749,7 @@ double kinetic::GetDeltaT() const{
 }
 
 void kinetic::SaveState(){
-
+    #pragma omp parallel for collapse(3)
     for (int i=0; i<nx; i++){    
         for (int j=0; j<ny; j++){
             for (int k=0; k<nz; k++){
