@@ -7,7 +7,7 @@ PFLAGS=-qopenmp
 all: project
 
 project: main.o  kinetic.o converter.o poisson.o output.o
-	$(CC) main.o kinetic.o converter.o poisson.o output.o $(PFLAGS) -o project
+	$(CC) main.o kinetic.o converter.o poisson.o output.o $(PFLAGS) -o $(PROJECTNAME)
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp $(PFLAGS)
 kinetic.o: kinetic.cpp
@@ -21,4 +21,4 @@ output.o: output.cpp
 
 
 clean:
-	rm -rf *.o project
+	rm -rf *.o

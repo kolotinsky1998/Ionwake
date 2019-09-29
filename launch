@@ -6,5 +6,5 @@
 #SBATCH --output=log
 #SBATCH -N 1
 #SBATCH -n 44
-#SBATCH --chdir=data1
-./project data1
+#SBATCH --chdir=data2.2
+./project data2.2

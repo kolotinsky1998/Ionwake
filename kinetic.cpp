@@ -443,8 +443,8 @@ void kinetic::VelocityPart(){
                     for (int a=1; a<nvx-1; a++){
                         for (int b=1; b<nvy-1; b++){
                             for (int c=1; c<nvz-1; c++){
-                                f[i][j][k][a][b][c] = f[i][j][k][a][b][c] 
-                                 - (deltaT * fy_ / hvy) * (f[i][j][k][a][b+1][c] - f[i][j][k][a][b][c]);
+                                f[i][j][k][a][b][c] = f_time[i][j][k][a][b][c] 
+                                 - (deltaT * fy_ / hvy) * (f_time[i][j][k][a][b+1][c] - f_time[i][j][k][a][b][c]);
                             }
                         }
                     }

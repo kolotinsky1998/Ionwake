@@ -110,7 +110,7 @@ void output::VTKoutput(int output_time){
         for(int k = 0; k < nz; k++){
             for(int j = 0; j < ny; j++) {
                 for(int i = 0; i < nx; i++) {
-                    Density = density[i][j][k] * pow(Converter->GetRd()/Converter->GetThermalVelocity(),3.);
+                    Density = density[i][j][k] * pow(1./Converter->GetRd(),3.);
                     output_density <<  Density << "\n";
                 }
             }

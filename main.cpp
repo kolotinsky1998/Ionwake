@@ -21,28 +21,28 @@ int main(int argc, char *argv[]){
     // time between ion-neutral collisions in seconds                  
     const double tau = 0.4 * pow(10.,-3.);                       
     //equilibrium concentaration of ions [1/cm^3]  
-    const double n_0 = 2. * pow(10.,6.);                        
+    const double n_0 = 3. * pow(10.,9.);                        
     //particle charge in electron units                      
     const double q = 2000;                               
     //electricity field in cgs units                     
-    const double El= 3*pow(10.,-5.);                        
+    const double El= 0.43*pow(10.,-5.);                        
     //In debay radious units                 
     //x-dimension of the computational box in Debye radious  
-    const double Lx=6;                       
+    const double Lx=15;                       
     //x-dimension of the computational box in Debye radious  
     const double Ly=6;                        
     //x-dimension of the computational box in Debye radious   
     const double Lz=6;                        
     //number of sells in cordinate space x   
-    const int Nx=60;                           
+    const int Nx=100;                           
     //number of sells in cordinate space y   
-    const int Ny=60;                           
+    const int Ny=40;                           
     //number of sells in cordinate space z   
-    const int Nz=60;         
+    const int Nz=40;         
     //position of dust particle at the grid
-    const int Nx_0=30;       
+    const int Nx_0=20;       
     //position of dust particle at the grid
-    const int Ny_0=30;   
+    const int Ny_0=20;   
     //position of dust particle at the grid
     const int Nz_0=20;              
     ///////////////////////////////////////////
