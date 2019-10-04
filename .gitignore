@@ -7,4 +7,6 @@ project
 data*
 .vscode
 data*/*
-
+.idea
+CMakeLists.txt
+cmake-build-debug
