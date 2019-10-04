@@ -16,4 +16,22 @@ const int MAX_XI = 15;
 ///discrete step for integration parameter
 const double DELTA_XI = 0.005;
 
+const double hvx = 0.2;
+const double hvy = 0.2;
+const double hvz = 0.2;
+
+////grid size X
+//const int Nx;
+////grid size Y
+//const int Ny;
+////grid size Z
+//const int Nz;
+
+//number of sells in cordinate space x
+const int Nx = 10;
+//number of sells in cordinate space y
+const int Ny = 10;
+//number of sells in cordinate space z
+const int Nz = 10;
+
 #endif //OPTIMIZATION_CONSTANTS_H

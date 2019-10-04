@@ -5,7 +5,7 @@ class converter {
 public:
     ///constuctor
     converter(double T_, double tau_, double n_0_, double q_,
-              double El_, double Lx_, double Ly_, double Lz_, int Nx_, int Ny_, int Nz_, int Nx_0, int Ny_0, int Nz_0);
+              double El_, double Lx_, double Ly_, double Lz_, int Nx_0, int Ny_0, int Nz_0);
 
     ///destructor
     ~converter();
@@ -133,12 +133,6 @@ private:
     int Ny_0;
     //position at the grid of the dust particle Z
     int Nz_0;
-    //grid size X
-    int Nx;
-    //grid size Y
-    int Ny;
-    //grid size Z
-    int Nz;
     // dust particle charge
     double q;
     //dimensionless relaxation time

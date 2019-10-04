@@ -14,10 +14,6 @@ kinetic::kinetic(const converter &Converter_, const poisson &Poisson) : Converte
     hy = Converter->GetCoordinateStepY();
     hz = Converter->GetCoordinateStepZ();
 
-    nx = Converter->GetNx();
-    ny = Converter->GetNy();
-    nz = Converter->GetNz();
-
     nx_0 = Converter->GetNx_0();
     ny_0 = Converter->GetNy_0();
     nz_0 = Converter->GetNz_0();
@@ -26,9 +22,6 @@ kinetic::kinetic(const converter &Converter_, const poisson &Poisson) : Converte
     Ly = Converter->GetLy();
     Lz = Converter->GetLz();
 
-    hvx = 0.2;
-    hvy = 0.2;
-    hvz = 0.2;
 
     vxcut = max(5., 8 * Converter->GetDimensionlessFlowVelocity());
     vyzcut = 5;
@@ -44,12 +37,12 @@ kinetic::kinetic(const converter &Converter_, const poisson &Poisson) : Converte
     CurT = 0;
     tau = Converter->GetDimensionlessTau();
 
-    f = new double *****[nx];
-    for (int i = 0; i < nx; ++i) {
-        f[i] = new double ****[ny];
-        for (int j = 0; j < ny; ++j) {
-            f[i][j] = new double ***[nz];
-            for (int k = 0; k < nz; ++k) {
+    f = new double *****[Nx];
+    for (int i = 0; i < Nx; ++i) {
+        f[i] = new double ****[Ny];
+        for (int j = 0; j < Ny; ++j) {
+            f[i][j] = new double ***[Nz];
+            for (int k = 0; k < Nz; ++k) {
                 f[i][j][k] = new double **[nvx];
                 for (int a = 0; a < nvx; ++a) {
                     f[i][j][k][a] = new double *[nvy];
@@ -61,12 +54,12 @@ kinetic::kinetic(const converter &Converter_, const poisson &Poisson) : Converte
         }
     }
 
-    f_time = new double *****[nx];
-    for (int i = 0; i < nx; ++i) {
-        f_time[i] = new double ****[ny];
-        for (int j = 0; j < ny; ++j) {
-            f_time[i][j] = new double ***[nz];
-            for (int k = 0; k < nz; ++k) {
+    f_time = new double *****[Nx];
+    for (int i = 0; i < Nx; ++i) {
+        f_time[i] = new double ****[Ny];
+        for (int j = 0; j < Ny; ++j) {
+            f_time[i][j] = new double ***[Nz];
+            for (int k = 0; k < Nz; ++k) {
                 f_time[i][j][k] = new double **[nvx];
                 for (int a = 0; a < nvx; ++a) {
                     f_time[i][j][k][a] = new double *[nvy];
@@ -94,19 +87,19 @@ kinetic::kinetic(const converter &Converter_, const poisson &Poisson) : Converte
         vz[c] = -vyzcut + hvz * c;
     }
 
-    x = new double[nx];
-    y = new double[ny];
-    z = new double[nz];
+    x = new double[Nx];
+    y = new double[Ny];
+    z = new double[Nz];
 
-    for (int i = 0; i < nx; ++i) {
+    for (int i = 0; i < Nx; ++i) {
         x[i] = hx * i;
     }
 
-    for (int j = 0; j < ny; ++j) {
+    for (int j = 0; j < Ny; ++j) {
         y[j] = hy * j;
     }
 
-    for (int k = 0; k < nz; ++k) {
+    for (int k = 0; k < Nz; ++k) {
         z[k] = hz * k;
     }
 
@@ -145,29 +138,29 @@ kinetic::kinetic(const converter &Converter_, const poisson &Poisson) : Converte
         profile_z[c] = 0;
     }
 
-    vfl_x = new double **[nx];
-    vfl_y = new double **[nx];
-    vfl_z = new double **[nx];
-    acx = new double **[nx];
-    acy = new double **[nx];
-    acz = new double **[nx];
-    density = new double **[nx];
-    for (int i = 0; i < nx; ++i) {
-        vfl_x[i] = new double *[ny];
-        vfl_y[i] = new double *[ny];
-        vfl_z[i] = new double *[ny];
-        acx[i] = new double *[ny];
-        acy[i] = new double *[ny];
-        acz[i] = new double *[ny];
-        density[i] = new double *[ny];
-        for (int j = 0; j < ny; ++j) {
-            vfl_x[i][j] = new double[nz];
-            vfl_y[i][j] = new double[nz];
-            vfl_z[i][j] = new double[nz];
-            acx[i][j] = new double[nz];
-            acy[i][j] = new double[nz];
-            acz[i][j] = new double[nz];
-            density[i][j] = new double[nz];
+    vfl_x = new double **[Nx];
+    vfl_y = new double **[Nx];
+    vfl_z = new double **[Nx];
+    acx = new double **[Nx];
+    acy = new double **[Nx];
+    acz = new double **[Nx];
+    density = new double **[Nx];
+    for (int i = 0; i < Nx; ++i) {
+        vfl_x[i] = new double *[Ny];
+        vfl_y[i] = new double *[Ny];
+        vfl_z[i] = new double *[Ny];
+        acx[i] = new double *[Ny];
+        acy[i] = new double *[Ny];
+        acz[i] = new double *[Ny];
+        density[i] = new double *[Ny];
+        for (int j = 0; j < Ny; ++j) {
+            vfl_x[i][j] = new double[Nz];
+            vfl_y[i][j] = new double[Nz];
+            vfl_z[i][j] = new double[Nz];
+            acx[i][j] = new double[Nz];
+            acy[i][j] = new double[Nz];
+            acz[i][j] = new double[Nz];
+            density[i][j] = new double[Nz];
         }
     }
 
@@ -176,9 +169,9 @@ kinetic::kinetic(const converter &Converter_, const poisson &Poisson) : Converte
     asy = Poisson.GetSelfConsistentForceFieldY();
     asz = Poisson.GetSelfConsistentForceFieldZ();
 
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 density[i][j][k] = Converter->GetDimensionlessIonConcentration();
 
                 acx[i][j][k] = -Converter->GetCAxelerationCofficient() * (x[i] - x[nx_0] + 0.5 * hx)
@@ -220,8 +213,8 @@ kinetic::~kinetic() {
     delete[] analytical_profile_x;
 
 
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
             delete[] density[i][j];
             delete[] vfl_x[i][j];
             delete[] vfl_y[i][j];
@@ -247,9 +240,9 @@ kinetic::~kinetic() {
     delete[] acy;
     delete[] acz;
 
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 for (int a = 0; a < nvx; ++a) {
                     for (int b = 0; b < nvy; ++b) {
                         delete[] f[i][j][k][a][b];
@@ -265,9 +258,9 @@ kinetic::~kinetic() {
 
     delete[] f;
 
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 for (int a = 0; a < nvx; ++a) {
                     for (int b = 0; b < nvy; ++b) {
                         delete[] f_time[i][j][k][a][b];
@@ -305,9 +298,9 @@ void kinetic::CoordinatePart() {
     //cout << "***  Starting coordinate part ***" << endl;
     SaveState();
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 for (int a = 1; a < nvx - 1; ++a) {
                     double **f_ijka = f[i][j][k][a];
                     double **f_time_ijka = f_time[i][j][k][a];
@@ -317,15 +310,15 @@ void kinetic::CoordinatePart() {
                             for (int c = 1; c < nvz - 1; ++c) {
                                 f_ijka[b][c] = f_time_ijka[b][c] - (deltaThx * vx[a])
                                                                    * (f_time_ijka[b][c] -
-                                                                      f_time[(nx + i - 1) %
-                                                                             nx][j][k][a][b][c]);
+                                                                      f_time[(Nx + i - 1) %
+                                                                             Nx][j][k][a][b][c]);
                             }
                         }
                     } else {
                         for (int b = 1; b < nvy - 1; ++b) {
                             for (int c = 1; c < nvz - 1; ++c) {
                                 f_ijka[b][c] = f_time_ijka[b][c] - (deltaThx * vx[a]) *
-                                                                   (f_time[(i + 1) % nx][j][k][a][b][c] -
+                                                                   (f_time[(i + 1) % Nx][j][k][a][b][c] -
                                                                     f_time_ijka[b][c]);
                             }
                         }
@@ -337,9 +330,9 @@ void kinetic::CoordinatePart() {
 
     SaveState();
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 for (int a = 1; a < nvx - 1; ++a) {
                     for (int b = 1; b < nvy - 1; ++b) {
                         double *f_ijkab = f[i][j][k][a][b];
@@ -349,12 +342,12 @@ void kinetic::CoordinatePart() {
                             for (int c = 1; c < nvz - 1; ++c) {
                                 f_ijkab[c] = f_time_ijkab[c] - (deltaThy * vy[b]) *
                                                                (f_time_ijkab[c] -
-                                                                f_time[i][(ny + j - 1) % ny][k][a][b][c]);
+                                                                f_time[i][(Ny + j - 1) % Ny][k][a][b][c]);
                             }
                         } else {
                             for (int c = 1; c < nvz - 1; ++c) {
                                 f_ijkab[c] = f_time_ijkab[c] - (deltaThy * vy[b]) *
-                                                               (f_time[i][(j + 1) % ny][k][a][b][c] - f_time_ijkab[c]);
+                                                               (f_time[i][(j + 1) % Ny][k][a][b][c] - f_time_ijkab[c]);
                             }
                         }
                     }
@@ -364,9 +357,9 @@ void kinetic::CoordinatePart() {
     }
     SaveState();
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 for (int a = 1; a < nvx - 1; ++a) {
                     for (int b = 1; b < nvy - 1; ++b) {
                         for (int c = 1; c < nvz - 1; ++c) {
@@ -374,11 +367,11 @@ void kinetic::CoordinatePart() {
                                 if (abs(vz[c] * deltaThz) > 1) cout << "z" << vz[c] * deltaThz << endl;
                                 f[i][j][k][a][b][c] =
                                         f_time[i][j][k][a][b][c] - (deltaThz * vz[c]) * (f_time[i][j][k][a][b][c] -
-                                                                                         f_time[i][j][(nz + k - 1) %
-                                                                                                      nz][a][b][c]);
+                                                                                         f_time[i][j][(Nz + k - 1) %
+                                                                                                      Nz][a][b][c]);
                             } else {
                                 f[i][j][k][a][b][c] = f_time[i][j][k][a][b][c] - (deltaThz * vz[c]) *
-                                                                                 (f_time[i][j][(k + 1) % nz][a][b][c] -
+                                                                                 (f_time[i][j][(k + 1) % Nz][a][b][c] -
                                                                                   f_time[i][j][k][a][b][c]);
                             }
                         }
@@ -402,9 +395,9 @@ void kinetic::VelocityPart() {
 
     SaveState();
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 const double fx_ = sAxelerationCofficient * asx[i][j][k] + al + acx[i][j][k];
                 double ***f_ijk = f[i][j][k];
                 double ***f_time_ijk = f_time[i][j][k];
@@ -436,9 +429,9 @@ void kinetic::VelocityPart() {
 
     SaveState();
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 const double fy_ = sAxelerationCofficient * asy[i][j][k] + acy[i][j][k];
                 double ***f_ijk = f[i][j][k];
                 double ***f_time_ijk = f_time[i][j][k];
@@ -470,9 +463,9 @@ void kinetic::VelocityPart() {
 
     SaveState();
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 const double fz_ = sAxelerationCofficient * asz[i][j][k] + acz[i][j][k];
                 double ***f_ijk = f[i][j][k];
                 double ***f_time_ijk = f_time[i][j][k];
@@ -516,16 +509,15 @@ void kinetic::IntegrateAll() {
 
     VelocityPart();
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 double ***f_ijk = f[i][j][k];
                 double density_ijk = density[i][j][k];
                 for (int a = 1; a < nvx - 1; ++a) {
                     for (int b = 1; b < nvy - 1; ++b) {
                         for (int c = 1; c < nvy - 1; ++c) {
-                            f_ijk[a][b][c] =
-                                    f_ijk[a][b][c] + deltaByTau * (density_ijk * f_n[a][b][c] - f_ijk[a][b][c]);
+                            f_ijk[a][b][c] += deltaByTau * (density_ijk * f_n[a][b][c] - f_ijk[a][b][c]);
                         }
                     }
                 }
@@ -545,9 +537,9 @@ void kinetic::ComputeDensity() {
     const double m = hvx * hvy * hvz;
     //cout << "*** Compute density ***" << endl;
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 double ***f_ijk = f[i][j][k];
                 double sum = 0.0;
                 for (int a = 0; a < nvx; ++a) {
@@ -570,9 +562,9 @@ void kinetic::ComputeFlowVelocity() {
     const double m = hvx * hvy * hvz;
     //cout << "*** Compute flow velocity ***" << endl;
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 double ***f_ijk = f[i][j][k];
                 double sum_x = 0.0;
                 double sum_y = 0.0;
@@ -622,9 +614,9 @@ void kinetic::InitialConditions() {
         }
     }
 
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 for (int a = 0; a < nvx; ++a) {
                     for (int b = 0; b < nvy; ++b) {
                         copy(f[0][0][0][a][b], f[0][0][0][a][b] + nvz, f[i][j][k][a][b]);
@@ -637,7 +629,7 @@ void kinetic::InitialConditions() {
     for (int a=0; a<nvx; ++a){
         for (int b=0; b<nvy; ++b){
             for (int c=0; c<nvz; ++c){
-	        f[nx/2][ny/2][nz/2][a][b][c] += 0.1 * Converter->GetDimensionlessIonConcentration() * f_n[a][b][c];
+	        f[Nx/2][Ny/2][Nz/2][a][b][c] += 0.1 * Converter->GetDimensionlessIonConcentration() * f_n[a][b][c];
 	    }
         }
     }
@@ -764,9 +756,9 @@ double kinetic::GetDeltaT() const {
 
 void kinetic::SaveState() {
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 for (int a = 0; a < nvx; ++a) {
                     for (int b = 0; b < nvy; ++b) {
                         std::copy(f[i][j][k][a][b], f[i][j][k][a][b] + nvz, f_time[i][j][k][a][b]);
@@ -795,9 +787,9 @@ void kinetic::DefineDensity() {
 
     double n_i = Converter->GetDimensionlessIonConcentration();
 
-    for (int i = 0; i < nx; ++i) {
-        for (int j = 0; j < ny; ++j) {
-            for (int k = 0; k < nz; ++k) {
+    for (int i = 0; i < Nx; ++i) {
+        for (int j = 0; j < Ny; ++j) {
+            for (int k = 0; k < Nz; ++k) {
                 density[i][j][k] = ((M_PI / Lx) * (M_PI / Lx) + (M_PI / Lx) * (M_PI / Lx) + (M_PI / Lz) * (M_PI / Lz))
                                    * sin(M_PI * x[i] / Lx) * sin(M_PI * y[j] / Ly) * sin(M_PI * z[k] / Lz) /
                                    (4. * M_PI) + n_i;

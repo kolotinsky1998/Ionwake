@@ -1,10 +1,11 @@
-#include "kinetic.h"
-#include "converter.h"
-#include "poisson.h"
 #include <cmath>
 #include <iostream>
 #include <chrono>
 #include <algorithm>
+
+#include "kinetic.h"
+#include "converter.h"
+#include "poisson.h"
 #include "output.h"
 #include "omp.h"
 
@@ -34,12 +35,6 @@ int main(int argc, char *argv[]) {
     const double Ly = 6;
     //x-dimension of the computational box in Debye radious   
     const double Lz = 6;
-    //number of sells in cordinate space x   
-    const int Nx = 10;
-    //number of sells in cordinate space y   
-    const int Ny = 10;
-    //number of sells in cordinate space z   
-    const int Nz = 10;
     //position of dust particle at the grid
     const int Nx_0 = 5;
     //position of dust particle at the grid
@@ -63,11 +58,16 @@ int main(int argc, char *argv[]) {
     //#######################################//
     //##         Inizialization            ##//
     //#######################################//
-//    omp_set_num_threads(44);
+    //cout << omp_get_num_threads() << endl;
+
+    int numThreads;
+    cout << "Enter numThreads: ";
+    cin >> numThreads;
+    omp_set_num_threads(numThreads);
     ///////////////////////////////////////////
     auto start = high_resolution_clock::now();
 
-    converter Converter(T_i, tau, n_0, q, El, Lx, Ly, Lz, Nx, Ny, Nz, Nx_0, Ny_0, Nz_0);
+    converter Converter(T_i, tau, n_0, q, El, Lx, Ly, Lz, Nx_0, Ny_0, Nz_0);
     poisson Poisson(Converter);
     kinetic Kinetic(Converter, Poisson);
     output Output(Converter, Poisson, Kinetic);

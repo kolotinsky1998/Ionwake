@@ -159,12 +159,6 @@ private:
     double *profile_z;
     ///analytical profile of the distribution function
     double *analytical_profile_x;
-    ///number of coordinate grids x-direction
-    int nx;
-    ///number of coordinate grids x-direction
-    int ny;
-    ///number of coordinate grids x-direction
-    int nz;
     ///number of position of the particle X
     int nx_0;
     ///number of position of the particle Y
@@ -189,12 +183,6 @@ private:
     double Ly;
     ///z-length of the computation box
     double Lz;
-    ///discretisation step in velocity space X
-    double hvx;
-    ///discretisation step in velocity space Y
-    double hvy;
-    ///discretisation step in velocity space Z
-    double hvz;
     ///maximum cut velocity in x direction in dimensionless units
     double vxcut;
     ///maximum cut velocity in yz directions in dimensionless units
