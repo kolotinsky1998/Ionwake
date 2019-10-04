@@ -1,11 +1,11 @@
 #include "kinetic.h"
 #include "converter.h"
 #include "poisson.h"
-#include "math.h"
-#include "output.h"
-#include "iostream"
+#include <cmath>
+#include <iostream>
 #include <chrono>
 #include <algorithm>
+#include "output.h"
 #include "omp.h"
 
 using namespace std;
@@ -23,30 +23,30 @@ int main(int argc, char *argv[]) {
     // time between ion-neutral collisions in seconds                  
     const double tau = 0.4 * pow(10., -3.);
     //equilibrium concentaration of ions [1/cm^3]  
-    const double n_0 = 3. * pow(10., 9.);
+    const double n_0 = 2. * pow(10., 7.);
     //particle charge in electron units                      
     const double q = 2000;
     //electricity field in cgs units                     
-    const double El = 0.43 * pow(10., -5.);
+    const double El = 0 * pow(10., -5.);
     //In debay radious units                 
     //x-dimension of the computational box in Debye radious  
-    const double Lx = 15;
+    const double Lx = 6;
     //x-dimension of the computational box in Debye radious  
     const double Ly = 6;
     //x-dimension of the computational box in Debye radious   
     const double Lz = 6;
     //number of sells in cordinate space x   
-    const int Nx = 100;
+    const int Nx = 10;
     //number of sells in cordinate space y   
-    const int Ny = 40;
+    const int Ny = 10;
     //number of sells in cordinate space z   
-    const int Nz = 40;
+    const int Nz = 10;
     //position of dust particle at the grid
-    const int Nx_0 = 20;
+    const int Nx_0 = 5;
     //position of dust particle at the grid
-    const int Ny_0 = 20;
+    const int Ny_0 = 5;
     //position of dust particle at the grid
-    const int Nz_0 = 20;
+    const int Nz_0 = 5;
     ///////////////////////////////////////////
 
 
@@ -55,16 +55,16 @@ int main(int argc, char *argv[]) {
     //#######################################//
 
     ///////////////////////////////////////////
-    int ITmax = 2000;
+    int ITmax = 10;
     int T_term = 1;
-    int T_output = 10;
+    int T_output = 1;
     ///////////////////////////////////////////
 
 
     //#######################################//
     //##         Inizialization            ##//
     //#######################################//
-    omp_set_num_threads(44);
+//    omp_set_num_threads(44);
     ///////////////////////////////////////////
     auto start = high_resolution_clock::now();
 
