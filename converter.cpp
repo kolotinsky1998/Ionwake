@@ -1,6 +1,7 @@
 #include"converter.h"
 
 #include <cmath>
+#include "constants.h"
 
 using namespace std;
 
@@ -21,27 +22,22 @@ converter::converter(double T_, double tau_, double n_0_, double q_,
         Nx_0(Nx_0_),
         Ny_0(Ny_0_),
         Nz_0(Nz_0_) {
-    pi = 3.1415926535897932;
-    e = 4.8032 * pow(10., -10.);
-    m = 6.6464 * pow(10., -23.);
-    k = 1.3806 * pow(10., -16.);
-    vt = sqrt(T * k / m);
-    rd = sqrt(k * T / (4. * pi * e * e * n_0));
+
+    vt = sqrt(T * K / M);
+    rd = sqrt(K * T / (4.0 * M_PI * E * E * n_0));
     wp = vt / rd;
 
     //this parameters should be visible in the outside of the converter
-    as = e * e / (m * vt * vt * rd);
-    al = El * e * rd / (m * vt * vt);
-    ac = q * e * e / (m * vt * vt * rd);
-    potential = e / rd;
+    as = E * E / (M * vt * vt * rd);
+    al = El * E * rd / (M * vt * vt);
+    ac = q * E * E / (M * vt * vt * rd);
+    potential = E / rd;
     tau_d = tau * vt / rd;
-    v_fl_an_d = e * El * tau / (m * vt);
+    v_fl_an_d = E * El * tau / (M * vt);
     n_0_d = n_0 * (rd * rd * rd);
-    hx = Lx / double(Nx);
-    hy = Ly / double(Ny);
-    hz = Lz / double(Nz);
-
-
+    hx = Lx / (double) Nx;
+    hy = Ly / (double) Ny;
+    hz = Lz / (double) Nz;
 }
 
 converter::~converter() = default;
@@ -175,15 +171,6 @@ double converter::GetRd() const {
     return rd;
 }
 
-double converter::GetElementaryCharge() const {
-    return e;
-}
-
-
 double converter::GetEl() const {
     return El;
-}
-
-double converter::GetPi() const {
-    return pi;
 }

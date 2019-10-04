@@ -91,27 +91,11 @@ public:
     ///get Debay radious
     double GetRd() const;
 
-    ///get elementary charge
-    double GetElementaryCharge() const;
-
     ///get longitudinal electricity field
     double GetEl() const;
 
-    ///get value of pi constant
-    double GetPi() const;
-
 
 private:
-    /******* some fundamental quantities ******/
-    //electron charge
-    double e;
-    //ion mass
-    double m;
-    //Boltzmann constant
-    double k;
-    //pi number
-    double pi;
-
     /******* system quantities in physical units *******/
     //temperature of neutrals in Kelvin
     double T;

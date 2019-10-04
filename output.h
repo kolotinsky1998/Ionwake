@@ -14,9 +14,6 @@ public:
     ///constructor
     output(const converter &, const poisson &, kinetic &);
 
-    ///destructor
-    ~output();
-
     ///output initial simulation parameter
     void StartOutput();
 

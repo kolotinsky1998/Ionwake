@@ -18,12 +18,6 @@ output::output(const converter &Converter_, const poisson &Poisson_, kinetic &Ki
     Time = 0;
 }
 
-
-output::~output() {
-
-}
-
-
 void output::StartOutput() {
 
     cout << "######### Physical parameters of the system #############" << endl;
@@ -81,12 +75,9 @@ void output::TerminalOutput(int term_time) {
 
 void output::VTKoutput(int output_time) {
 
-    int nx, ny, nz;
-
-
-    nx = Converter->GetNx();
-    ny = Converter->GetNy();
-    nz = Converter->GetNz();
+    int nx = Converter->GetNx();
+    int ny = Converter->GetNy();
+    int nz = Converter->GetNz();
 
     double Density;
     double Potential;

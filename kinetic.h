@@ -111,8 +111,6 @@ public:
 
 
 private:
-    ///constant pi
-    double pi;
     ///distribution function
     double ******f;
     ///temporal distribution function
