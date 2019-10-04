@@ -26,7 +26,6 @@ converter::converter(double T_, double tau_, double n_0_, double q_,
     vt = sqrt(T * K / M);
     rd = sqrt(K * T / (4.0 * M_PI * E * E * n_0));
     wp = vt / rd;
-
     //this parameters should be visible in the outside of the converter
     as = E * E / (M * vt * vt * rd);
     al = El * E * rd / (M * vt * vt);

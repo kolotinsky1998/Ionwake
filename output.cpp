@@ -1,12 +1,14 @@
-#include "kinetic.h"
-#include "poisson.h"
-#include "converter.h"
-#include "output.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <fstream>
 #include <cmath>
+
+#include "kinetic.h"
+#include "poisson.h"
+#include "converter.h"
+#include "output.h"
+#include "constants.h"
 
 
 using namespace std;
@@ -87,60 +89,60 @@ void output::VTKoutput(int output_time) {
     double ***vfl_x = Kinetic->GetFlowVelocityX();
     double ***vfl_y = Kinetic->GetFlowVelocityY();
     double ***vfl_z = Kinetic->GetFlowVelocityZ();
-//
-//    stringstream density_filename;
-//    stringstream potential_filename;
-//    stringstream velocity_filename;
-//
-//    density_filename << data << "/density_t" << Time << ".dat";
-//    potential_filename << data << "/potential_t" << Time << ".dat";
-//    velocity_filename << data << "/velocity_t" << Time << ".dat";
-//
-//    ofstream output_density;
-//    ofstream output_potential;
-//    ofstream output_velocity;
-//
-//
-//    if (Time % output_time == 0) {
-//        output_density.open(density_filename.str().c_str());
-//
-//        output_density << nx << "\t" << ny << "\t" << nz << "\n";
-//        for (int k = 0; k < nz; k++) {
-//            for (int j = 0; j < ny; j++) {
-//                for (int i = 0; i < nx; i++) {
-//                    Density = density[i][j][k] * pow(1. / Converter->GetRd(), 3.);
-//                    output_density << Density << "\n";
-//                }
-//            }
-//        }
-//        output_density.close();
-//
-//        output_velocity.open(velocity_filename.str().c_str());
-//
-//        output_velocity << nx << "\t" << ny << "\t" << nz << "\n";
-//        for (int k = 0; k < nz; k++) {
-//            for (int j = 0; j < ny; j++) {
-//                for (int i = 0; i < nx; i++) {
-//                    output_velocity << vfl_x[i][j][k] << "\t" << vfl_y[i][j][k] << "\t" << vfl_z[i][j][k] << "\n";
-//                }
-//            }
-//        }
-//        output_velocity.close();
-//
-//        output_potential.open(potential_filename.str().c_str());
-//
-//        output_potential << nx << "\t" << ny << "\t" << nz << "\n";
-//        for (int k = 0; k < nz; k++) {
-//            for (int j = 0; j < ny; j++) {
-//                for (int i = 0; i < nx; i++) {
-//                    Potential = Converter->GetDimensionlessIonConcentration() * Converter->ConvertPotential() *
-//                                potential[i][j][k];
-//                    output_potential << Potential << "\n";
-//                }
-//            }
-//        }
-//        output_potential.close();
-//    }
+
+    stringstream density_filename;
+    stringstream potential_filename;
+    stringstream velocity_filename;
+
+    density_filename << data << "/density_t" << Time << ".dat";
+    potential_filename << data << "/potential_t" << Time << ".dat";
+    velocity_filename << data << "/velocity_t" << Time << ".dat";
+
+    ofstream output_density;
+    ofstream output_potential;
+    ofstream output_velocity;
+
+
+    if (Time % output_time == 0) {
+        output_density.open(density_filename.str().c_str());
+
+        output_density << nx << "\t" << ny << "\t" << nz << "\n";
+        for (int k = 0; k < nz; k++) {
+            for (int j = 0; j < ny; j++) {
+                for (int i = 0; i < nx; i++) {
+                    Density = density[i][j][k] * pow(1. / Converter->GetRd(), 3.);
+                    output_density << Density << "\n";
+                }
+            }
+        }
+        output_density.close();
+
+        output_velocity.open(velocity_filename.str().c_str());
+
+        output_velocity << nx << "\t" << ny << "\t" << nz << "\n";
+        for (int k = 0; k < nz; k++) {
+            for (int j = 0; j < ny; j++) {
+                for (int i = 0; i < nx; i++) {
+                    output_velocity << vfl_x[i][j][k] << "\t" << vfl_y[i][j][k] << "\t" << vfl_z[i][j][k] << "\n";
+                }
+            }
+        }
+        output_velocity.close();
+
+        output_potential.open(potential_filename.str().c_str());
+
+        output_potential << nx << "\t" << ny << "\t" << nz << "\n";
+        for (int k = 0; k < nz; k++) {
+            for (int j = 0; j < ny; j++) {
+                for (int i = 0; i < nx; i++) {
+                    Potential = Converter->GetDimensionlessIonConcentration() * Converter->ConvertPotential() *
+                                potential[i][j][k];
+                    output_potential << Potential << "\n";
+                }
+            }
+        }
+        output_potential.close();
+    }
 
 }
 
@@ -228,31 +230,31 @@ void output::WriteInitialPotential() {
 
     rd = Converter->GetRd();
 
-//    stringstream output_potential_filename;
-//    ofstream output_potential;
-//
-//    output_potential_filename << data << "/InitialPotential.dat";
-//    output_potential.open(output_potential_filename.str().c_str());
-//
-//
-//    output_potential << Converter->GetNx() << "\t" << Converter->GetNy() << "\t" << Converter->GetNz() << "\n";
-//    for (int k = 0; k < nz; k++) {
-//        for (int j = 0; j < ny; j++) {
-//            for (int i = 0; i < nx; i++) {
-//                r = (i - Converter->GetNx_0()) * (i - Converter->GetNx_0()) * (lx * rd / double(nx)) *
-//                    (lx * rd / double(nx));
-//                r = r + (j - Converter->GetNy_0()) * (j - Converter->GetNy_0()) * (ly * rd / double(ny)) *
-//                        (ly * rd / double(ny));
-//                r = r + (k - Converter->GetNz_0()) * (k - Converter->GetNz_0()) * (lz * rd / double(nz)) *
-//                        (lz * rd / double(nz));
-//                r = sqrt(r);
-//                potential = -Converter->GetParticleCharge() * Converter->GetElementaryCharge() / r;
-//                potential = potential - Converter->GetEl() * (k * lz * rd / double(nz));
-//                output_potential << potential << "\n";
-//            }
-//        }
-//    }
-//    output_potential.close();
+    stringstream output_potential_filename;
+    ofstream output_potential;
+
+    output_potential_filename << data << "/InitialPotential.dat";
+    output_potential.open(output_potential_filename.str().c_str());
+
+
+    output_potential << Converter->GetNx() << "\t" << Converter->GetNy() << "\t" << Converter->GetNz() << "\n";
+    for (int k = 0; k < nz; k++) {
+        for (int j = 0; j < ny; j++) {
+            for (int i = 0; i < nx; i++) {
+                r = (i - Converter->GetNx_0()) * (i - Converter->GetNx_0()) * (lx * rd / double(nx)) *
+                    (lx * rd / double(nx));
+                r = r + (j - Converter->GetNy_0()) * (j - Converter->GetNy_0()) * (ly * rd / double(ny)) *
+                        (ly * rd / double(ny));
+                r = r + (k - Converter->GetNz_0()) * (k - Converter->GetNz_0()) * (lz * rd / double(nz)) *
+                        (lz * rd / double(nz));
+                r = sqrt(r);
+                potential = -Converter->GetParticleCharge() * E / r;
+                potential = potential - Converter->GetEl() * (k * lz * rd / double(nz));
+                output_potential << potential << "\n";
+            }
+        }
+    }
+    output_potential.close();
 
 }
 

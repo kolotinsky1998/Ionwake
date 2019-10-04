@@ -70,6 +70,7 @@ poisson::~poisson() {
 }
 
 const double e = 0.0001;
+
 void poisson::PoissonScheme(double ***density) {
     const double owx = hx * hx;
     const double owy = hy * hy;
@@ -94,8 +95,10 @@ void poisson::PoissonScheme(double ***density) {
                     double Fj = (potential[i][j + 1][k] - d + potential[i][j - 1][k]) / owy;
                     double Fk = (potential[i][j][k + 1] - d + potential[i][j][k - 1]) / owz;
                     potential[i][j][k] = potential[i][j][k]
-                                         + (Fi + Fj + Fk + 4. * M_PI * (density[i][j][k] / n_i - 1. +
-                                                                        q / (n_i * hx * hy * hz * Nz * Ny * Nz) -
+                                         + (Fi + Fj + Fk + 4. * M_PI * (density[i][j][k] / n_i - 1. + q /
+                                                                                                      (n_i * hx * hy *
+                                                                                                       hz * Nz * Ny *
+                                                                                                       Nz) -
                                                                         q * (i == Nx_0) * (j == Ny_0) * (k == Nz_0)) /
                                                            (n_i * hx * hy * hz)) * tau;
                     if (potential[i][j][k] != 0) {
@@ -114,12 +117,12 @@ void poisson::GradientScheme() {
     for (int i = 1; i < Nx - 1; ++i) {
         for (int j = 1; j < Ny - 1; ++j) {
             for (int k = 1; k < Nz - 1; ++k) {
-                sfx[i][j][k] = -(potential[i + 1][j][k] - potential[i - 1][j][k]) / (2.0 * hx);
-                sfy[i][j][k] = -(potential[i][j + 1][k] - potential[i][j - 1][k]) / (2.0 * hy);
-                sfz[i][j][k] = -(potential[i][j][k + 1] - potential[i][j][k - 1]) / (2.0 * hz);
-                sfx[i][j][k] = sfx[i][j][k] * n_i;
-                sfy[i][j][k] = sfy[i][j][k] * n_i;
-                sfz[i][j][k] = sfz[i][j][k] * n_i;
+//                sfx[i][j][k] = -(potential[i + 1][j][k] - potential[i - 1][j][k]) / (2.0 * hx);
+//                sfy[i][j][k] = -(potential[i][j + 1][k] - potential[i][j - 1][k]) / (2.0 * hy);
+//                sfz[i][j][k] = -(potential[i][j][k + 1] - potential[i][j][k - 1]) / (2.0 * hz);
+                sfx[i][j][k] = -(potential[i + 1][j][k] - potential[i - 1][j][k]) / (2.0 * hx) * n_i;
+                sfy[i][j][k] = -(potential[i][j + 1][k] - potential[i][j - 1][k]) / (2.0 * hy) * n_i;
+                sfz[i][j][k] = -(potential[i][j][k + 1] - potential[i][j][k - 1]) / (2.0 * hz) * n_i;
             }
         }
     }

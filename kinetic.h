@@ -205,10 +205,6 @@ private:
     double CurT;
     /// relaxation time
     double tau;
-    /// maximum value of integration patameter in velocity space
-    double maxXi;
-    ///discrete step for integration parameter
-    double deltaXi;
     ///grid size for integration parameter
     int nxi;
     ///analytically calculated velocity of the ion flow
