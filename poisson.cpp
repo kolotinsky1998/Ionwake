@@ -112,6 +112,23 @@ void poisson::PoissonScheme(double ***density){
 
 }
 
+void poisson::PoissonBoltzmann(){
+	double rijk;
+
+	for(int i=0; i < Nx; i++){
+		for(int j=0; j < Ny; j++){
+			for(int k=0; k<Nz; k++){
+				for(int i_=0; i_ < Nx; i_++){
+					for(int j_=0; j_ < Ny; j-++){
+						for(int k_=0; k_<Nz; k_++){
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 
 void poisson::GradientScheme(){
 

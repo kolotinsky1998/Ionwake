@@ -20,6 +20,8 @@ class poisson {
             double*** GetPotential() const;
             ///numerical scheme for solving the Poisson equation
             void PoissonScheme(double*** density);
+	    ///integral method of solution linearised Poisson-Boltzmann equation
+	    void PoissonBoltzmann(double*** density);
             ///numerical scheme for taking gradient
             void GradientScheme();
             
