@@ -171,9 +171,20 @@ IonWake::IonWake(size_t nx, size_t ny, size_t nz, size_t nx_0, size_t ny_0, size
         potential[i] = new double *[ny];
         density[i] = new double *[ny];
         for (size_t j = 0; j < ny; ++j) {
-            acx[i][j] = new double[nz]{};
-            acy[i][j] = new double[nz]{};
-            acz[i][j] = new double[nz]{};
+            acx[i][j] = new double[nz];
+            acy[i][j] = new double[nz];
+            acz[i][j] = new double[nz];
+
+            for (size_t k = 0; k < nz; ++k) {
+                double down = pow(pow((x[i] - x[nx_0] + 0.5 * coordinateStepX), 2.) +
+                                  pow((y[j] - y[ny_0] + 0.5 * coordinateStepY), 2.) +
+                                  pow((z[k] - z[nz_0] + 0.5 * coordinateStepZ), 2.), 1.5);
+
+                acx[i][j][k] = -accelerationCoefficientC * (x[i] - x[nx_0] + 0.5 * coordinateStepX) / down;
+                acy[i][j][k] = -accelerationCoefficientC * (y[j] - y[ny_0] + 0.5 * coordinateStepY) / down;
+                acz[i][j][k] = -accelerationCoefficientC * (z[k] - z[nz_0] + 0.5 * coordinateStepZ) / down;
+            }
+
             flowVelocityX[i][j] = new double[nz]{};
             flowVelocityY[i][j] = new double[nz]{};
             flowVelocityZ[i][j] = new double[nz]{};
