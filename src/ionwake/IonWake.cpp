@@ -215,6 +215,8 @@ void IonWake::nextStep() {
         }
     }
 
+    currentTime += deltaT;
+
     computeDensity();
     computeFlowVelocity();
 }

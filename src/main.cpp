@@ -122,9 +122,9 @@ int main(int argc, char *argv[]) {
 //    Output.WriteInitialPotential();
 
 
-    std::ofstream density("./InitialPotential.dat", std::ofstream::out);
-    ionWake.writeInitialPotential(density);
-    density.close();
+    std::ofstream initialPotential("./InitialPotential.dat", std::ofstream::out);
+    ionWake.writeInitialPotential(initialPotential);
+    initialPotential.close();
 
     auto duration = duration_cast<microseconds>(high_resolution_clock::now() - start);
     cout << "Time taken by inizialisation: "
@@ -137,6 +137,8 @@ int main(int argc, char *argv[]) {
 
     start = high_resolution_clock::now();
     for (int i = 0; i < ITmax; i++) {
+        cout << "####### Simulation time = " << ionWake.getCurrentTime() << " #######" << endl << endl;
+
         ionWake.nextStep();
 
         std::ofstream density("./density/density_x" + std::to_string(i) + ".dat", std::ofstream::out);
