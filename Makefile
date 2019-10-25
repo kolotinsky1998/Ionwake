@@ -26,7 +26,7 @@ all: $(OBJECTS)
 	$(CC) $^ -o $(TARGET) $(PFLAGS)
 
 $(BUILDDIR)\\%.o: $(SRCDIR)\%.cpp
-	$(CREATEFOLDER) $(dir $@)
+	@IF NOT EXIST $(dir $@) MD $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
