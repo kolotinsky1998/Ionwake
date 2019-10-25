@@ -10,3 +10,9 @@ data*/*
 .idea
 CMakeLists.txt
 cmake-build-debug
+*.exe
+density
+gnuplot
+potential
+velocity
+InitialPotential.dat

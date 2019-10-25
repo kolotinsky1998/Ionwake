@@ -1,24 +1,53 @@
-CC=icc
+CC := g++
+#CC=icc
+CFLAGS=-O2 -fopenmp
+PFLAGS=-fopenmp
 
-CFLAGS=-c -fast 
+SRCDIR := src
+BUILDDIR := build
+SRCEXT := .cpp
+TARGET := ionwake
 
-PFLAGS=-qopenmp
+ifeq ($(OS),Windows_NT)
+	SOURCES      := $(shell FORFILES /P $(SRCDIR) /S /M *.cpp /C "CMD /C ECHO @relpath")
+	SOURCES      := $(patsubst ".\\%",$(SRCDIR)\\%,$(SOURCES))
+	OBJECTS      := $(SOURCES:$(SRCDIR)\\%.cpp=$(BUILDDIR)\\%.o)
+	CLEANTEXT    := IF EXIST $(BUILDDIR) RMDIR /S /Q $(BUILDDIR)
+	CREATEFOLDER := MD
+else
+	SOURCES      := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+	OBJECTS      := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+	CLEANTEXT    := rm -r $(BUILDDIR) $(TARGET)
+	CREATEFOLDER := mkdir -p
+endif
 
-all: project
+all: $(OBJECTS)
+	@echo linking...
+	$(CC) $^ -o $(TARGET) $(PFLAGS)
 
-project: main.o  kinetic.o converter.o poisson.o output.o
-	$(CC) main.o kinetic.o converter.o poisson.o output.o $(PFLAGS) -o $(PROJECTNAME)
-main.o: main.cpp
-	$(CC) $(CFLAGS) main.cpp $(PFLAGS)
-kinetic.o: kinetic.cpp
-	$(CC) $(CFLAGS) kinetic.cpp $(PFLAGS)
-converter.o: converter.cpp
-	$(CC) $(CFLAGS) converter.cpp
-poisson.o: poisson.cpp
-	$(CC) $(CFLAGS) poisson.cpp
-output.o: output.cpp
-	$(CC) $(CFLAGS) output.cpp
-
+$(BUILDDIR)\\%.o: $(SRCDIR)\%.cpp
+	$(CREATEFOLDER) $(dir $@)
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf *.o
+	$(CLEANTEXT)
+
+
+#all: project
+#
+#project: main.o  kinetic.o converter.o poisson.o output.o
+#	$(CC) main.o kinetic.o converter.o poisson.o output.o $(PFLAGS) -o $(PROJECTNAME)
+#main.o: src/main.cpp
+#	$(CC) $(CFLAGS) main.cpp $(PFLAGS)
+#kinetic.o: src/kinetic.cpp
+#	$(CC) $(CFLAGS) kinetic.cpp $(PFLAGS)
+#converter.o: src/converter.cpp
+#	$(CC) $(CFLAGS) converter.cpp
+#poisson.o: src/poisson.cpp
+#	$(CC) $(CFLAGS) poisson.cpp
+#output.o: src/output.cpp
+#	$(CC) $(CFLAGS) output.cpp
+#
+#
+#clean:
+
