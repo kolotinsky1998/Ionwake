@@ -1,7 +1,8 @@
 CC := g++
 #CC=icc
 CFLAGS=-O2 -fopenmp
-PFLAGS=-fopenmp
+#PFLAGS=-fopenmp
+PFLAGS= -fopenmp
 
 SRCDIR := src
 BUILDDIR := build
@@ -26,11 +27,13 @@ all: $(OBJECTS)
 	$(CC) $^ -o $(TARGET) $(PFLAGS)
 
 $(BUILDDIR)\\%.o: $(SRCDIR)\%.cpp
-	@IF NOT EXIST $(dir $@) MD $(dir $@)
+#	@IF NOT EXIST $(dir $@) MD $(dir $@)
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	$(CLEANTEXT)
+#	$(CLEANTEXT)
+	rm -rf *.o project
 
 
 #all: project

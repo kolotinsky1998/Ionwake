@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     //particle charge in electron units                      
     const double q = 2000;
     //electricity field in cgs units                     
-    const double El = 0 * pow(10., -5.);
+    const double El = 1.72e-05 / 2; // * pow(10., -5.);
     //In debay radious units                 
     //x-dimension of the computational box in Debye radious  
     const double Lx = 6;
@@ -61,10 +61,10 @@ int main(int argc, char *argv[]) {
     //#######################################//
     //cout << omp_get_num_threads() << endl;
 
-    int numThreads;
-    cout << "Enter numThreads: ";
-    cin >> numThreads;
-    omp_set_num_threads(numThreads);
+//    int numThreads;
+//    cout << "Enter numThreads: ";
+//    cin >> numThreads;
+//    omp_set_num_threads(4);
     ///////////////////////////////////////////
     auto start = high_resolution_clock::now();
     system("mkdir gnuplot");

@@ -203,10 +203,7 @@ void IonWake::nextStep() {
     poissonScheme();
     gradientScheme();
 
-    saveStep();
     coordinatePart();
-
-    saveStep();
     velocityPart();
 
 #pragma omp parallel for collapse(3)
@@ -301,6 +298,8 @@ void IonWake::coordinatePart() {
     const double delta_x_step = deltaT / coordinateStepX;
     const double delta_y_step = deltaT / coordinateStepY;
     const double delta_z_step = deltaT / coordinateStepZ;
+
+    saveStep();
 #pragma omp parallel for collapse(3)
     for (size_t i = 0; i < nx; ++i) {
         for (size_t j = 0; j < ny; ++j) {
@@ -330,6 +329,8 @@ void IonWake::coordinatePart() {
             }
         }
     }
+
+    saveStep();
 #pragma omp parallel for collapse(3)
     for (size_t i = 0; i < nx; ++i) {
         for (size_t j = 0; j < ny; ++j) {
@@ -357,6 +358,8 @@ void IonWake::coordinatePart() {
             }
         }
     }
+
+    saveStep();
 #pragma omp parallel for collapse(3)
     for (size_t i = 0; i < nx; ++i) {
         for (size_t j = 0; j < ny; ++j) {
@@ -390,6 +393,7 @@ void IonWake::velocityPart() {
     const double delta_t_hvy = deltaT / hvy;
     const double delta_t_hvz = deltaT / hvz;
 
+    saveStep();
 #pragma omp parallel for collapse(3)
     for (size_t i = 0; i < nx; ++i) {
         for (size_t j = 0; j < ny; ++j) {
@@ -420,6 +424,8 @@ void IonWake::velocityPart() {
             }
         }
     }
+
+    saveStep();
 #pragma omp parallel for collapse(3)
     for (size_t i = 0; i < nx; ++i) {
         for (size_t j = 0; j < ny; ++j) {
@@ -449,6 +455,8 @@ void IonWake::velocityPart() {
             }
         }
     }
+
+    saveStep();
 #pragma omp parallel for collapse(3)
     for (size_t i = 0; i < nx; ++i) {
         for (size_t j = 0; j < ny; ++j) {
@@ -596,13 +604,13 @@ void IonWake::plotDistributionFunctionX(size_t i, size_t j, size_t k, std::ofstr
 }
 
 void IonWake::plotDistributionFunctionY(size_t i, size_t j, size_t k, std::ofstream &of) const {
-    for (size_t b = 0; b < nvx; ++b) {
+    for (size_t b = 0; b < nvy; ++b) {
         of << vy[b] << "\t" << f[i][j][k][nvx / 2][b][nvz / 2] << "\n";
     }
 }
 
 void IonWake::plotDistributionFunctionZ(size_t i, size_t j, size_t k, std::ofstream &of) const {
-    for (size_t c = 0; c < nvx; ++c) {
+    for (size_t c = 0; c < nvz; ++c) {
         of << vz[c] << "\t" << f[i][j][k][nvx / 2][nvy / 2][c] << "\n";
     }
 }
