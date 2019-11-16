@@ -1,12 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <chrono>
-#include <algorithm>
 
-#include "kinetic.h"
-#include "converter.h"
-#include "poisson.h"
-#include "output.h"
 #include "omp.h"
 #include "ionwake/IonWake.h"
 
@@ -64,7 +59,7 @@ int main(int argc, char *argv[]) {
 //    int numThreads;
 //    cout << "Enter numThreads: ";
 //    cin >> numThreads;
-//    omp_set_num_threads(4);
+    omp_set_num_threads(44);
     ///////////////////////////////////////////
     auto start = high_resolution_clock::now();
     system("mkdir gnuplot");
@@ -164,14 +159,6 @@ int main(int argc, char *argv[]) {
         std::ofstream profile_z("./gnuplot/profile_z_t" + std::to_string(i) + ".dat", std::ofstream::out);
         ionWake.plotDistributionFunctionZ(1, 1, 1, profile_z);
         profile_z.close();
-
-//        Output.TerminalOutput(T_term);
-//        Poisson.PoissonScheme(Kinetic.GetDensity());
-//        Poisson.GradientScheme();
-//        Kinetic.IntegrateAll();
-//        Output.VTKoutput(T_output);
-//        Output.PlotDistributionFunction(1, 1, 1, T_output);
-//        Output.UpdateTime();
     }
     duration = duration_cast<microseconds>(high_resolution_clock::now() - start);
     cout << "Time taken by numerical scheme: "
