@@ -57,10 +57,6 @@ namespace ionwake {
         double *vy;
         double *vz;
 
-        double *x;
-        double *y;
-        double *z;
-
         double accelerationCoefficientS;
         double accelerationCoefficientL;
         double accelerationCoefficientC;

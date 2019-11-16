@@ -52,13 +52,6 @@ IonWake::IonWake(size_t nx, size_t ny, size_t nz, size_t nx_0, size_t ny_0, size
     for (size_t i = 0; i < nvy; ++i) { vy[i] = i * hvy - vyzcut; }
     for (size_t i = 0; i < nvz; ++i) { vz[i] = i * hvz - vyzcut; }
 
-    x = new double[nx];
-    y = new double[ny];
-    z = new double[nz];
-    for (size_t i = 0; i < nx; ++i) { x[i] = i * coordinateStepX; }
-    for (size_t i = 0; i < ny; ++i) { y[i] = i * coordinateStepY; }
-    for (size_t i = 0; i < nz; ++i) { z[i] = i * coordinateStepZ; }
-
     f_n = new double **[nvx];
     for (size_t i = 0; i < nvx; ++i) {
         f_n[i] = new double *[nvy];
@@ -176,13 +169,16 @@ IonWake::IonWake(size_t nx, size_t ny, size_t nz, size_t nx_0, size_t ny_0, size
             acz[i][j] = new double[nz];
 
             for (size_t k = 0; k < nz; ++k) {
-                double down = pow(pow((x[i] - x[nx_0] + 0.5 * coordinateStepX), 2.) +
-                                  pow((y[j] - y[ny_0] + 0.5 * coordinateStepY), 2.) +
-                                  pow((z[k] - z[nz_0] + 0.5 * coordinateStepZ), 2.), 1.5);
+                double x_step = i * coordinateStepX - nx_0 * coordinateStepX;
+                double y_step = j * coordinateStepY - ny_0 * coordinateStepY;
+                double z_step = k * coordinateStepZ - nz_0 * coordinateStepZ;
+                double down = pow(pow((x_step + 0.5 * coordinateStepX), 2.) +
+                                  pow((y_step + 0.5 * coordinateStepY), 2.) +
+                                  pow((z_step + 0.5 * coordinateStepZ), 2.), 1.5);
 
-                acx[i][j][k] = -accelerationCoefficientC * (x[i] - x[nx_0] + 0.5 * coordinateStepX) / down;
-                acy[i][j][k] = -accelerationCoefficientC * (y[j] - y[ny_0] + 0.5 * coordinateStepY) / down;
-                acz[i][j][k] = -accelerationCoefficientC * (z[k] - z[nz_0] + 0.5 * coordinateStepZ) / down;
+                acx[i][j][k] = -accelerationCoefficientC * (x_step + 0.5 * coordinateStepX) / down;
+                acy[i][j][k] = -accelerationCoefficientC * (y_step + 0.5 * coordinateStepY) / down;
+                acz[i][j][k] = -accelerationCoefficientC * (z_step + 0.5 * coordinateStepZ) / down;
             }
 
             flowVelocityX[i][j] = new double[nz]{};
