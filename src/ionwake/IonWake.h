@@ -65,24 +65,28 @@ namespace ionwake {
         double coordinateStepY;
         double coordinateStepZ;
 
-        double ***acx;
-        double ***acy;
-        double ***acz;
+        double *acx;
+        double *acy;
+        double *acz;
 
-        double ***flowVelocityX;
-        double ***flowVelocityY;
-        double ***flowVelocityZ;
+        double *flowVelocityX;
+        double *flowVelocityY;
+        double *flowVelocityZ;
 
-        double ***selfConsistentForceFieldX;
-        double ***selfConsistentForceFieldY;
-        double ***selfConsistentForceFieldZ;
+        double *selfConsistentForceFieldX;
+        double *selfConsistentForceFieldY;
+        double *selfConsistentForceFieldZ;
 
-        double ***potential;
-        double ***density;
+        double *potential;
+        double *density;
 
-        double ******f;
-        double ******f_time;
-        double ***f_n;
+        double *f;
+        double *f_time;
+        double *f_n;
+
+        size_t coordinate_total_size;
+        size_t velocity_total_size;
+        size_t total_size;
 
         double convertPotential;
         double plasmasFrequency;
