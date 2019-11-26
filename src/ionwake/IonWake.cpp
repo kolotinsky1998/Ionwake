@@ -45,7 +45,7 @@ IonWake::IonWake(size_t nx, size_t ny, size_t nz, size_t nx_0, size_t ny_0, size
     vx = new double[nvx];
     vy = new double[nvy];
     vz = new double[nvz];
-    for (size_t i = 0; i < nvx; ++i) { vx[i] = i * hvx - vyzcut; } // vyzcut???
+    for (size_t i = 0; i < nvx; ++i) { vx[i] = i * hvx - vyzcut; }
     for (size_t i = 0; i < nvy; ++i) { vy[i] = i * hvy - vyzcut; }
     for (size_t i = 0; i < nvz; ++i) { vz[i] = i * hvz - vyzcut; }
 
@@ -96,7 +96,7 @@ IonWake::IonWake(size_t nx, size_t ny, size_t nz, size_t nx_0, size_t ny_0, size
         const size_t b = total_i / nvz % nvy;
         const size_t a = total_i / nvz / nvy % nvx;
 
-        const size_t velocity_i = a * nvz * nvz + b * nvz + c;
+        const size_t velocity_i = a * nvy * nvz + b * nvz + c;
         f[total_i] = f[velocity_i];
     }
 
@@ -151,7 +151,7 @@ void IonWake::nextStep() {
 
             const size_t coordinate_i = i * ny * nz + j * nz + k;
             const size_t velocity_i = a * nvy * nvz + b * nvz + c;
-            f[total_i] = deltaT * (density[coordinate_i] * f_n[velocity_i] - f[total_i]) / dimensionlessTau;
+            f[total_i] += deltaT * (density[coordinate_i] * f_n[velocity_i] - f[total_i]) / dimensionlessTau;
         }
     }
 
@@ -211,6 +211,11 @@ void IonWake::gradientScheme() {
     const double x = 2.0 * coordinateStepX;
     const double y = 2.0 * coordinateStepY;
     const double z = 2.0 * coordinateStepZ;
+    double x_concentration = dimensionlessIonConcentration / x;
+    double y_concentration = dimensionlessIonConcentration / y;
+    double z_concentration = dimensionlessIonConcentration / z;
+
+    const size_t nx_nz = nz * ny;
 
 #pragma omp parallel for
     for (size_t total_i = 0; total_i < coordinate_total_size; ++total_i) {
@@ -220,11 +225,11 @@ void IonWake::gradientScheme() {
 
         if (i != 0 && j != 0 && k != 0 && i != nx - 1 && j != ny - 1 && k != nz - 1) {
             selfConsistentForceFieldX[total_i] =
-                    -(potential[total_i + nz * ny] - potential[total_i - nz * ny]) / x * dimensionlessIonConcentration;
+                    -(potential[total_i + nx_nz] - potential[total_i - nx_nz]) * x_concentration;
             selfConsistentForceFieldY[total_i] =
-                    -(potential[total_i + nz] - potential[total_i - nz]) / y * dimensionlessIonConcentration;
+                    -(potential[total_i + nz] - potential[total_i - nz]) * y_concentration;
             selfConsistentForceFieldZ[total_i] =
-                    -(potential[total_i + 1] - potential[total_i - 1]) / z * dimensionlessIonConcentration;
+                    -(potential[total_i + 1] - potential[total_i - 1]) * z_concentration;
         }
     }
 
@@ -296,6 +301,9 @@ void IonWake::velocityPart() {
     const double delta_t_hvy = deltaT / hvy;
     const double delta_t_hvz = deltaT / hvz;
 
+    const size_t ny_nz = ny * nz;
+    const size_t nvx_nvy = nvz * nvy;
+
     saveStep();
 #pragma omp parallel for
     for (size_t total_i = 0; total_i < total_size; ++total_i) {
@@ -330,7 +338,7 @@ void IonWake::velocityPart() {
             const size_t k = total_i / nvz / nvy / nvx % nz;
             const size_t j = total_i / nvz / nvy / nvx / nz % ny;
             const size_t i = total_i / nvz / nvy / nvx / nz / ny;
-            const size_t coordinate_i = i * ny * nz + j * nz + k;
+            const size_t coordinate_i = i *ny_nz + j * nz + k;
 
             const double fy = accelerationCoefficientS * selfConsistentForceFieldY[coordinate_i] + acy[coordinate_i];
             const double shift = fy > 0.0
@@ -352,7 +360,7 @@ void IonWake::velocityPart() {
             const size_t k = total_i / nvz / nvy / nvx % nz;
             const size_t j = total_i / nvz / nvy / nvx / nz % ny;
             const size_t i = total_i / nvz / nvy / nvx / nz / ny;
-            const size_t coordinate_i = i * ny * nz + j * nz + k;
+            const size_t coordinate_i = i * ny_nz + j * nz + k;
 
             const double fz = accelerationCoefficientS * selfConsistentForceFieldZ[coordinate_i] + acz[coordinate_i];
             const double shift = fz > 0.0
