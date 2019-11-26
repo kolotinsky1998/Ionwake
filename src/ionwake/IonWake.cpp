@@ -3,6 +3,8 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <chrono>
+#include <iostream>
 
 using namespace ionwake;
 
@@ -132,11 +134,34 @@ IonWake::IonWake(size_t nx, size_t ny, size_t nz, size_t nx_0, size_t ny_0, size
 }
 
 void IonWake::nextStep() {
-    poissonScheme();
-    gradientScheme();
 
+    auto start_2 = std::chrono::high_resolution_clock::now();
+    poissonScheme();
+    std::cout << "Time taken by poissonScheme: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start_2).count() / 1000000.0 << " seconds"
+              << std::endl;
+
+    auto start_1 = std::chrono::high_resolution_clock::now();
+    gradientScheme();
+    std::cout << "Time taken by gradientScheme: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start_1).count() / 1000000.0 << " seconds"
+              << std::endl;
+
+    auto start = std::chrono::high_resolution_clock::now();
     coordinatePart();
+    std::cout << "Time taken by coordinatePart: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start).count() / 1000000.0 << " seconds" << std::endl;
+    auto start2 = std::chrono::high_resolution_clock::now();
     velocityPart();
+    std::cout << "Time taken by numerical velocityPart: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start2).count() / 1000000.0 << " seconds"
+              << std::endl;
+
+    auto start3 = std::chrono::high_resolution_clock::now();
 
 #pragma omp parallel for
     for (size_t total_i = 0; total_i < total_size; ++total_i) {
@@ -154,6 +179,10 @@ void IonWake::nextStep() {
             f[total_i] += deltaT * (density[coordinate_i] * f_n[velocity_i] - f[total_i]) / dimensionlessTau;
         }
     }
+    std::cout << "Time taken by ceter: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start3).count() / 1000000.0 << " seconds"
+              << std::endl;
 
     currentTime += deltaT;
 
@@ -246,52 +275,65 @@ void IonWake::coordinatePart() {
 
     saveStep();
 #pragma omp parallel for
-    for (size_t total_i = 0; total_i < total_size; ++total_i) {
-        const size_t c = total_i % nvz;
-        const size_t b = total_i / nvz % nvy;
-        const size_t a = total_i / nvz / nvy % nvx;
+    for (size_t velocity_total_i = 0; velocity_total_i < velocity_total_size; ++velocity_total_i) {
+        const size_t c = velocity_total_i % nvz;
+        const size_t b = velocity_total_i / nvz % nvy;
+        const size_t a = velocity_total_i / nvz / nvy;
 
         if (a != 0 && b != 0 && c != 0 && a != nvx - 1 && b != nvy - 1 && c != nvz - 1) {
-            const double vx_a = vx[a];
-            const double shift = vx_a > 0.0
-                                 ? f_time[total_i] - f_time[(total_i + (total_size - x_shift)) % total_size]
-                                 : f_time[(total_i + x_shift) % total_size] - f_time[total_i];
+            for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+                const size_t total_shift = coordinate_total_i * velocity_total_size + velocity_total_i;
 
-            f[total_i] = f_time[total_i] - (delta_x_step * vx_a) * shift;
+                const double vx_a = vx[a];
+                const double shift = vx_a > 0.0
+                                     ? f_time[total_shift] -
+                                       f_time[(total_shift + (total_shift - x_shift)) % total_shift]
+                                     : f_time[(total_shift + x_shift) % total_shift] - f_time[total_shift];
+
+                f[total_shift] = f_time[total_shift] - (delta_x_step * vx_a) * shift;
+            }
         }
     }
 
     saveStep();
 #pragma omp parallel for
-    for (size_t total_i = 0; total_i < total_size; ++total_i) {
-        const size_t c = total_i % nvz;
-        const size_t b = total_i / nvz % nvy;
-        const size_t a = total_i / nvz / nvy % nvx;
+    for (size_t velocity_total_i = 0; velocity_total_i < velocity_total_size; ++velocity_total_i) {
+        const size_t c = velocity_total_i % nvz;
+        const size_t b = velocity_total_i / nvz % nvy;
+        const size_t a = velocity_total_i / nvz / nvy;
 
         if (a != 0 && b != 0 && c != 0 && a != nvx - 1 && b != nvy - 1 && c != nvz - 1) {
-            const double vy_b = vy[b];
-            const double shift = vy_b > 0.0
-                                 ? f_time[total_i] - f_time[(total_i + (total_size - y_shift)) % total_size]
-                                 : f_time[(total_i + y_shift) % total_size] - f_time[total_i];
+            for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+                const size_t total_shift = coordinate_total_i * velocity_total_size + velocity_total_i;
 
-            f[total_i] = f_time[total_i] - (delta_y_step * vy_b) * shift;
+                const double vy_b = vy[b];
+                const double shift = vy_b > 0.0
+                                     ? f_time[total_shift] - f_time[(total_shift + (total_size - y_shift)) % total_size]
+                                     : f_time[(total_shift + y_shift) % total_size] - f_time[total_shift];
+
+                f[total_shift] = f_time[total_shift] - (delta_y_step * vy_b) * shift;
+            }
         }
     }
 
     saveStep();
 #pragma omp parallel for
-    for (size_t total_i = 0; total_i < total_size; ++total_i) {
-        const size_t c = total_i % nvz;
-        const size_t b = total_i / nvz % nvy;
-        const size_t a = total_i / nvz / nvy % nvx;
+    for (size_t velocity_total_i = 0; velocity_total_i < velocity_total_size; ++velocity_total_i) {
+        const size_t c = velocity_total_i % nvz;
+        const size_t b = velocity_total_i / nvz % nvy;
+        const size_t a = velocity_total_i / nvz / nvy;
 
         if (a != 0 && b != 0 && c != 0 && a != nvx - 1 && b != nvy - 1 && c != nvz - 1) {
-            const double vz_c = vz[c];
-            const double shift = vz_c > 0.0
-                                 ? f_time[total_i] - f_time[(total_i + (total_size - z_shift)) % total_size]
-                                 : f_time[(total_i + z_shift) % total_size] - f_time[total_i];
+            for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+                const size_t total_shift = coordinate_total_i * velocity_total_size + velocity_total_i;
 
-            f[total_i] = f_time[total_i] - (delta_z_step * vz_c) * shift;
+                const double vz_c = vz[c];
+                const double shift = vz_c > 0.0
+                                     ? f_time[total_shift] - f_time[(total_shift + (total_size - z_shift)) % total_size]
+                                     : f_time[(total_shift + z_shift) % total_size] - f_time[total_shift];
+
+                f[total_shift] = f_time[total_shift] - (delta_z_step * vz_c) * shift;
+            }
         }
     }
 }
@@ -306,68 +348,67 @@ void IonWake::velocityPart() {
 
     saveStep();
 #pragma omp parallel for
-    for (size_t total_i = 0; total_i < total_size; ++total_i) {
-        const size_t c = total_i % nvz;
-        const size_t b = total_i / nvz % nvy;
-        const size_t a = total_i / nvz / nvy % nvx;
+    for (size_t velocity_total_i = 0; velocity_total_i < velocity_total_size; ++velocity_total_i) {
+        const size_t c = velocity_total_i % nvz;
+        const size_t b = velocity_total_i / nvz % nvy;
+        const size_t a = velocity_total_i / nvz / nvy;
 
         if (a != 0 && b != 0 && c != 0 && a != nvx - 1 && b != nvy - 1 && c != nvz - 1) {
-            const size_t k = total_i / nvz / nvy / nvx % nz;
-            const size_t j = total_i / nvz / nvy / nvx / nz % ny;
-            const size_t i = total_i / nvz / nvy / nvx / nz / ny;
-            const size_t coordinate_i = i * ny * nz + j * nz + k;
+            for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+                size_t total = coordinate_total_i * velocity_total_size + velocity_total_i;
 
-            const double fx = accelerationCoefficientS * selfConsistentForceFieldX[coordinate_i] +
-                              accelerationCoefficientL + acx[coordinate_i];
-            const double shift = fx > 0.0
-                                 ? f_time[total_i] - f_time[total_i - nvz * nvy]
-                                 : f_time[total_i + nvz * nvy] - f_time[total_i];
+                const double fx = accelerationCoefficientS * selfConsistentForceFieldX[coordinate_total_i] +
+                                  accelerationCoefficientL + acx[coordinate_total_i];
+                const double shift = fx > 0.0
+                                     ? f_time[total] - f_time[total - nvx_nvy]
+                                     : f_time[total + nvx_nvy] - f_time[total];
 
-            f[total_i] = f_time[total_i] - (delta_t_hvx * fx) * shift;
+                f[total] = f_time[total] - (delta_t_hvx * fx) * shift;
+            }
         }
     }
 
     saveStep();
 #pragma omp parallel for
-    for (size_t total_i = 0; total_i < total_size; ++total_i) {
-        const size_t c = total_i % nvz;
-        const size_t b = total_i / nvz % nvy;
-        const size_t a = total_i / nvz / nvy % nvx;
+    for (size_t velocity_total_i = 0; velocity_total_i < velocity_total_size; ++velocity_total_i) {
+        const size_t c = velocity_total_i % nvz;
+        const size_t b = velocity_total_i / nvz % nvy;
+        const size_t a = velocity_total_i / nvz / nvy;
 
         if (a != 0 && b != 0 && c != 0 && a != nvx - 1 && b != nvy - 1 && c != nvz - 1) {
-            const size_t k = total_i / nvz / nvy / nvx % nz;
-            const size_t j = total_i / nvz / nvy / nvx / nz % ny;
-            const size_t i = total_i / nvz / nvy / nvx / nz / ny;
-            const size_t coordinate_i = i *ny_nz + j * nz + k;
+            for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+                size_t total = coordinate_total_i * velocity_total_size + velocity_total_i;
 
-            const double fy = accelerationCoefficientS * selfConsistentForceFieldY[coordinate_i] + acy[coordinate_i];
-            const double shift = fy > 0.0
-                                 ? f_time[total_i] - f_time[total_i - nvz]
-                                 : f_time[total_i + nvz] - f_time[total_i];
+                const double fy = accelerationCoefficientS * selfConsistentForceFieldY[coordinate_total_i] +
+                                  acy[coordinate_total_i];
+                const double shift = fy > 0.0
+                                     ? f_time[total] - f_time[total - nvz]
+                                     : f_time[total + nvz] - f_time[total];
 
-            f[total_i] = f_time[total_i] - (delta_t_hvy * fy) * shift;
+                f[total] = f_time[total] - (delta_t_hvy * fy) * shift;
+            }
         }
     }
 
     saveStep();
 #pragma omp parallel for
-    for (size_t total_i = 0; total_i < total_size; ++total_i) {
-        const size_t c = total_i % nvz;
-        const size_t b = total_i / nvz % nvy;
-        const size_t a = total_i / nvz / nvy % nvx;
+    for (size_t velocity_total_i = 0; velocity_total_i < velocity_total_size; ++velocity_total_i) {
+        const size_t c = velocity_total_i % nvz;
+        const size_t b = velocity_total_i / nvz % nvy;
+        const size_t a = velocity_total_i / nvz / nvy;
 
         if (a != 0 && b != 0 && c != 0 && a != nvx - 1 && b != nvy - 1 && c != nvz - 1) {
-            const size_t k = total_i / nvz / nvy / nvx % nz;
-            const size_t j = total_i / nvz / nvy / nvx / nz % ny;
-            const size_t i = total_i / nvz / nvy / nvx / nz / ny;
-            const size_t coordinate_i = i * ny_nz + j * nz + k;
+            for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+                size_t total = coordinate_total_i * velocity_total_size + velocity_total_i;
 
-            const double fz = accelerationCoefficientS * selfConsistentForceFieldZ[coordinate_i] + acz[coordinate_i];
-            const double shift = fz > 0.0
-                                 ? f_time[total_i] - f_time[total_i - 1]
-                                 : f_time[total_i + 1] - f_time[total_i];
+                const double fz = accelerationCoefficientS * selfConsistentForceFieldZ[coordinate_total_i] +
+                                  acz[coordinate_total_i];
+                const double shift = fz > 0.0
+                                     ? f_time[total] - f_time[total - 1]
+                                     : f_time[total + 1] - f_time[total];
 
-            f[total_i] = f_time[total_i] - (delta_t_hvz * fz) * shift;
+                f[total] = f_time[total] - (delta_t_hvz * fz) * shift;
+            }
         }
     }
 }
@@ -376,9 +417,11 @@ void IonWake::computeDensity() {
     const double m = hvx * hvy * hvz;
 #pragma omp parallel for
     for (size_t total_i = 0; total_i < coordinate_total_size; ++total_i) {
+        const size_t velocity_shift = total_i * velocity_total_size;
+
         double sum = 0.0;
         for (size_t total_j = 0; total_j < velocity_total_size; ++total_j) {
-            sum += f[total_i * velocity_total_size + total_j];
+            sum += f[velocity_shift + total_j];
         }
         density[total_i] = sum * m;
     }
@@ -388,6 +431,7 @@ void IonWake::computeFlowVelocity() {
     const double m = hvx * hvy * hvz;
 #pragma omp parallel for
     for (size_t total_i = 0; total_i < coordinate_total_size; ++total_i) {
+        size_t velocity_shift = total_i * velocity_total_size;
         double sum_x = 0.0;
         double sum_y = 0.0;
         double sum_z = 0.0;
@@ -396,9 +440,9 @@ void IonWake::computeFlowVelocity() {
             const size_t b = total_i / nvz % nvy;
             const size_t a = total_i / nvz / nvy;
 
-            sum_x += vx[a] * f[total_i * velocity_total_size + total_j];
-            sum_y += vy[b] * f[total_i * velocity_total_size + total_j];
-            sum_z += vz[c] * f[total_i * velocity_total_size + total_j];
+            sum_x += vx[a] * f[velocity_shift + total_j];
+            sum_y += vy[b] * f[velocity_shift + total_j];
+            sum_z += vz[c] * f[velocity_shift + total_j];
         }
 
         flowVelocityX[total_i] = sum_x * m;
