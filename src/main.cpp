@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 //    int numThreads;
 //    cout << "Enter numThreads: ";
 //    cin >> numThreads;
-//    omp_set_num_threads(numThreads);
+    omp_set_num_threads(1);
     ///////////////////////////////////////////
     auto start = high_resolution_clock::now();
     system("mkdir gnuplot");

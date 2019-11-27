@@ -233,19 +233,18 @@ void IonWake::gradientScheme() {
 
     const size_t nx_nz = nz * ny;
 
-#pragma omp parallel for
-    for (size_t total_i = 0; total_i < coordinate_total_size; ++total_i) {
-        const size_t k = total_i % nz;
-        const size_t j = total_i / nz % ny;
-        const size_t i = total_i / nz / ny;
-
-        if (i != 0 && j != 0 && k != 0 && i != nx - 1 && j != ny - 1 && k != nz - 1) {
-            selfConsistentForceFieldX[total_i] =
-                    -(potential[total_i + nx_nz] - potential[total_i - nx_nz]) * x_concentration;
-            selfConsistentForceFieldY[total_i] =
-                    -(potential[total_i + nz] - potential[total_i - nz]) * y_concentration;
-            selfConsistentForceFieldZ[total_i] =
-                    -(potential[total_i + 1] - potential[total_i - 1]) * z_concentration;
+#pragma omp parallel for collapse(3)
+    for (int i = 0; i < nx - 1; ++i) {
+        for (int j = 0; j < ny - 1; ++j) {
+            for (int k = 0; k < nz - 1; ++k) {
+                const size_t coordinate_i = i * ny * nz + j * nz + k;
+                selfConsistentForceFieldX[coordinate_i] =
+                        -(potential[coordinate_i + nx_nz] - potential[coordinate_i - nx_nz]) * x_concentration;
+                selfConsistentForceFieldY[coordinate_i] =
+                        -(potential[coordinate_i + nz] - potential[coordinate_i - nz]) * y_concentration;
+                selfConsistentForceFieldZ[coordinate_i] =
+                        -(potential[coordinate_i + 1] - potential[coordinate_i - 1]) * z_concentration;
+            }
         }
     }
 
@@ -256,15 +255,18 @@ void IonWake::coordinatePart() {
     const double delta_y_step = deltaT / coordinateStepY;
     const double delta_z_step = deltaT / coordinateStepZ;
 
+    const size_t nz_ny = nz * ny;
     const size_t nvz_nvy = nvz * nvy;
     const size_t z_shift = nvz * nvy * nvx;
     const size_t y_shift = z_shift * nz;
     const size_t x_shift = y_shift * ny;
 
     saveStep();
+    auto start1 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+        const size_t i = coordinate_total_i / nz_ny;
 
         for (size_t a = 1; a < nvx - 1; ++a) {
             for (size_t b = 1; b < nvy - 1; ++b) {
@@ -272,19 +274,28 @@ void IonWake::coordinatePart() {
                     const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
                     const double vx_a = vx[a];
                     const double shift = vx_a > 0.0
-                                         ? f_time[total] - f_time[(total + (total_size - x_shift)) % total_size]
-                                         : f_time[(total + x_shift) % total_size] - f_time[total];
+                                         ? f_time[total] -
+                                           f_time[i != 0 ? total - x_shift : total + x_shift * (nx - 1)]
+                                         : f_time[i != nx - 1 ? total + x_shift : total - x_shift * (nx - 1)] -
+                                           f_time[total];
 
                     f[total] = f_time[total] - (delta_x_step * vx_a) * shift;
                 }
             }
         }
     }
+    std::cout << "Time taken by coordinatePart 1: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start1).count() / 1000000.0 << " seconds"
+              << std::endl;
+
 
     saveStep();
+    auto start2 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+        const size_t j = coordinate_total_i / nz % ny;
 
         for (size_t a = 1; a < nvx - 1; ++a) {
             for (size_t b = 1; b < nvy - 1; ++b) {
@@ -292,19 +303,27 @@ void IonWake::coordinatePart() {
                     const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
                     const double vy_b = vy[b];
                     const double shift = vy_b > 0.0
-                                         ? f_time[total] - f_time[(total + (total_size - y_shift)) % total_size]
-                                         : f_time[(total + y_shift) % total_size] - f_time[total];
+                                         ? f_time[total] -
+                                           f_time[j != 0 ? total - y_shift : total + y_shift * (ny - 1)]
+                                         : f_time[j != ny - 1 ? total + y_shift : total - y_shift * (ny - 1)] -
+                                           f_time[total];
 
                     f[total] = f_time[total] - (delta_y_step * vy_b) * shift;
                 }
             }
         }
     }
+    std::cout << "Time taken by coordinatePart 2: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start2).count() / 1000000.0 << " seconds"
+              << std::endl;
 
     saveStep();
+    auto start3 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+        const size_t k = coordinate_total_i % nz;
 
         for (size_t a = 1; a < nvx - 1; ++a) {
             for (size_t b = 1; b < nvy - 1; ++b) {
@@ -312,14 +331,21 @@ void IonWake::coordinatePart() {
                     const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
                     const double vz_c = vz[c];
                     const double shift = vz_c > 0.0
-                                         ? f_time[total] - f_time[(total + (total_size - z_shift)) % total_size]
-                                         : f_time[(total + z_shift) % total_size] - f_time[total];
+                                         ? f_time[total] - f_time[k != 0 ? total - z_shift : total + z_shift * (nz - 1)]
+                                         : f_time[k != nz - 1 ? total + z_shift : total - z_shift * (nz - 1)] -
+                                           f_time[total];
 
                     f[total] = f_time[total] - (delta_z_step * vz_c) * shift;
                 }
             }
         }
     }
+
+    std::cout << "Time taken by coordinatePart 3: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start3).count() / 1000000.0 << " seconds"
+              << std::endl;
+
 }
 
 void IonWake::velocityPart() {
@@ -327,73 +353,91 @@ void IonWake::velocityPart() {
     const double delta_t_hvy = deltaT / hvy;
     const double delta_t_hvz = deltaT / hvz;
 
-    const size_t ny_nz = ny * nz;
     const size_t nvz_nvy = nvz * nvy;
 
     saveStep();
+    auto start1 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+        const double fx = accelerationCoefficientS * selfConsistentForceFieldX[coordinate_total_i] +
+                          accelerationCoefficientL + acx[coordinate_total_i];
+        const double delta_t_hvx_fx = delta_t_hvx * fx;
 
         for (size_t a = 1; a < nvx - 1; ++a) {
             for (size_t b = 1; b < nvy - 1; ++b) {
                 for (size_t c = 1; c < nvz - 1; ++c) {
                     const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
 
-                    const double fx = accelerationCoefficientS * selfConsistentForceFieldX[coordinate_total_i] +
-                                      accelerationCoefficientL + acx[coordinate_total_i];
                     const double shift = fx > 0.0
                                          ? f_time[total] - f_time[total - nvz * nvy]
                                          : f_time[total + nvz * nvy] - f_time[total];
 
-                    f[total] = f_time[total] - (delta_t_hvx * fx) * shift;
+                    f[total] = f_time[total] - delta_t_hvx_fx * shift;
+
                 }
             }
         }
     }
+    std::cout << "Time taken by velocityPart 1: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start1).count() / 1000000.0 << " seconds"
+              << std::endl;
 
     saveStep();
+    auto start2 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+        const double fy =
+                accelerationCoefficientS * selfConsistentForceFieldY[coordinate_total_i] + acy[coordinate_total_i];
+        const double delta_t_hvy_fy = delta_t_hvy * fy;
 
         for (size_t a = 1; a < nvx - 1; ++a) {
             for (size_t b = 1; b < nvy - 1; ++b) {
                 for (size_t c = 1; c < nvz - 1; ++c) {
                     const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
-                    const double fy =
-                            accelerationCoefficientS * selfConsistentForceFieldY[coordinate_total_i] + acy[coordinate_total_i];
                     const double shift = fy > 0.0
                                          ? f_time[total] - f_time[total - nvz]
                                          : f_time[total + nvz] - f_time[total];
 
-                    f[total] = f_time[total] - (delta_t_hvy * fy) * shift;
+                    f[total] = f_time[total] - delta_t_hvy_fy * shift;
                 }
             }
         }
     }
+    std::cout << "Time taken by velocityPart 2: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start2).count() / 1000000.0 << " seconds"
+              << std::endl;
 
     saveStep();
+    auto start3 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+        const double fz =
+                accelerationCoefficientS * selfConsistentForceFieldZ[coordinate_total_i] + acz[coordinate_total_i];
+        const double delta_t_hvz_fz = delta_t_hvz * fz;
 
         for (size_t a = 1; a < nvx - 1; ++a) {
             for (size_t b = 1; b < nvy - 1; ++b) {
                 for (size_t c = 1; c < nvz - 1; ++c) {
                     const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
 
-                    const double fz =
-                            accelerationCoefficientS * selfConsistentForceFieldZ[coordinate_total_i] + acz[coordinate_total_i];
                     const double shift = fz > 0.0
                                          ? f_time[total] - f_time[total - 1]
                                          : f_time[total + 1] - f_time[total];
 
-                    f[total] = f_time[total] - (delta_t_hvz * fz) * shift;
+                    f[total] = f_time[total] - delta_t_hvz_fz * shift;
                 }
             }
         }
     }
+    std::cout << "Time taken by velocityPart 3: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start3).count() / 1000000.0 << " seconds"
+              << std::endl;
 }
 
 void IonWake::computeDensity() {
