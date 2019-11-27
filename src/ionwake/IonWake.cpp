@@ -3,7 +3,6 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
-#include <chrono>
 #include <iostream>
 
 using namespace ionwake;
@@ -138,19 +137,8 @@ void IonWake::nextStep() {
     poissonScheme();
     gradientScheme();
 
-    auto start = std::chrono::high_resolution_clock::now();
     coordinatePart();
-    std::cout << "Time taken by coordinatePart: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(
-                      std::chrono::high_resolution_clock::now() - start).count() / 1000000.0 << " seconds" << std::endl;
-    auto start2 = std::chrono::high_resolution_clock::now();
     velocityPart();
-    std::cout << "Time taken by numerical velocityPart: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(
-                      std::chrono::high_resolution_clock::now() - start2).count() / 1000000.0 << " seconds"
-              << std::endl;
-
-    auto start3 = std::chrono::high_resolution_clock::now();
 
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
@@ -166,10 +154,6 @@ void IonWake::nextStep() {
             }
         }
     }
-    std::cout << "Time taken by ceter: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(
-                      std::chrono::high_resolution_clock::now() - start3).count() / 1000000.0 << " seconds"
-              << std::endl;
 
     currentTime += deltaT;
 
@@ -262,7 +246,6 @@ void IonWake::coordinatePart() {
     const size_t x_shift = y_shift * ny;
 
     saveStep();
-    auto start1 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
@@ -284,14 +267,9 @@ void IonWake::coordinatePart() {
             }
         }
     }
-    std::cout << "Time taken by coordinatePart 1: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(
-                      std::chrono::high_resolution_clock::now() - start1).count() / 1000000.0 << " seconds"
-              << std::endl;
 
 
     saveStep();
-    auto start2 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
@@ -313,13 +291,8 @@ void IonWake::coordinatePart() {
             }
         }
     }
-    std::cout << "Time taken by coordinatePart 2: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(
-                      std::chrono::high_resolution_clock::now() - start2).count() / 1000000.0 << " seconds"
-              << std::endl;
 
     saveStep();
-    auto start3 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
@@ -341,11 +314,6 @@ void IonWake::coordinatePart() {
         }
     }
 
-    std::cout << "Time taken by coordinatePart 3: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(
-                      std::chrono::high_resolution_clock::now() - start3).count() / 1000000.0 << " seconds"
-              << std::endl;
-
 }
 
 void IonWake::velocityPart() {
@@ -356,7 +324,6 @@ void IonWake::velocityPart() {
     const size_t nvz_nvy = nvz * nvy;
 
     saveStep();
-    auto start1 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
@@ -379,13 +346,8 @@ void IonWake::velocityPart() {
             }
         }
     }
-    std::cout << "Time taken by velocityPart 1: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(
-                      std::chrono::high_resolution_clock::now() - start1).count() / 1000000.0 << " seconds"
-              << std::endl;
 
     saveStep();
-    auto start2 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
@@ -406,13 +368,8 @@ void IonWake::velocityPart() {
             }
         }
     }
-    std::cout << "Time taken by velocityPart 2: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(
-                      std::chrono::high_resolution_clock::now() - start2).count() / 1000000.0 << " seconds"
-              << std::endl;
 
     saveStep();
-    auto start3 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for
     for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
         const size_t velocity_shift = coordinate_total_i * velocity_total_size;
@@ -434,10 +391,7 @@ void IonWake::velocityPart() {
             }
         }
     }
-    std::cout << "Time taken by velocityPart 3: "
-              << std::chrono::duration_cast<std::chrono::microseconds>(
-                      std::chrono::high_resolution_clock::now() - start3).count() / 1000000.0 << " seconds"
-              << std::endl;
+
 }
 
 void IonWake::computeDensity() {
