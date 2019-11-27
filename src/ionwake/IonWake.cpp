@@ -1,11 +1,10 @@
-//
-// Created by Igor on 25.10.2019.
-//
 #include "IonWake.h"
 
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <chrono>
+#include <iostream>
 
 using namespace ionwake;
 
@@ -48,150 +47,90 @@ IonWake::IonWake(size_t nx, size_t ny, size_t nz, size_t nx_0, size_t ny_0, size
     vx = new double[nvx];
     vy = new double[nvy];
     vz = new double[nvz];
-    for (size_t i = 0; i < nvx; ++i) { vx[i] = i * hvx - vyzcut; } // vyzcut???
+    for (size_t i = 0; i < nvx; ++i) { vx[i] = i * hvx - vyzcut; }
     for (size_t i = 0; i < nvy; ++i) { vy[i] = i * hvy - vyzcut; }
     for (size_t i = 0; i < nvz; ++i) { vz[i] = i * hvz - vyzcut; }
 
-    f_n = new double **[nvx];
-    for (size_t i = 0; i < nvx; ++i) {
-        f_n[i] = new double *[nvy];
-        for (size_t j = 0; j < nvy; ++j) {
-            f_n[i][j] = new double[nvz];
-            for (size_t k = 0; k < nvz; ++k) {
-                const double x = vx[i] * vx[i];
-                const double y = vy[j] * vy[j];
-                const double z = vz[k] * vz[k];
-                f_n[i][j][k] = std::exp(-0.5 * (x + y + z)) / std::pow(2.0 * M_PI, 1.5);
-            }
-        }
+    coordinate_total_size = nx * ny * nz;
+    velocity_total_size = nvx * nvy * nvz;
+    total_size = coordinate_total_size * velocity_total_size;
+
+    f_n = new double[velocity_total_size];
+#pragma omp parallel for
+    for (size_t total_i = 0; total_i < velocity_total_size; ++total_i) {
+        const size_t c = total_i % nvz;
+        const size_t b = total_i / nvz % nvy;
+        const size_t a = total_i / nvz / nvy;
+
+        const double x = vx[a] * vx[a];
+        const double y = vy[b] * vy[b];
+        const double z = vz[c] * vz[c];
+        f_n[total_i] = std::exp(-0.5 * (x + y + z)) / std::pow(2.0 * M_PI, 1.5);
     }
 
-    f = new double *****[nx];
-    for (size_t i = 0; i < nx; ++i) {
-        f[i] = new double ****[ny];
-        for (size_t j = 0; j < ny; ++j) {
-            f[i][j] = new double ***[nz];
-            for (size_t k = 0; k < nz; ++k) {
-                f[i][j][k] = new double **[nvx];
-                for (size_t a = 0; a < nvx; ++a) {
-                    f[i][j][k][a] = new double *[nvy];
-                    for (size_t b = 0; b < nvy; ++b) {
-                        f[i][j][k][a][b] = new double[nvz];
-                    }
-                }
+    f = new double[total_size];
+    f_time = new double[total_size];
+#pragma omp parallel for
+    for (size_t total_i = 0; total_i < total_size; ++total_i) {
+        const size_t c = total_i % nvz;
+        const size_t b = total_i / nvz % nvy;
+        const size_t a = total_i / nvz / nvy % nvx;
+        const size_t k = total_i / nvz / nvy / nvx % nz;
+        const size_t j = total_i / nvz / nvy / nvx / nz % ny;
+        const size_t i = total_i / nvz / nvy / nvx / nz / ny;
+
+        if (i == 0 && j == 0 && k == 0) {
+            double sum = 0.0;
+            double xi = 0;
+            while (xi < MAX_XI) {
+                double vx_a = vx[a] - xi * analyticalFlowVelocity;
+                double vy_b = vy[b];
+                double vz_c = vz[c];
+
+                sum += exp(-xi) * exp(-0.5 * (vx_a * vx_a + vy_b * vy_b + vz_c * vz_c));
+                xi += DELTA_XI;
             }
+            f[total_i] = dimensionlessIonConcentration * sum * DELTA_XI / pow(2.0 * M_PI, 1.5);
         }
     }
+#pragma omp parallel for
+    for (size_t total_i = 0; total_i < total_size; ++total_i) {
+        const size_t c = total_i % nvz;
+        const size_t b = total_i / nvz % nvy;
+        const size_t a = total_i / nvz / nvy % nvx;
 
-    f_time = new double *****[nx];
-    for (size_t i = 0; i < nx; ++i) {
-        f_time[i] = new double ****[ny];
-        for (size_t j = 0; j < ny; ++j) {
-            f_time[i][j] = new double ***[nz];
-            for (size_t k = 0; k < nz; ++k) {
-                f_time[i][j][k] = new double **[nvx];
-                for (size_t a = 0; a < nvx; ++a) {
-                    f_time[i][j][k][a] = new double *[nvy];
-                    for (size_t b = 0; b < nvy; ++b) {
-                        f_time[i][j][k][a][b] = new double[nvz];
-                    }
-                }
-            }
-        }
+        const size_t velocity_i = a * nvy * nvz + b * nvz + c;
+        f[total_i] = f[velocity_i];
     }
 
-    //Initial conditions
-    for (size_t i = 0; i < 1; ++i) {
-        for (size_t j = 0; j < 1; ++j) {
-            for (size_t k = 0; k < 1; ++k) {
-                for (size_t a = 0; a < nvx; ++a) {
-                    for (size_t b = 0; b < nvy; ++b) {
-                        for (size_t c = 0; c < nvz; ++c) {
-                            double sum = 0.0;
-                            double xi = 0;
-                            while (xi < MAX_XI) {
-                                double vx_a = vx[a] - xi * analyticalFlowVelocity;
-                                double vy_b = vy[b];
-                                double vz_c = vz[c];
+    flowVelocityX = new double[coordinate_total_size]{0};
+    flowVelocityY = new double[coordinate_total_size]{0};
+    flowVelocityZ = new double[coordinate_total_size]{0};
+    selfConsistentForceFieldX = new double[coordinate_total_size]{0};
+    selfConsistentForceFieldY = new double[coordinate_total_size]{0};
+    selfConsistentForceFieldZ = new double[coordinate_total_size]{0};
+    potential = new double[coordinate_total_size]{0};
+    density = new double[coordinate_total_size];
+    std::fill(density, density + coordinate_total_size, dimensionlessIonConcentration);
 
-                                sum += exp(-xi) * exp(-0.5 * (vx_a * vx_a + vy_b * vy_b + vz_c * vz_c));
-                                xi += DELTA_XI;
-                            }
-                            f[i][j][k][a][b][c] = dimensionlessIonConcentration * sum * DELTA_XI / pow(2.0 * M_PI, 1.5);
-                        }
-                    }
-                }
-            }
-        }
-    }
+    acx = new double[coordinate_total_size]{0};
+    acy = new double[coordinate_total_size]{0};
+    acz = new double[coordinate_total_size]{0};
+    for (size_t total_i = 0; total_i < coordinate_total_size; ++total_i) {
+        const size_t k = total_i % nz;
+        const size_t j = total_i / nz % ny;
+        const size_t i = total_i / nz / ny;
 
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                for (size_t a = 0; a < nvx; ++a) {
-                    for (size_t b = 0; b < nvy; ++b) {
-                        for (size_t c = 0; c < nvz; ++c) {
-                            f[i][j][k][a][b][c] = f[0][0][0][a][b][c];
-                        }
-                    }
-                }
-            }
-        }
-    }
+        double x_step = i * coordinateStepX - nx_0 * coordinateStepX;
+        double y_step = j * coordinateStepY - ny_0 * coordinateStepY;
+        double z_step = k * coordinateStepZ - nz_0 * coordinateStepZ;
+        double down = pow(pow((x_step + 0.5 * coordinateStepX), 2.) +
+                          pow((y_step + 0.5 * coordinateStepY), 2.) +
+                          pow((z_step + 0.5 * coordinateStepZ), 2.), 1.5);
 
-    acx = new double **[nx];
-    acy = new double **[nx];
-    acz = new double **[nx];
-    flowVelocityX = new double **[nx];
-    flowVelocityY = new double **[nx];
-    flowVelocityZ = new double **[nx];
-    selfConsistentForceFieldX = new double **[nx];
-    selfConsistentForceFieldY = new double **[nx];
-    selfConsistentForceFieldZ = new double **[nx];
-    potential = new double **[nx];
-    density = new double **[nx];
-    for (size_t i = 0; i < nx; ++i) {
-        acx[i] = new double *[ny];
-        acy[i] = new double *[ny];
-        acz[i] = new double *[ny];
-        flowVelocityX[i] = new double *[ny];
-        flowVelocityY[i] = new double *[ny];
-        flowVelocityZ[i] = new double *[ny];
-        selfConsistentForceFieldX[i] = new double *[ny];
-        selfConsistentForceFieldY[i] = new double *[ny];
-        selfConsistentForceFieldZ[i] = new double *[ny];
-        potential[i] = new double *[ny];
-        density[i] = new double *[ny];
-        for (size_t j = 0; j < ny; ++j) {
-            acx[i][j] = new double[nz];
-            acy[i][j] = new double[nz];
-            acz[i][j] = new double[nz];
-
-            for (size_t k = 0; k < nz; ++k) {
-                double x_step = i * coordinateStepX - nx_0 * coordinateStepX;
-                double y_step = j * coordinateStepY - ny_0 * coordinateStepY;
-                double z_step = k * coordinateStepZ - nz_0 * coordinateStepZ;
-                double down = pow(pow((x_step + 0.5 * coordinateStepX), 2.) +
-                                  pow((y_step + 0.5 * coordinateStepY), 2.) +
-                                  pow((z_step + 0.5 * coordinateStepZ), 2.), 1.5);
-
-                acx[i][j][k] = -accelerationCoefficientC * (x_step + 0.5 * coordinateStepX) / down;
-                acy[i][j][k] = -accelerationCoefficientC * (y_step + 0.5 * coordinateStepY) / down;
-                acz[i][j][k] = -accelerationCoefficientC * (z_step + 0.5 * coordinateStepZ) / down;
-            }
-
-            flowVelocityX[i][j] = new double[nz]{};
-            flowVelocityY[i][j] = new double[nz]{};
-            flowVelocityZ[i][j] = new double[nz]{};
-            selfConsistentForceFieldX[i][j] = new double[ny];
-            selfConsistentForceFieldY[i][j] = new double[ny];
-            selfConsistentForceFieldZ[i][j] = new double[ny];
-            potential[i][j] = new double[ny]{};
-
-            density[i][j] = new double[nz];
-            std::fill(density[i][j], density[i][j] + nz, dimensionlessIonConcentration);
-        }
+        acx[total_i] = -accelerationCoefficientC * (x_step + 0.5 * coordinateStepX) / down;
+        acy[total_i] = -accelerationCoefficientC * (y_step + 0.5 * coordinateStepY) / down;
+        acz[total_i] = -accelerationCoefficientC * (z_step + 0.5 * coordinateStepZ) / down;
     }
 }
 
@@ -199,25 +138,38 @@ void IonWake::nextStep() {
     poissonScheme();
     gradientScheme();
 
+    auto start = std::chrono::high_resolution_clock::now();
     coordinatePart();
+    std::cout << "Time taken by coordinatePart: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start).count() / 1000000.0 << " seconds" << std::endl;
+    auto start2 = std::chrono::high_resolution_clock::now();
     velocityPart();
+    std::cout << "Time taken by numerical velocityPart: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start2).count() / 1000000.0 << " seconds"
+              << std::endl;
 
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                double ***const f_ijk = f[i][j][k];
-                for (size_t a = 1; a < nvx - 1; ++a) {
-                    for (size_t b = 1; b < nvy - 1; ++b) {
-                        for (size_t c = 1; c < nvz - 1; ++c) {
-                            f_ijk[a][b][c] +=
-                                    deltaT * (density[i][j][k] * f_n[a][b][c] - f_ijk[a][b][c]) / dimensionlessTau;
-                        }
-                    }
+    auto start3 = std::chrono::high_resolution_clock::now();
+
+#pragma omp parallel for
+    for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+        const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+
+        for (size_t a = 1; a < nvx - 1; ++a) {
+            for (size_t b = 1; b < nvy - 1; ++b) {
+                for (size_t c = 1; c < nvz - 1; ++c) {
+                    const size_t velocity_i = a * nvy * nvz + b * nvz + c;
+                    const size_t total = velocity_shift + velocity_i;
+                    f[total] += deltaT * (density[coordinate_total_i] * f_n[velocity_i] - f[total]) / dimensionlessTau;
                 }
             }
         }
     }
+    std::cout << "Time taken by ceter: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::high_resolution_clock::now() - start3).count() / 1000000.0 << " seconds"
+              << std::endl;
 
     currentTime += deltaT;
 
@@ -242,28 +194,29 @@ void IonWake::poissonScheme() {
     bool proceed = true;
     while (proceed) {
         proceed = false;
-        for (size_t i = 1; i < nx - 1; ++i) {
-            for (size_t j = 1; j < ny - 1; ++j) {
-                for (size_t k = 1; k < nz - 1; ++k) {
-                    const double f1 = potential[i][j][k];
+        for (size_t total_i = 0; total_i < coordinate_total_size; ++total_i) {
+            const size_t k = total_i % nz;
+            const size_t j = total_i / nz % ny;
+            const size_t i = total_i / nz / ny;
 
-                    const double double_f1 = 2.0 * f1;
-                    const double fi = (potential[i + 1][j][k] - double_f1 + potential[i - 1][j][k]) / owx;
-                    const double fj = (potential[i][j + 1][k] - double_f1 + potential[i][j - 1][k]) / owy;
-                    const double fk = (potential[i][j][k + 1] - double_f1 + potential[i][j][k - 1]) / owz;
+            if (i != 0 && j != 0 && k != 0 && i != nx - 1 && j != ny - 1 && k != nz - 1) {
+                const double f1 = potential[total_i];
 
-                    const double first = density[i][j][k] / dimensionlessIonConcentration - 1.0;
-                    const double second =
-                            particleCharge / (dimensionlessIonConcentration * hx * hy * hz * nz * ny * nz);
-                    const double third = (i == nx_0 && j == ny_0 && k == nz_0 ? particleCharge : 0.0);
-                    const double strange =
-                            4. * M_PI * (first + second - third) / (dimensionlessIonConcentration * hx * hy * hz);
+                const double double_f1 = 2.0 * f1;
+                const double fi = (potential[total_i + nz * ny] - double_f1 + potential[total_i - nz * ny]) / owx;
+                const double fj = (potential[total_i + nz] - double_f1 + potential[total_i - nz]) / owy;
+                const double fk = (potential[total_i + 1] - double_f1 + potential[total_i - 1]) / owz;
 
-                    potential[i][j][k] += (fi + fj + fk + strange) * tau;
+                const double first = density[total_i] / dimensionlessIonConcentration - 1.0;
+                const double second = particleCharge / (dimensionlessIonConcentration * hx * hy * hz * nz * ny * nz);
+                const double third = (i == nx_0 && j == ny_0 && k == nz_0 ? particleCharge : 0.0);
+                const double strange =
+                        4. * M_PI * (first + second - third) / (dimensionlessIonConcentration * hx * hy * hz);
 
-                    if (potential[i][j][k] == 0.0 && std::abs((potential[i][j][k] - f1) / potential[i][j][k]) > E) {
-                        proceed = true;
-                    }
+                potential[total_i] += (fi + fj + fk + strange) * tau;
+
+                if (potential[total_i] == 0.0 && std::abs((potential[total_i] - f1) / potential[total_i]) > E) {
+                    proceed = true;
                 }
             }
         }
@@ -274,20 +227,28 @@ void IonWake::gradientScheme() {
     const double x = 2.0 * coordinateStepX;
     const double y = 2.0 * coordinateStepY;
     const double z = 2.0 * coordinateStepZ;
+    double x_concentration = dimensionlessIonConcentration / x;
+    double y_concentration = dimensionlessIonConcentration / y;
+    double z_concentration = dimensionlessIonConcentration / z;
 
-#pragma omp parallel for collapse(3)
-    for (size_t i = 1; i < nx - 1; ++i) {
-        for (size_t j = 1; j < ny - 1; ++j) {
-            for (size_t k = 1; k < nz - 1; ++k) {
-                selfConsistentForceFieldX[i][j][k] =
-                        -(potential[i + 1][j][k] - potential[i - 1][j][k]) / x * dimensionlessIonConcentration;
-                selfConsistentForceFieldY[i][j][k] =
-                        -(potential[i][j + 1][k] - potential[i][j - 1][k]) / y * dimensionlessIonConcentration;
-                selfConsistentForceFieldZ[i][j][k] =
-                        -(potential[i][j][k + 1] - potential[i][j][k - 1]) / z * dimensionlessIonConcentration;
-            }
+    const size_t nx_nz = nz * ny;
+
+#pragma omp parallel for
+    for (size_t total_i = 0; total_i < coordinate_total_size; ++total_i) {
+        const size_t k = total_i % nz;
+        const size_t j = total_i / nz % ny;
+        const size_t i = total_i / nz / ny;
+
+        if (i != 0 && j != 0 && k != 0 && i != nx - 1 && j != ny - 1 && k != nz - 1) {
+            selfConsistentForceFieldX[total_i] =
+                    -(potential[total_i + nx_nz] - potential[total_i - nx_nz]) * x_concentration;
+            selfConsistentForceFieldY[total_i] =
+                    -(potential[total_i + nz] - potential[total_i - nz]) * y_concentration;
+            selfConsistentForceFieldZ[total_i] =
+                    -(potential[total_i + 1] - potential[total_i - 1]) * z_concentration;
         }
     }
+
 }
 
 void IonWake::coordinatePart() {
@@ -295,89 +256,66 @@ void IonWake::coordinatePart() {
     const double delta_y_step = deltaT / coordinateStepY;
     const double delta_z_step = deltaT / coordinateStepZ;
 
+    const size_t nvz_nvy = nvz * nvy;
+    const size_t z_shift = nvz * nvy * nvx;
+    const size_t y_shift = z_shift * nz;
+    const size_t x_shift = y_shift * ny;
+
     saveStep();
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                double ***const f_ijk = f[i][j][k];
-                double ***const f_time_ijk = f_time[i][j][k];
-                for (size_t a = 1; a < nvx - 1; ++a) {
+#pragma omp parallel for
+    for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+        const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+
+        for (size_t a = 1; a < nvx - 1; ++a) {
+            for (size_t b = 1; b < nvy - 1; ++b) {
+                for (size_t c = 1; c < nvz - 1; ++c) {
+                    const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
                     const double vx_a = vx[a];
-                    if (vx_a > 0.0) {
-                        for (size_t b = 1; b < nvy - 1; ++b) {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] - (delta_x_step * vx_a) * (f_time_ijk[a][b][c] -
-                                                                                                f_time[(nx + i - 1) %
-                                                                                                       nx][j][k][a][b][c]);
-                            }
-                        }
-                    } else {
-                        for (size_t b = 1; b < nvy - 1; ++b) {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] - (delta_x_step * vx_a) *
-                                                                       (f_time[(i + 1) % nx][j][k][a][b][c] -
-                                                                        f_time_ijk[a][b][c]);
-                            }
-                        }
-                    }
+                    const double shift = vx_a > 0.0
+                                         ? f_time[total] - f_time[(total + (total_size - x_shift)) % total_size]
+                                         : f_time[(total + x_shift) % total_size] - f_time[total];
+
+                    f[total] = f_time[total] - (delta_x_step * vx_a) * shift;
                 }
             }
         }
     }
 
     saveStep();
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                double ***const f_ijk = f[i][j][k];
-                double ***const f_time_ijk = f_time[i][j][k];
-                for (size_t a = 1; a < nvx - 1; ++a) {
-                    for (size_t b = 1; b < nvy - 1; ++b) {
-                        const double vy_b = vy[b];
-                        if (vy_b > 0.0) {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] - (delta_y_step * vy_b) * (f_time_ijk[a][b][c] -
-                                                                                                f_time[i][(ny + j - 1) %
-                                                                                                          ny][k][a][b][c]);
-                            }
-                        } else {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] - (delta_y_step * vy_b) *
-                                                                       (f_time[i][(j + 1) % ny][k][a][b][c] -
-                                                                        f_time_ijk[a][b][c]);
-                            }
-                        }
-                    }
+#pragma omp parallel for
+    for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+        const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+
+        for (size_t a = 1; a < nvx - 1; ++a) {
+            for (size_t b = 1; b < nvy - 1; ++b) {
+                for (size_t c = 1; c < nvz - 1; ++c) {
+                    const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
+                    const double vy_b = vy[b];
+                    const double shift = vy_b > 0.0
+                                         ? f_time[total] - f_time[(total + (total_size - y_shift)) % total_size]
+                                         : f_time[(total + y_shift) % total_size] - f_time[total];
+
+                    f[total] = f_time[total] - (delta_y_step * vy_b) * shift;
                 }
             }
         }
     }
 
     saveStep();
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                double ***const f_ijk = f[i][j][k];
-                double ***const f_time_ijk = f_time[i][j][k];
-                for (size_t a = 1; a < nvx - 1; ++a) {
-                    for (size_t b = 1; b < nvy - 1; ++b) {
-                        for (size_t c = 1; c < nvz - 1; ++c) {
-                            const double vz_c = vz[c];
-                            if (vz_c > 0.0) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] - (delta_z_step * vz_c) * (f_time_ijk[a][b][c] -
-                                                                                                f_time[i][j][
-                                                                                                        (nz + k - 1) %
-                                                                                                        nz][a][b][c]);
-                            } else {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] - (delta_z_step * vz_c) *
-                                                                       (f_time[i][j][(k + 1) % nz][a][b][c] -
-                                                                        f_time_ijk[a][b][c]);
-                            }
-                        }
-                    }
+#pragma omp parallel for
+    for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+        const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+
+        for (size_t a = 1; a < nvx - 1; ++a) {
+            for (size_t b = 1; b < nvy - 1; ++b) {
+                for (size_t c = 1; c < nvz - 1; ++c) {
+                    const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
+                    const double vz_c = vz[c];
+                    const double shift = vz_c > 0.0
+                                         ? f_time[total] - f_time[(total + (total_size - z_shift)) % total_size]
+                                         : f_time[(total + z_shift) % total_size] - f_time[total];
+
+                    f[total] = f_time[total] - (delta_z_step * vz_c) * shift;
                 }
             }
         }
@@ -389,95 +327,69 @@ void IonWake::velocityPart() {
     const double delta_t_hvy = deltaT / hvy;
     const double delta_t_hvz = deltaT / hvz;
 
+    const size_t ny_nz = ny * nz;
+    const size_t nvz_nvy = nvz * nvy;
+
     saveStep();
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                double ***const f_ijk = f[i][j][k];
-                double ***const f_time_ijk = f_time[i][j][k];
-                const double fx = accelerationCoefficientS * selfConsistentForceFieldX[i][j][k] +
-                                  accelerationCoefficientL + acx[i][j][k];
-                if (fx > 0.0) {
-                    for (size_t a = 1; a < nvx - 1; ++a) {
-                        for (size_t b = 1; b < nvy - 1; ++b) {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] -
-                                                 (delta_t_hvx * fx) * (f_time_ijk[a][b][c] - f_time_ijk[a - 1][b][c]);
-                            }
-                        }
-                    }
-                } else {
-                    for (size_t a = 1; a < nvx - 1; ++a) {
-                        for (size_t b = 1; b < nvy - 1; ++b) {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] -
-                                                 (delta_t_hvx * fx) * (f_time_ijk[a + 1][b][c] - f_time_ijk[a][b][c]);
-                            }
-                        }
-                    }
+#pragma omp parallel for
+    for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+        const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+
+        for (size_t a = 1; a < nvx - 1; ++a) {
+            for (size_t b = 1; b < nvy - 1; ++b) {
+                for (size_t c = 1; c < nvz - 1; ++c) {
+                    const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
+
+                    const double fx = accelerationCoefficientS * selfConsistentForceFieldX[coordinate_total_i] +
+                                      accelerationCoefficientL + acx[coordinate_total_i];
+                    const double shift = fx > 0.0
+                                         ? f_time[total] - f_time[total - nvz * nvy]
+                                         : f_time[total + nvz * nvy] - f_time[total];
+
+                    f[total] = f_time[total] - (delta_t_hvx * fx) * shift;
                 }
             }
         }
     }
 
     saveStep();
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                double ***const f_ijk = f[i][j][k];
-                double ***const f_time_ijk = f_time[i][j][k];
-                const double fy = accelerationCoefficientS * selfConsistentForceFieldY[i][j][k] + acy[i][j][k];
-                if (fy > 0.0) {
-                    for (size_t a = 1; a < nvx - 1; ++a) {
-                        for (size_t b = 1; b < nvy - 1; ++b) {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] -
-                                                 (delta_t_hvy * fy) * (f_time_ijk[a][b][c] - f_time_ijk[a][b - 1][c]);
-                            }
-                        }
-                    }
-                } else {
-                    for (size_t a = 1; a < nvx - 1; ++a) {
-                        for (size_t b = 1; b < nvy - 1; ++b) {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] -
-                                                 (delta_t_hvy * fy) * (f_time_ijk[a][b + 1][c] - f_time_ijk[a][b][c]);
-                            }
-                        }
-                    }
+#pragma omp parallel for
+    for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+        const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+
+        for (size_t a = 1; a < nvx - 1; ++a) {
+            for (size_t b = 1; b < nvy - 1; ++b) {
+                for (size_t c = 1; c < nvz - 1; ++c) {
+                    const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
+                    const double fy =
+                            accelerationCoefficientS * selfConsistentForceFieldY[coordinate_total_i] + acy[coordinate_total_i];
+                    const double shift = fy > 0.0
+                                         ? f_time[total] - f_time[total - nvz]
+                                         : f_time[total + nvz] - f_time[total];
+
+                    f[total] = f_time[total] - (delta_t_hvy * fy) * shift;
                 }
             }
         }
     }
 
     saveStep();
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                double ***const f_ijk = f[i][j][k];
-                double ***const f_time_ijk = f_time[i][j][k];
-                const double fz = accelerationCoefficientS * selfConsistentForceFieldZ[i][j][k] + acz[i][j][k];
-                if (fz > 0.0) {
-                    for (size_t a = 1; a < nvx - 1; ++a) {
-                        for (size_t b = 1; b < nvy - 1; ++b) {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] -
-                                                 (delta_t_hvz * fz) * (f_time_ijk[a][b][c] - f_time_ijk[a][b][c - 1]);
-                            }
-                        }
-                    }
-                } else {
-                    for (size_t a = 1; a < nvx - 1; ++a) {
-                        for (size_t b = 1; b < nvy - 1; ++b) {
-                            for (size_t c = 1; c < nvz - 1; ++c) {
-                                f_ijk[a][b][c] = f_time_ijk[a][b][c] -
-                                                 (delta_t_hvz * fz) * (f_time_ijk[a][b][c + 1] - f_time_ijk[a][b][c]);
-                            }
-                        }
-                    }
+#pragma omp parallel for
+    for (size_t coordinate_total_i = 0; coordinate_total_i < coordinate_total_size; ++coordinate_total_i) {
+        const size_t velocity_shift = coordinate_total_i * velocity_total_size;
+
+        for (size_t a = 1; a < nvx - 1; ++a) {
+            for (size_t b = 1; b < nvy - 1; ++b) {
+                for (size_t c = 1; c < nvz - 1; ++c) {
+                    const size_t total = velocity_shift + a * nvz_nvy + b * nvz + c;
+
+                    const double fz =
+                            accelerationCoefficientS * selfConsistentForceFieldZ[coordinate_total_i] + acz[coordinate_total_i];
+                    const double shift = fz > 0.0
+                                         ? f_time[total] - f_time[total - 1]
+                                         : f_time[total + 1] - f_time[total];
+
+                    f[total] = f_time[total] - (delta_t_hvz * fz) * shift;
                 }
             }
         }
@@ -486,59 +398,47 @@ void IonWake::velocityPart() {
 
 void IonWake::computeDensity() {
     const double m = hvx * hvy * hvz;
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                double ***const f_ijk = f[i][j][k];
-                double sum = 0.0;
-                for (size_t a = 0; a < nvx; ++a) {
-                    for (size_t b = 0; b < nvy; ++b) {
-                        for (size_t c = 0; c < nvz; ++c) {
-                            sum += f_ijk[a][b][c];
-                        }
-                    }
-                }
-                density[i][j][k] = sum * m;
-            }
+#pragma omp parallel for
+    for (size_t total_i = 0; total_i < coordinate_total_size; ++total_i) {
+        const size_t velocity_shift = total_i * velocity_total_size;
+
+        double sum = 0.0;
+        for (size_t total_j = 0; total_j < velocity_total_size; ++total_j) {
+            sum += f[velocity_shift + total_j];
         }
+        density[total_i] = sum * m;
     }
 }
 
 void IonWake::computeFlowVelocity() {
     const double m = hvx * hvy * hvz;
-#pragma omp parallel for collapse(3)
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                double ***const f_ijk = f[i][j][k];
-                double sum_x = 0.0;
-                double sum_y = 0.0;
-                double sum_z = 0.0;
-                for (size_t a = 0; a < nvx; ++a) {
-                    for (size_t b = 0; b < nvy; ++b) {
-                        for (size_t c = 0; c < nvz; ++c) {
-                            sum_x += vx[a] * f_ijk[a][b][c];
-                            sum_y += vy[b] * f_ijk[a][b][c];
-                            sum_z += vz[c] * f_ijk[a][b][c];
-                        }
-                    }
-                }
-                flowVelocityX[i][j][k] = sum_x * m;
-                flowVelocityY[i][j][k] = sum_y * m;
-                flowVelocityZ[i][j][k] = sum_z * m;
-            }
+#pragma omp parallel for
+    for (size_t total_i = 0; total_i < coordinate_total_size; ++total_i) {
+        size_t velocity_shift = total_i * velocity_total_size;
+        double sum_x = 0.0;
+        double sum_y = 0.0;
+        double sum_z = 0.0;
+        for (size_t total_j = 0; total_j < velocity_total_size; ++total_j) {
+            const size_t c = total_i % nvz;
+            const size_t b = total_i / nvz % nvy;
+            const size_t a = total_i / nvz / nvy;
+
+            sum_x += vx[a] * f[velocity_shift + total_j];
+            sum_y += vy[b] * f[velocity_shift + total_j];
+            sum_z += vz[c] * f[velocity_shift + total_j];
         }
+
+        flowVelocityX[total_i] = sum_x * m;
+        flowVelocityY[total_i] = sum_y * m;
+        flowVelocityZ[total_i] = sum_z * m;
     }
 }
-
 
 void IonWake::saveStep() {
     auto temp = f;
     f = f_time;
     f_time = temp;
 }
-
 
 void IonWake::writeInitialPotential(std::ofstream &of) const {
     of << nx << "\t" << ny << "\t" << nz << "\n";
@@ -564,7 +464,8 @@ void IonWake::writeDensity(std::ofstream &of) const {
     for (size_t k = 0; k < nz; ++k) {
         for (size_t j = 0; j < ny; ++j) {
             for (size_t i = 0; i < nx; ++i) {
-                of << density[i][j][k] * pow(1.0 / debayRadius, 3) << "\n";
+                const size_t coordinate_i = i * ny * nz + j * nz + k;
+                of << density[coordinate_i] * pow(1.0 / debayRadius, 3) << "\n";
             }
         }
     }
@@ -575,7 +476,8 @@ void IonWake::writePotential(std::ofstream &of) const {
     for (size_t k = 0; k < nz; ++k) {
         for (size_t j = 0; j < ny; ++j) {
             for (size_t i = 0; i < nx; ++i) {
-                of << dimensionlessIonConcentration * convertPotential * potential[i][j][k] << "\n";
+                const size_t coordinate_i = i * ny * nz + j * nz + k;
+                of << dimensionlessIonConcentration * convertPotential * potential[coordinate_i] << "\n";
             }
         }
     }
@@ -586,28 +488,41 @@ void IonWake::writeVelocity(std::ofstream &of) const {
     for (size_t k = 0; k < nz; ++k) {
         for (size_t j = 0; j < ny; ++j) {
             for (size_t i = 0; i < nx; ++i) {
-                of << flowVelocityX[i][j][k] << "\t" << flowVelocityY[i][j][k] << "\t" << flowVelocityZ[i][j][k]
-                   << "\n";
+                const size_t coordinate_i = i * ny * nz + j * nz + k;
+                of << flowVelocityX[coordinate_i] << "\t" << flowVelocityY[coordinate_i] << "\t"
+                   << flowVelocityZ[coordinate_i] << "\n";
             }
         }
     }
 }
 
 void IonWake::plotDistributionFunctionX(size_t i, size_t j, size_t k, std::ofstream &of) const {
+    const size_t coordinate_i = i * ny * nz + j * nz + k;
+    const size_t shift = coordinate_i * velocity_total_size;
+
     for (size_t a = 0; a < nvx; ++a) {
-        of << vx[a] << "\t" << f[i][j][k][a][nvy / 2][nvz / 2] << "\n";
+        const size_t velocity_i = a * nvy * nvz + (nvy / 2) * nvz + (nvz / 2);
+        of << vx[a] << "\t" << f[shift + velocity_i] << "\n";
     }
 }
 
 void IonWake::plotDistributionFunctionY(size_t i, size_t j, size_t k, std::ofstream &of) const {
+    const size_t coordinate_i = i * ny * nz + j * nz + k;
+    const size_t shift = coordinate_i * velocity_total_size;
+
     for (size_t b = 0; b < nvy; ++b) {
-        of << vy[b] << "\t" << f[i][j][k][nvx / 2][b][nvz / 2] << "\n";
+        const size_t velocity_i = (nvx / 2) * nvy * nvz + b * nvz + (nvz / 2);
+        of << vy[b] << "\t" << f[shift + velocity_i] << "\n";
     }
 }
 
 void IonWake::plotDistributionFunctionZ(size_t i, size_t j, size_t k, std::ofstream &of) const {
+    const size_t coordinate_i = i * ny * nz + j * nz + k;
+    const size_t shift = coordinate_i * velocity_total_size;
+
     for (size_t c = 0; c < nvz; ++c) {
-        of << vz[c] << "\t" << f[i][j][k][nvx / 2][nvy / 2][c] << "\n";
+        const size_t velocity_i = (nvx / 2) * nvy * nvz + (nvy / 2) * nvz + c;
+        of << vz[c] << "\t" << f[shift + velocity_i] << "\n";
     }
 }
 
@@ -732,34 +647,6 @@ IonWake::~IonWake() {
     delete[] vx;
     delete[] vy;
     delete[] vz;
-
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            delete[] density[i][j];
-            delete[] potential[i][j];
-            delete[] flowVelocityX[i][j];
-            delete[] flowVelocityY[i][j];
-            delete[] flowVelocityZ[i][j];
-            delete[] selfConsistentForceFieldX[i][j];
-            delete[] selfConsistentForceFieldY[i][j];
-            delete[] selfConsistentForceFieldZ[i][j];
-            delete[] acx[i][j];
-            delete[] acy[i][j];
-            delete[] acz[i][j];
-        }
-        delete[] density[i];
-        delete[] potential[i];
-        delete[] flowVelocityX[i];
-        delete[] flowVelocityY[i];
-        delete[] flowVelocityZ[i];
-        delete[] selfConsistentForceFieldX[i];
-        delete[] selfConsistentForceFieldY[i];
-        delete[] selfConsistentForceFieldZ[i];
-        delete[] acx[i];
-        delete[] acy[i];
-        delete[] acz[i];
-    }
-
     delete[] density;
     delete[] potential;
     delete[] flowVelocityX;
@@ -771,42 +658,7 @@ IonWake::~IonWake() {
     delete[] acx;
     delete[] acy;
     delete[] acz;
-
-    for (size_t i = 0; i < nx; ++i) {
-        for (size_t j = 0; j < ny; ++j) {
-            for (size_t k = 0; k < nz; ++k) {
-                for (size_t a = 0; a < nvx; ++a) {
-                    for (size_t b = 0; b < nvy; ++b) {
-                        delete[] f[i][j][k][a][b];
-                        delete[] f_time[i][j][k][a][b];
-                    }
-                    delete[] f[i][j][k][a];
-                    delete[] f_time[i][j][k][a];
-                }
-                delete[] f[i][j][k];
-                delete[] f_time[i][j][k];
-            }
-            delete[] f[i][j];
-            delete[] f_time[i][j];
-        }
-        delete[] f[i];
-        delete[] f_time[i];
-    }
     delete[] f;
     delete[] f_time;
-
-
-    for (size_t a = 0; a < nvx; ++a) {
-        for (size_t b = 0; b < nvy; ++b) {
-            delete[] f_n[a][b];
-        }
-        delete[] f_n[a];
-    }
     delete[] f_n;
 }
-
-
-
-//Debay radious
-
-
