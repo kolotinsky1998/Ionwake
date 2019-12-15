@@ -28,27 +28,29 @@ namespace ionwake {
 
     class IonWake {
     private:
+        double *f;
+        double *f_time;
+        double *f_n;
+        
+        double *potential;
+        double *density;
+
         const size_t nx;
         const size_t ny;
         const size_t nz;
 
-        const size_t nx_0;
-        const size_t ny_0;
-        const size_t nz_0;
+        size_t coordinate_total_size;
+        size_t velocity_total_size;
+        size_t total_size;
 
         const double lx;
         const double ly;
         const double lz;
 
-        const double particleCharge;
-        const double temperature;
-        const double physicalIonConcentration;
-        const double physicalTau;
-        const double strength;
-
         size_t nvx;
         size_t nvy;
         size_t nvz;
+
         double hvx;
         double hvy;
         double hvz;
@@ -56,6 +58,10 @@ namespace ionwake {
         double *vx;
         double *vy;
         double *vz;
+
+        const size_t nx_0;
+        const size_t ny_0;
+        const size_t nz_0;
 
         double accelerationCoefficientS;
         double accelerationCoefficientL;
@@ -77,17 +83,6 @@ namespace ionwake {
         double *selfConsistentForceFieldY;
         double *selfConsistentForceFieldZ;
 
-        double *potential;
-        double *density;
-
-        double *f;
-        double *f_time;
-        double *f_n;
-
-        size_t coordinate_total_size;
-        size_t velocity_total_size;
-        size_t total_size;
-
         double convertPotential;
         double plasmasFrequency;
 
@@ -103,6 +98,12 @@ namespace ionwake {
 
         double vxcut;
         double vyzcut;
+
+        const double particleCharge;
+        const double temperature;
+        const double physicalIonConcentration;
+        const double physicalTau;
+        const double strength;
 
         void poissonScheme();
 

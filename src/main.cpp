@@ -14,22 +14,22 @@ int main(int argc, char *argv[]) {
     //#######################################//
 
     ///////////////////////////////////////////
-    //ion temperature  (kelvin)                      
+    //ion temperature  (kelvin)
     const double T_i = 300;
-    // time between ion-neutral collisions in seconds                  
+    // time between ion-neutral collisions in seconds
     const double tau = 0.4 * pow(10., -3.);
-    //equilibrium concentaration of ions [1/cm^3]  
+    //equilibrium concentaration of ions [1/cm^3]
     const double n_0 = 2. * pow(10., 7.);
-    //particle charge in electron units                      
+    //particle charge in electron units
     const double q = 2000;
-    //electricity field in cgs units                     
+    //electricity field in cgs units
     const double El = 0.0; //1.72e-05 / 2; // * pow(10., -5.);
-    //In debay radious units                 
-    //x-dimension of the computational box in Debye radious  
+    //In debay radious units
+    //x-dimension of the computational box in Debye radious
     const double Lx = 6;
-    //x-dimension of the computational box in Debye radious  
+    //x-dimension of the computational box in Debye radious
     const double Ly = 6;
-    //x-dimension of the computational box in Debye radious   
+    //x-dimension of the computational box in Debye radious
     const double Lz = 6;
     //position of dust particle at the grid
     const int Nx_0 = 5;
@@ -56,10 +56,11 @@ int main(int argc, char *argv[]) {
     //#######################################//
     //cout << omp_get_num_threads() << endl;
 
-//    int numThreads;
-//    cout << "Enter numThreads: ";
-//    cin >> numThreads;
-    omp_set_num_threads(1);
+    int numThreads;
+    cout << "Enter numThreads: ";
+    cin >> numThreads;
+    omp_set_num_threads(numThreads);
+//    cout << sizeof(ionwake::IonWake) << endl;
     ///////////////////////////////////////////
     auto start = high_resolution_clock::now();
     system("mkdir gnuplot");
