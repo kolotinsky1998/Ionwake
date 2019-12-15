@@ -132,34 +132,36 @@ int main(int argc, char *argv[]) {
     //#######################################//
 
     start = high_resolution_clock::now();
-    for (int i = 0; i < ITmax; i++) {
-        cout << "####### Simulation time = " << ionWake.getCurrentTime() << " #######" << endl << endl;
+    for (int i = 1; i <= ITmax; i++) {
+        cout << "####### Simultaion step = " << i << "; Simulation time = " << ionWake.getCurrentTime() << " #######"
+             << endl << endl;
 
         ionWake.nextStep();
+        if (i % T_output == 0) {
+            std::ofstream density("./density/density_x" + std::to_string(i) + ".dat", std::ofstream::out);
+            ionWake.writeDensity(density);
+            density.close();
 
-        std::ofstream density("./density/density_x" + std::to_string(i) + ".dat", std::ofstream::out);
-        ionWake.writeDensity(density);
-        density.close();
+            std::ofstream potential("./potential/potential_x" + std::to_string(i) + ".dat", std::ofstream::out);
+            ionWake.writePotential(potential);
+            potential.close();
 
-        std::ofstream potential("./potential/potential_x" + std::to_string(i) + ".dat", std::ofstream::out);
-        ionWake.writePotential(potential);
-        potential.close();
+            std::ofstream velocity("./velocity/velocity_x" + std::to_string(i) + ".dat", std::ofstream::out);
+            ionWake.writeVelocity(velocity);
+            velocity.close();
 
-        std::ofstream velocity("./velocity/velocity_x" + std::to_string(i) + ".dat", std::ofstream::out);
-        ionWake.writeVelocity(velocity);
-        velocity.close();
+            std::ofstream profile_x("./gnuplot/profile_x_t" + std::to_string(i) + ".dat", std::ofstream::out);
+            ionWake.plotDistributionFunctionX(1, 1, 1, profile_x);
+            profile_x.close();
 
-        std::ofstream profile_x("./gnuplot/profile_x_t" + std::to_string(i) + ".dat", std::ofstream::out);
-        ionWake.plotDistributionFunctionX(1, 1, 1, profile_x);
-        profile_x.close();
+            std::ofstream profile_y("./gnuplot/profile_y_t" + std::to_string(i) + ".dat", std::ofstream::out);
+            ionWake.plotDistributionFunctionY(1, 1, 1, profile_y);
+            profile_x.close();
 
-        std::ofstream profile_y("./gnuplot/profile_y_t" + std::to_string(i) + ".dat", std::ofstream::out);
-        ionWake.plotDistributionFunctionY(1, 1, 1, profile_y);
-        profile_x.close();
-
-        std::ofstream profile_z("./gnuplot/profile_z_t" + std::to_string(i) + ".dat", std::ofstream::out);
-        ionWake.plotDistributionFunctionZ(1, 1, 1, profile_z);
-        profile_z.close();
+            std::ofstream profile_z("./gnuplot/profile_z_t" + std::to_string(i) + ".dat", std::ofstream::out);
+            ionWake.plotDistributionFunctionZ(1, 1, 1, profile_z);
+            profile_z.close();
+        }
     }
     duration = duration_cast<microseconds>(high_resolution_clock::now() - start);
     cout << "Time taken by numerical scheme: "
