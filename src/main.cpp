@@ -56,13 +56,13 @@ int main(int argc, char *argv[]) {
     //#######################################//
     //cout << omp_get_num_threads() << endl;
 
-    int numThreads;
-    cout << "Enter numThreads: ";
-    cin >> numThreads;
-    omp_set_num_threads(numThreads);
+//    int numThreads;
+//    cout << "Enter numThreads: ";
+//    cin >> numThreads;
+//    omp_set_num_threads(numThreads);
 //    cout << sizeof(ionwake::IonWake) << endl;
     ///////////////////////////////////////////
-    auto start = high_resolution_clock::now();
+    auto total_start = high_resolution_clock::now();
     system("mkdir gnuplot");
     system("mkdir density");
     system("mkdir potential");
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
     ionWake.writeInitialPotential(initialPotential);
     initialPotential.close();
 
-    auto duration = duration_cast<microseconds>(high_resolution_clock::now() - start);
+    auto duration = duration_cast<microseconds>(high_resolution_clock::now() - total_start);
     cout << "Time taken by inizialisation: "
          << duration.count() / 1000000.0 << " seconds" << endl;
     ///////////////////////////////////////////
@@ -131,12 +131,18 @@ int main(int argc, char *argv[]) {
     //##             Time loop             ##//
     //#######################################//
 
-    start = high_resolution_clock::now();
-    for (int i = 1; i <= ITmax; i++) {
-        cout << "####### Simultaion step = " << i << "; Simulation time = " << ionWake.getCurrentTime() << " #######"
-             << endl << endl;
+    total_start = high_resolution_clock::now();
+    for (int i = 0; i < ITmax; i++) {
+        cout << "####### Simultaion step = " << i
+             << "; IonWake system time = " << ionWake.getCurrentTime()
+             << " #######" << endl;
 
+        auto start = high_resolution_clock::now();
         ionWake.nextStep();
+        cout << "Calculation time: "
+             << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1000000.0
+             << " seconds\n" << endl;
+
         if (i % T_output == 0) {
             std::ofstream density("./density/density_x" + std::to_string(i) + ".dat", std::ofstream::out);
             ionWake.writeDensity(density);
@@ -163,7 +169,7 @@ int main(int argc, char *argv[]) {
             profile_z.close();
         }
     }
-    duration = duration_cast<microseconds>(high_resolution_clock::now() - start);
+    duration = duration_cast<microseconds>(high_resolution_clock::now() - total_start);
     cout << "Time taken by numerical scheme: "
          << duration.count() / 1000000.0 << " seconds" << endl;
 
