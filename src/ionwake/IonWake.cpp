@@ -199,7 +199,7 @@ void IonWake::poissonScheme() {
 
                 potential[total_i] += (fi + fj + fk + strange) * tau;
 
-                if (potential[total_i] == 0.0 && std::abs((potential[total_i] - f1) / potential[total_i]) > E) {
+                if (potential[total_i] != 0.0 && std::abs((potential[total_i] - f1) / potential[total_i]) > E) {
                     proceed = true;
                 }
             }
@@ -218,9 +218,9 @@ void IonWake::gradientScheme() {
     const size_t nx_nz = nz * ny;
 
 #pragma omp parallel for collapse(3)
-    for (int i = 0; i < nx - 1; ++i) {
-        for (int j = 0; j < ny - 1; ++j) {
-            for (int k = 0; k < nz - 1; ++k) {
+    for (int i = 1; i < nx - 1; ++i) {
+        for (int j = 1; j < ny - 1; ++j) {
+            for (int k = 1; k < nz - 1; ++k) {
                 const size_t coordinate_i = i * ny * nz + j * nz + k;
                 selfConsistentForceFieldX[coordinate_i] =
                         -(potential[coordinate_i + nx_nz] - potential[coordinate_i - nx_nz]) * x_concentration;
