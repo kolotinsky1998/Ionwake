@@ -1,0 +1,22 @@
+#!/bin/bash
+
+mkdir $1
+export PROJECTNAME=$1/project
+make clean
+make
+> launch 
+
+echo "#!/bin/bash" >> launch
+echo "#SBATCH --time=3-00:00:00" >> launch
+echo "#SBATCH --job-name=ionwake" >> launch 
+echo "#SBATCH --partition=max1" >> launch
+echo "#SBATCH --error=error" >> launch
+echo "#SBATCH --output=log" >> launch
+echo "#SBATCH -N 1" >> launch 
+echo "#SBATCH -n 44" >> launch 
+echo "#SBATCH --chdir=$1" >> launch
+
+echo "./project $1" >> launch
+
+chmod +x launch
+sbatch launch --gres=none

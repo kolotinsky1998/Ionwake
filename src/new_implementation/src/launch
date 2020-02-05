@@ -1,0 +1,10 @@
+#!/bin/bash
+#SBATCH --time=3-00:00:00
+#SBATCH --job-name=ionwake
+#SBATCH --partition=max1
+#SBATCH --error=error
+#SBATCH --output=log
+#SBATCH -N 1
+#SBATCH -n 44
+#SBATCH --chdir=data_low_density_new
+./project data_low_density_new
