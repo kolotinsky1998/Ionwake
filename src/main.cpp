@@ -4,6 +4,7 @@
 
 #include "omp.h"
 #include "ionwake/IonWake.h"
+#include "TArray.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -12,6 +13,16 @@ int main(int argc, char *argv[]) {
     //#######################################//
     //## Physical parameters of the system ##//
     //#######################################//
+
+
+    TArray<double, 2> a({5, 5});
+    a.fill(10);
+    a[5] = 1000;
+    for (size_t i = 0; i < a.getTotalSize(); ++i) {
+        cout << a[i] << " ";
+    }
+    int o;
+    cin >> o;
 
     ///////////////////////////////////////////
     //ion temperature  (kelvin)
