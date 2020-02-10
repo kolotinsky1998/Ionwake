@@ -1,0 +1,3 @@
+To compile and run the task, you need to type the command on the command line
+$ ./script data
+Here data - name of the working folder for the current task launch
