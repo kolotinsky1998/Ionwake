@@ -2,52 +2,74 @@
 #include <iostream>
 #include <chrono>
 
+#include "scheme.hpp"
+#include "converter.hpp"
 #include "omp.h"
-#include "ionwake/IonWake.h"
-#include "TArray.h"
 
 using namespace std;
 using namespace std::chrono;
 
 int main(int argc, char *argv[]) {
+
     //#######################################//
     //## Physical parameters of the system ##//
     //#######################################//
 
-
-    TArray<double, 2> a({5, 5});
-    a.fill(10);
-    a[5] = 1000;
-    for (size_t i = 0; i < a.getTotalSize(); ++i) {
-        cout << a[i] << " ";
-    }
-    int o;
-    cin >> o;
-
     ///////////////////////////////////////////
     //ion temperature  (kelvin)
-    const double T_i = 300;
+    const double Ti = 300;
+    //electron temperature (kelvin)
+    const double Te = 9000;
     // time between ion-neutral collisions in seconds
-    const double tau = 0.4 * pow(10., -3.);
+    const double wc = 361745;
     //equilibrium concentaration of ions [1/cm^3]
-    const double n_0 = 2. * pow(10., 7.);
+    const double ni = 3. * pow(10., 7.);
     //particle charge in electron units
-    const double q = 2000;
+    const double q = 10000;
     //electricity field in cgs units
-    const double El = 0.0; //1.72e-05 / 2; // * pow(10., -5.);
+    const double Eext = 0.257e-2;
+    //ion mass
+    const double mi = 6.6464 * pow(10., -23.);
     //In debay radious units
     //x-dimension of the computational box in Debye radious
-    const double Lx = 6;
+    const double lx = 15;
     //x-dimension of the computational box in Debye radious
-    const double Ly = 6;
+    const double ly = 6;
     //x-dimension of the computational box in Debye radious
-    const double Lz = 6;
-    //position of dust particle at the grid
-    const int Nx_0 = 5;
-    //position of dust particle at the grid
-    const int Ny_0 = 5;
-    //position of dust particle at the grid
-    const int Nz_0 = 5;
+    const double lz = 6;
+    //coordinate-x of the dust particle
+    const double r0x = 3;
+    //coordinate-y of the dust particle
+    const double r0y = 3;
+    //coordinate-z of the dust particle
+    const double r0z = 3;
+    ///////////////////////////////////////////
+
+    //########################################//
+    //## Numerical parameters of the system ##//
+    //########################################//
+
+    ///////////////////////////////////////////
+    //number of cells in cordinate space x
+    const int nx = 10;
+    //number of cells in cordinate space y
+    const int ny = 10;
+    //number of ells in cordinate space z
+    const int nz = 10;
+    //integration step in velocity space x
+    const double hvx = 0.2;
+    //integration step in velocity space y
+    const double hvy = 0.2;
+    //integration step in velocity space z
+    const double hvz = 0.2;
+    //maximum velocity yz
+    const double vmaxyz = 1;
+    //minimum velocity yz
+    const double vminyz = -1;
+    //integration step for calculation initial conditions
+    const double hxi = 0.002;
+    //integration limit for calculation initial conditions
+    const double ximax = 5;
     ///////////////////////////////////////////
 
 
@@ -56,134 +78,57 @@ int main(int argc, char *argv[]) {
     //#######################################//
 
     ///////////////////////////////////////////
-    int ITmax = 10;
-    int T_term = 1;
-    int T_output = 1;
+    int ITmax = 100;
+    int T_output = 20;
     ///////////////////////////////////////////
 
 
     //#######################################//
     //##         Inizialization            ##//
     //#######################################//
-    //cout << omp_get_num_threads() << endl;
 
-//    int numThreads;
-//    cout << "Enter numThreads: ";
-//    cin >> numThreads;
-//    omp_set_num_threads(numThreads);
-//    cout << sizeof(ionwake::IonWake) << endl;
-    ///////////////////////////////////////////
-    auto total_start = high_resolution_clock::now();
-    system("mkdir gnuplot");
-    system("mkdir density");
-    system("mkdir potential");
-    system("mkdir velocity");
+//    omp_set_num_threads(44);
 
-    ionwake::IonWake ionWake(10, 10, 10, Nx_0, Ny_0, Nz_0, Lx, Ly, Lz, q, T_i, n_0, tau, El);
-    cout << "######### Physical parameters of the system #############\n";
-    cout << "#########################################################\n";
-    cout << "Temperature       : " << ionWake.getTemperature() << " K\n";
-    cout << "Thermal velocity  : " << ionWake.getThermalVelocity() << " cm/s\n";
-    cout << "Debay radious     : " << ionWake.getDebayRadius() << " cm\n";
-    cout << "Plasmas frequency : " << ionWake.getPlasmasFrequency() << " 1/s\n";
-    cout << "Relaxation time   : " << ionWake.getPhysicalTau() << " s\n";
-    cout << "Ion concenteration: " << ionWake.getPhysicalIonConcentration() << " 1/cm**3\n";
-    cout << "Particle charge   : " << ionWake.getParticleCharge() << " (electron charges)\n";
-    cout << "External force    : " << ionWake.getStrength() << " (cgs units)\n";
-    cout << "Physical delta t  : " << ionWake.getDeltaT() * ionWake.getDebayRadius() / ionWake.getThermalVelocity()
-         << "s\n";
-    cout << "\n";
-
-
-    cout << "########## Scheme parameters ############################\n";
-    cout << "#########################################################\n";
-    cout << "                        X       Y       Z     \n\n";
-    cout << "coordinate step  " << "\t" << ionWake.getCoordinateStepX() << "\t" << ionWake.getCoordinateStepY()
-         << "\t" << ionWake.getCoordinateStepZ() << "\n";
-    cout << "velocity step    " << "\t" << ionWake.getHvx() << "\t" << ionWake.getHvy() << "\t" << ionWake.getHvz()
-         << "\n";
-    cout << "coordinate N     " << "\t" << ionWake.getNx() << "\t" << ionWake.getNy() << "\t"
-         << ionWake.getNz() << "\n";
-    cout << "velocity N       " << "\t" << ionWake.getNvx() << "\t" << ionWake.getNvy() << "\t" << ionWake.getNvz()
-         << "\n";
-    cout << "cut velocity     " << "\t" << ionWake.getCutVelocityAlong() << "\t" << ionWake.getCutVelocityNormal()
-         << "\t" << ionWake.getCutVelocityNormal() << "\n";
-    cout << "length of the box" << "\t" << ionWake.getCoordinateStepX() * ionWake.getNx() << "\t"
-         << ionWake.getCoordinateStepY() * ionWake.getNy() << "\t"
-         << ionWake.getCoordinateStepZ() * ionWake.getNz() << "\n";
-    cout << "#########################################################\n\n";
-
-    cout << "### Some important parameters for numerical scheme ######\n";
-    cout << "#########################################################\n";
-    cout << "Flow velocity    :" << ionWake.getDimensionlessFlowVelocity() << "\n";
-    cout << "Relaxation time  :" << ionWake.getDimensionlessTau() << "\n";
-    cout << "Ion concentration:" << ionWake.getDimensionlessIonConcentration() << "\n";
-    cout << "Delta T          :" << ionWake.getDeltaT() << "\n";
-    cout << endl;
-//    converter Converter(T_i, tau, n_0, q, El, Lx, Ly, Lz, Nx_0, Ny_0, Nz_0);
-//    poisson Poisson(Converter);
-//    kinetic Kinetic(Converter, Poisson);
-//    output Output(Converter, Poisson, Kinetic);
-//    Output.StartOutput();
-//    Output.CreateOutputDirectory();
-//    Output.WriteInitialPotential();
-
-
-    std::ofstream initialPotential("./InitialPotential.dat", std::ofstream::out);
-    ionWake.writeInitialPotential(initialPotential);
-    initialPotential.close();
-
-    auto duration = duration_cast<microseconds>(high_resolution_clock::now() - total_start);
+    auto start = high_resolution_clock::now();
+    Converter converter(Te, Ti, ni, q, Eext, wc, mi);
+    Scheme scheme(
+            converter, nx, ny, nz, lx, ly, lz,
+            ITmax, r0x, r0y, r0z, hvx, hvy, hvz, vminyz, vmaxyz, hxi, ximax
+    );
+    scheme.InitialLogOut();
+    converter.InitialLogOut();
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
     cout << "Time taken by inizialisation: "
          << duration.count() / 1000000.0 << " seconds" << endl;
-    ///////////////////////////////////////////
 
-    //#######################################//
-    //##             Time loop             ##//
-    //#######################################//
-
-    total_start = high_resolution_clock::now();
-    for (int i = 0; i < ITmax; i++) {
-        cout << "####### Simultaion step = " << i
-             << "; IonWake system time = " << ionWake.getCurrentTime()
-             << " #######" << endl;
-
-        auto start = high_resolution_clock::now();
-        ionWake.nextStep();
-        cout << "Calculation time: "
-             << duration_cast<microseconds>(high_resolution_clock::now() - start).count() / 1000000.0
-             << " seconds\n" << endl;
-
-        if (i % T_output == 0) {
-            std::ofstream density("./density/density_x" + std::to_string(i) + ".dat", std::ofstream::out);
-            ionWake.writeDensity(density);
-            density.close();
-
-            std::ofstream potential("./potential/potential_x" + std::to_string(i) + ".dat", std::ofstream::out);
-            ionWake.writePotential(potential);
-            potential.close();
-
-            std::ofstream velocity("./velocity/velocity_x" + std::to_string(i) + ".dat", std::ofstream::out);
-            ionWake.writeVelocity(velocity);
-            velocity.close();
-
-            std::ofstream profile_x("./gnuplot/profile_x_t" + std::to_string(i) + ".dat", std::ofstream::out);
-            ionWake.plotDistributionFunctionX(1, 1, 1, profile_x);
-            profile_x.close();
-
-            std::ofstream profile_y("./gnuplot/profile_y_t" + std::to_string(i) + ".dat", std::ofstream::out);
-            ionWake.plotDistributionFunctionY(1, 1, 1, profile_y);
-            profile_x.close();
-
-            std::ofstream profile_z("./gnuplot/profile_z_t" + std::to_string(i) + ".dat", std::ofstream::out);
-            ionWake.plotDistributionFunctionZ(1, 1, 1, profile_z);
-            profile_z.close();
+    //####################################//
+    //##         Computation            ##//
+    //####################################//
+    cout << "##############################################" << endl;
+    cout << "##******* Comutations start ****************##" << endl;
+    cout << "##############################################" << endl;
+    auto total_start = high_resolution_clock::now();
+    for (int t = 0; t < ITmax; t++) {
+        start = high_resolution_clock::now();
+        cout << "# Step №" << t << endl;
+        scheme.schemeStep();
+        scheme.printCurrentTime();
+        scheme.printFullCharge();
+        if (t % T_output == 0) {
+            scheme.writeDensityFile("./");
+            scheme.writePotentialFile("./");
         }
+
+        stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        cout << "Time taken by one step: "
+             << duration.count() / 1000000.0 << " seconds" << endl;
     }
-    duration = duration_cast<microseconds>(high_resolution_clock::now() - total_start);
-    cout << "Time taken by numerical scheme: "
-         << duration.count() / 1000000.0 << " seconds" << endl;
+    auto total_stop = high_resolution_clock::now();
+    auto total_duration = duration_cast<microseconds>(total_stop - total_start);
+    cout << "Time taken by scheme: "
+         << total_duration.count() / 1000000.0 << " seconds" << endl;
 
     return 0;
-
 }

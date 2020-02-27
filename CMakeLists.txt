@@ -13,6 +13,8 @@ add_executable(Optimization
         src/main.cpp
         src/scheme.cpp
         src/scheme.hpp
+        src/TScheme.h
+        src/TScheme.cpp
         src/ionwake/IonWake.h
         src/ionwake/IonWake.cpp
         )

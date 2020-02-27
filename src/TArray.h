@@ -9,9 +9,15 @@ template<class T, const std::size_t N>
 class TArray {
 public:
 
+    TArray();
+
     explicit TArray(std::array<std::size_t, N>);
 
+    TArray(TArray<double, N> &array);
+
     ~TArray();
+
+    TArray &operator=(TArray<T, N> &&) noexcept;
 
     inline T &operator[](std::array<std::size_t, N>);
 
@@ -23,11 +29,13 @@ public:
 
     bool isEmpty() noexcept;
 
+    bool swap(TArray<T, N> &other);
+
 private:
     const std::array<std::size_t, N> sizes;
+    T *data;
     std::array<std::size_t, N> shifts;
     std::size_t totalSize;
-    T *data;
 };
 
 
@@ -35,7 +43,7 @@ template<class T, std::size_t N>
 inline T &TArray<T, N>::operator[](std::array<std::size_t, N> position) {
     std::size_t convertedPosition = 0;
     for (int i = 0; i < N; ++i) {
-        convertedPosition += position * shifts[i];
+        convertedPosition += position[i] * shifts[i];
     }
     return data[convertedPosition];
 }
@@ -76,6 +84,40 @@ T &TArray<T, N>::operator[](size_t position) {
 template<class T, std::size_t N>
 TArray<T, N>::~TArray() {
     delete[] data;
+}
+
+template<class T, std::size_t N>
+bool TArray<T, N>::swap(TArray<T, N> &other) {
+    if (this->totalSize != other.totalSize || this->sizes != other.sizes) {
+        return false;
+    }
+    T *otherData = other.data;
+    other.data = this->data;
+    this->data = otherData;
+    return true;
+}
+
+template<class T, std::size_t N>
+TArray<T, N> &TArray<T, N>::operator=(TArray<T, N> &&other) noexcept {
+    delete[] data;
+    new(this) TArray(other);
+    return *this;
+}
+
+template<class T, std::size_t N>
+TArray<T, N>::TArray(TArray<double, N> &other):
+        sizes(other.sizes),
+        totalSize(other.totalSize),
+        shifts(other.shifts) {
+    data = new T[totalSize];
+    std::copy(other.data, other.data + other.totalSize, data);
+}
+
+template<class T, std::size_t N>
+TArray<T, N>::TArray() : sizes(std::array<std::size_t, N>()) {
+    totalSize = 0;
+    shifts = std::array<std::size_t, N>();
+    data = nullptr;
 }
 
 #endif
