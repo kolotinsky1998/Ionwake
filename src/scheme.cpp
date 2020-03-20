@@ -141,8 +141,7 @@ double Scheme::vmaxxCompute() {
         distribution = 0;
         double xi = 0;
         while (xi < ximax) {
-            distribution = distribution
-                           + exp(-xi) * exp(-0.5 * (vmax - xi * vfl) * (vmax - xi * vfl)) * hxi;
+            distribution += exp(-xi) * exp(-0.5 * (vmax - xi * vfl) * (vmax - xi * vfl)) * hxi;
             xi = xi + hxi;
         }
     } while (distribution > maxvell);
@@ -153,9 +152,8 @@ double Scheme::initialDisrtibutionFunction(double vx, double vy, double vz) {
     double distribution = 0;
     double xi = 0;
     while (xi < ximax) {
-        distribution = distribution
-                       + exp(-xi) * exp(-0.5 * (vx - xi * vfl) * (vx - xi * vfl)) * exp(-0.5 * vy * vy) *
-                         exp(-0.5 * vz * vz) * hxi;
+        distribution += exp(-xi) * exp(-0.5 * (vx - xi * vfl) * (vx - xi * vfl)) * exp(-0.5 * vy * vy) *
+                        exp(-0.5 * vz * vz) * hxi;
         xi = xi + hxi;
     }
     distribution = distribution / pow(2 * M_PI, 1.5);
@@ -167,16 +165,15 @@ double Scheme::maxwellianDistribution(double vx, double vy, double vz) {
 }
 
 void Scheme::density() {
-    double density;
 #pragma omp parallel for collapse(3)
     for (size_t i = 0; i < nx; i++) {
         for (size_t j = 0; j < ny; j++) {
             for (size_t k = 0; k < nz; k++) {
-                density = 0;
+                double density = 0;
                 for (size_t a = 0; a < nvx; a++) {
                     for (size_t b = 0; b < nvy; b++) {
                         for (size_t c = 0; c < nvz; c++) {
-                            density = density + f[{i, j, k, a, b, c}];
+                            density += f[{i, j, k, a, b, c}];
                         }
                     }
                 }
@@ -187,12 +184,10 @@ void Scheme::density() {
 }
 
 double Scheme::potentialDebye(double rx, double ry, double rz) {
-    double r = distance(rx, ry, rz, r0x, r0y, r0z);
-    if (r < sqrt(hx * hx + hy * hy + hz * hz)) {
-        return -q * exp(-sqrt(hx * hx + hy * hy + hz * hz) / rde) / sqrt(hx * hx + hy * hy + hz * hz);
-    } else {
-        return -q * exp(-r / rde) / r;
-    }
+    const double r = distance(rx, ry, rz, r0x, r0y, r0z);
+    const double t = sqrt(hx * hx + hy * hy + hz * hz);
+    const double distance = r < t ? t : r;
+    return -q * exp(-distance / rde) / distance;
 }
 
 inline double Scheme::distance(double r1x, double r1y, double r1z, double r2x, double r2y, double r2z) {
@@ -431,9 +426,9 @@ void Scheme::kinetic() {
                 for (size_t a = 1; a < nvx - 1; a++) {
                     for (size_t b = 1; b < nvy - 1; b++) {
                         for (size_t c = 1; c < nvz - 1; c++) {
-                            f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] + wc * (maxwellianDistribution(
-                                    vx[a], vy[b], vz[c]
-                            ) * n[{i, j, k}] - ftime[{i, j, k, a, b, c}]) * dt;
+                            const double distribution = maxwellianDistribution(vx[a], vy[b], vz[c]);
+                            const double value = ftime[{i, j, k, a, b, c}];
+                            f[{i, j, k, a, b, c}] = value + wc * (distribution * n[{i, j, k}] - value) * dt;
                         }
                     }
                 }
@@ -443,20 +438,17 @@ void Scheme::kinetic() {
 }
 
 void Scheme::poisson() {
-    double potential;
-    double r;
 #pragma omp parallel for collapse(3)
     for (size_t i = 0; i < nx; i++) {
         for (size_t j = 0; j < ny; j++) {
             for (size_t k = 0; k < nz; k++) {
-                potential = potentialDebye(rx[i], ry[j], rz[k]);
+                double potential = potentialDebye(rx[i], ry[j], rz[k]);
                 for (size_t i_ = 0; i_ < nx; i_++) {
                     for (size_t j_ = 0; j_ < ny; j_++) {
                         for (size_t k_ = 0; k_ < nz; k_++) {
-                            r = distance(rx[i], ry[j], rz[k], rx[i_], ry[j_], rz[k_]);
+                            double r = distance(rx[i], ry[j], rz[k], rx[i_], ry[j_], rz[k_]);
                             if (r != 0) {
-                                potential = potential +
-                                            exp(-r / rde) * (n[{i_, j_, k_}] - 1.) * hx * hy * hz / (r * 4 * M_PI);
+                                potential += exp(-r / rde) * (n[{i_, j_, k_}] - 1.) * hx * hy * hz / (r * 4 * M_PI);
                             }
                         }
                     }
@@ -482,7 +474,7 @@ void Scheme::calculateFullCharge() {
     for (size_t i = 0; i < nx; i++) {
         for (size_t j = 0; j < ny; j++) {
             for (size_t k = 0; k < nz; k++) {
-                fullCharge = fullCharge + (n[{i, j, k}] - 1.0) * hx * hy * hz;
+                fullCharge += (n[{i, j, k}] - 1.0) * hx * hy * hz;
             }
         }
     }
