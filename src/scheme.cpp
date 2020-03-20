@@ -290,26 +290,15 @@ void Scheme::kinetic() {
     for (size_t i = 0; i < nx; i++) {
         for (size_t j = 0; j < ny; j++) {
             for (size_t k = 0; k < nz; k++) {
-                if (ax[{i, j, k}] > 0) {
-                    for (size_t a = 1; a < nvx - 1; a++) {
-                        for (size_t b = 1; b < nvy - 1; b++) {
-                            for (size_t c = 1; c < nvz - 1; c++) {
-                                ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] -
-                                                            ax[{i, j, k}] * (f[{i, j, k, a, b, c}] -
-                                                                             f[{i, j, k, a - 1, b, c}]) *
-                                                            dt / hvx;
-                            }
-                        }
-                    }
-                } else {
-                    for (size_t a = 1; a < nvx - 1; a++) {
-                        for (size_t b = 1; b < nvy - 1; b++) {
-                            for (size_t c = 1; c < nvz - 1; c++) {
-                                ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] -
-                                                            ax[{i, j, k}] * (f[{i, j, k, a + 1, b, c}] -
-                                                                             f[{i, j, k, a, b, c}]) *
-                                                            dt / hvx;
-                            }
+                const double ax_ijk = ax[{i, j, k}];
+                const size_t a_shift_1 = ax_ijk > 0 ? 0 : 1;
+                const size_t a_shift_2 = ax_ijk > 0 ? 1 : 0;
+                
+                for (size_t a = 1; a < nvx - 1; a++) {
+                    for (size_t b = 1; b < nvy - 1; b++) {
+                        for (size_t c = 1; c < nvz - 1; c++) {
+                            const double diff = f[{i, j, k, a + a_shift_1, b, c}] - f[{i, j, k, a - a_shift_2, b, c}];
+                            ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] - ax_ijk * diff * dt / hvx;
                         }
                     }
                 }
@@ -320,26 +309,15 @@ void Scheme::kinetic() {
     for (size_t i = 0; i < nx; i++) {
         for (size_t j = 0; j < ny; j++) {
             for (size_t k = 0; k < nz; k++) {
-                if (ay[{i, j, k}] > 0) {
-                    for (size_t a = 1; a < nvx - 1; a++) {
-                        for (size_t b = 1; b < nvy - 1; b++) {
-                            for (size_t c = 1; c < nvz - 1; c++) {
-                                f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] -
-                                                        ay[{i, j, k}] * (ftime[{i, j, k, a, b, c}] -
-                                                                         ftime[{i, j, k, a, b - 1, c}]) *
-                                                        dt / hvy;
-                            }
-                        }
-                    }
-                } else {
-                    for (size_t a = 1; a < nvx - 1; a++) {
-                        for (size_t b = 1; b < nvy - 1; b++) {
-                            for (size_t c = 1; c < nvz - 1; c++) {
-                                f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] - ay[{i, j, k}] *
-                                                                                    (ftime[{i, j, k, a, b + 1, c}] -
-                                                                                     ftime[{i, j, k, a, b, c}]) *
-                                                                                    dt / hvy;
-                            }
+                const double ay_ijk = ay[{i, j, k}];
+                const size_t b_shift_1 = ay_ijk > 0 ? 0 : 1;
+                const size_t b_shift_2 = ay_ijk > 0 ? 1 : 0;
+
+                for (size_t a = 1; a < nvx - 1; a++) {
+                    for (size_t b = 1; b < nvy - 1; b++) {
+                        for (size_t c = 1; c < nvz - 1; c++) {
+                            const double diff = ftime[{i, j, k, a, b + b_shift_1, c}] - ftime[{i, j, k, a, b - b_shift_2, c}];
+                            f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] - ay_ijk * diff * dt / hvy;
                         }
                     }
                 }
@@ -350,26 +328,15 @@ void Scheme::kinetic() {
     for (size_t i = 0; i < nx; i++) {
         for (size_t j = 0; j < ny; j++) {
             for (size_t k = 0; k < nz; k++) {
-                if (az[{i, j, k}] > 0) {
-                    for (size_t a = 1; a < nvx - 1; a++) {
-                        for (size_t b = 1; b < nvy - 1; b++) {
-                            for (size_t c = 1; c < nvz - 1; c++) {
-                                ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] -
-                                                            az[{i, j, k}] * (f[{i, j, k, a, b, c}] -
-                                                                             f[{i, j, k, a, b, c - 1}]) *
-                                                            dt / hvz;
-                            }
-                        }
-                    }
-                } else {
-                    for (size_t a = 1; a < nvx - 1; a++) {
-                        for (size_t b = 1; b < nvy - 1; b++) {
-                            for (size_t c = 1; c < nvz - 1; c++) {
-                                ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] -
-                                                            az[{i, j, k}] * (f[{i, j, k, a, b, c + 1}] -
-                                                                             f[{i, j, k, a, b, c}]) *
-                                                            dt / hvz;
-                            }
+                double az_ijk = az[{i, j, k}];
+                const size_t c_shift_1 = az_ijk > 0 ? 0 : 1;
+                const size_t c_shift_2 = az_ijk > 0 ? 1 : 0;
+
+                for (size_t a = 1; a < nvx - 1; a++) {
+                    for (size_t b = 1; b < nvy - 1; b++) {
+                        for (size_t c = 1; c < nvz - 1; c++) {
+                            const double diff = f[{i, j, k, a, b, c + c_shift_1}] - f[{i, j, k, a, b, c - c_shift_2}];
+                            ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] - az_ijk * diff * dt / hvz;
                         }
                     }
                 }
