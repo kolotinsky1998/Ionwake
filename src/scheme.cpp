@@ -132,7 +132,7 @@ Scheme::~Scheme() {
     delete[] vz;
 }
 
-double Scheme::vmaxxCompute() {
+double Scheme::vmaxxCompute() const {
     double distribution;
     const double maxvell = exp(-vmaxyz * vmaxyz * 0.5);
     double vmax = 0;
@@ -148,7 +148,7 @@ double Scheme::vmaxxCompute() {
     return vmax;
 }
 
-double Scheme::initialDisrtibutionFunction(double vx, double vy, double vz) {
+double Scheme::initialDisrtibutionFunction(double vx, double vy, double vz) const {
     double distribution = 0;
     double xi = 0;
     while (xi < ximax) {
@@ -183,7 +183,7 @@ void Scheme::density() {
     }
 }
 
-double Scheme::potentialDebye(double rx, double ry, double rz) {
+double Scheme::potentialDebye(double rx, double ry, double rz) const {
     const double r = distance(rx, ry, rz, r0x, r0y, r0z);
     const double t = sqrt(hx * hx + hy * hy + hz * hz);
     const double distance = r < t ? t : r;
@@ -405,11 +405,11 @@ void Scheme::calculateFullCharge() {
     }
 }
 
-void Scheme::printCurrentTime() {
+void Scheme::printCurrentTime() const {
     cout << "Current dimmensionless time: " << t << endl;
 }
 
-void Scheme::printFullCharge() {
+void Scheme::printFullCharge() const {
     cout << "Current full charge in the computational box: " << fullCharge << endl;
 }
 
@@ -445,7 +445,7 @@ void Scheme::writePotentialFile(const string &data = "./") {
     file.close();
 }
 
-void Scheme::InitialLogOut() {
+void Scheme::InitialLogOut() const {
     cout << "#########################################################" << endl;
     cout << "##******* Output provided by numerical scheme *********##" << endl;
     cout << "#########################################################" << endl;

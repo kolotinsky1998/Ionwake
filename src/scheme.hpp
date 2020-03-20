@@ -25,11 +25,11 @@ public:
 
     void writePotentialFile(const string &data);
 
-    void printCurrentTime();
+    void printCurrentTime() const;
 
-    void printFullCharge();
+    void printFullCharge() const;
 
-    void InitialLogOut(); ///write simulation parameters into the log file
+    void InitialLogOut() const; ///write simulation parameters into the log file
 private:
     Converter converter;
     /// Coordinate space
@@ -85,17 +85,17 @@ private:
     void force();
 
     ///Helping functions
-    double maxwellianDistribution(double vx, double vy, double vz); ///compute Maxwell distribution
+    static double maxwellianDistribution(double vx, double vy, double vz); ///compute Maxwell distribution
     void density(); ///compute density
     ///compute distance between two points in coordinate space
     inline static double distance(double r1x, double r1y, double r1z, double r2x, double r2y, double r2z);
 
-    double vmaxxCompute(); ///compute the maximum velocity in velocity space in x direction
+    double vmaxxCompute() const; ///compute the maximum velocity in velocity space in x direction
     ///set the initial distribution function
-    double initialDisrtibutionFunction(double vx, double vy, double vz);
+    double initialDisrtibutionFunction(double vx, double vy, double vz) const;
 
     ///calculate Debye potential due to the dust particle
-    double potentialDebye(double rx, double ry, double rz);
+    double potentialDebye(double rx, double ry, double rz) const;
 
     void calculateFullCharge(); ///calculate full charge in computational box
 };
