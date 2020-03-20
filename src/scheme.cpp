@@ -213,35 +213,22 @@ void Scheme::kinetic() {
     for (size_t i = 0; i < nx; i++) {
         for (size_t j = 0; j < ny; j++) {
             for (size_t k = 0; k < nz; k++) {
+                const size_t i_prev = i == 0 ? nx - 1 : i - 1;
+                const size_t i_next = i == nx - 1 ? 0 : i + 1;
+
                 for (size_t a = 1; a < nvx - 1; a++) {
                     if (vx[a] > 0) {
                         for (size_t b = 1; b < nvy - 1; b++) {
                             for (size_t c = 1; c < nvz - 1; c++) {
-                                if (i == 0) {
-                                    f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] -
-                                                            vx[a] * (ftime[{i, j, k, a, b, c}] -
-                                                                     ftime[{nx - 1, j, k, a, b, c}]) * dt / hx;
-                                } else {
-                                    f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] -
-                                                            vx[a] * (ftime[{i, j, k, a, b, c}] -
-                                                                     ftime[{i - 1, j, k, a, b, c}]) * dt / hx;
-                                }
+                                const double diff = ftime[{i, j, k, a, b, c}] - ftime[{i_prev, j, k, a, b, c}];
+                                f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] - vx[a] * diff * dt / hx;
                             }
                         }
                     } else {
                         for (size_t b = 1; b < nvy - 1; b++) {
                             for (size_t c = 1; c < nvz - 1; c++) {
-                                if (i == nx - 1) {
-                                    f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] -
-                                                            vx[a] *
-                                                            (ftime[{0, j, k, a, b, c}] - ftime[{i, j, k, a, b, c}]) *
-                                                            dt / hx;
-                                } else {
-                                    f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] - vx[a] *
-                                                                                        (ftime[{i + 1, j, k, a, b, c}] -
-                                                                                         ftime[{i, j, k, a, b, c}]) *
-                                                                                        dt / hx;
-                                }
+                                const double diff = ftime[{i_next, j, k, a, b, c}] - ftime[{i, j, k, a, b, c}];
+                                f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] - vx[a] * diff * dt / hx;
                             }
                         }
                     }
@@ -255,35 +242,19 @@ void Scheme::kinetic() {
         for (size_t j = 0; j < ny; j++) {
             for (size_t k = 0; k < nz; k++) {
                 for (size_t a = 1; a < nvx - 1; a++) {
+                    const size_t j_prev = j == 0 ? ny - 1 : j - 1;
+                    const size_t j_next = j == ny - 1 ? 0 : j + 1;
+
                     for (size_t b = 1; b < nvy - 1; b++) {
                         if (vy[b] > 0) {
                             for (size_t c = 1; c < nvz - 1; c++) {
-                                if (j == 0) {
-                                    ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] -
-                                                                vy[b] *
-                                                                (f[{i, j, k, a, b, c}] - f[{i, ny - 1, k, a, b, c}]) *
-                                                                dt / hy;
-                                } else {
-                                    ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] -
-                                                                vy[b] *
-                                                                (f[{i, j, k, a, b, c}] - f[{i, j - 1, k, a, b, c}]) *
-                                                                dt / hy;
-                                }
+                                const double diff = f[{i, j, k, a, b, c}] - f[{i, j_prev, k, a, b, c}];
+                                ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] - vy[b] * diff * dt / hy;
                             }
                         } else {
                             for (size_t c = 1; c < nvz - 1; c++) {
-                                if (j == ny - 1) {
-                                    ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] -
-                                                                vy[b] *
-                                                                (f[{i, 0, k, a, b, c}] - f[{i, j, k, a, b, c}]) *
-                                                                dt /
-                                                                hy;
-                                } else {
-                                    ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] -
-                                                                vy[b] *
-                                                                (f[{i, j + 1, k, a, b, c}] - f[{i, j, k, a, b, c}]) *
-                                                                dt / hy;
-                                }
+                                const double diff = f[{i, j_next, k, a, b, c}] - f[{i, j, k, a, b, c}];
+                                ftime[{i, j, k, a, b, c}] = f[{i, j, k, a, b, c}] - vy[b] * diff * dt / hy;
                             }
                         }
                     }
@@ -295,31 +266,18 @@ void Scheme::kinetic() {
     for (size_t i = 0; i < nx; i++) {
         for (size_t j = 0; j < ny; j++) {
             for (size_t k = 0; k < nz; k++) {
+                const size_t k_prev = k == 0 ? nz - 1 : k - 1;
+                const size_t k_next = k == nz - 1 ? 0 : k + 1;
+
                 for (size_t a = 1; a < nvx - 1; a++) {
                     for (size_t b = 1; b < nvy - 1; b++) {
                         for (size_t c = 1; c < nvz - 1; c++) {
                             if (vz[c] > 0) {
-                                if (k == 0) {
-                                    f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] -
-                                                            vz[c] * (ftime[{i, j, k, a, b, c}] -
-                                                                     ftime[{i, j, nz - 1, a, b, c}]) * dt / hz;
-                                } else {
-                                    f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] -
-                                                            vz[c] * (ftime[{i, j, k, a, b, c}] -
-                                                                     ftime[{i, j, k - 1, a, b, c}]) * dt / hz;
-                                }
+                                const double diff = ftime[{i, j, k, a, b, c}] - ftime[{i, j, k_prev, a, b, c}];
+                                f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] - vz[c] * diff * dt / hz;
                             } else {
-                                if (k == nz - 1) {
-                                    f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] -
-                                                            vz[c] *
-                                                            (ftime[{i, j, 0, a, b, c}] - ftime[{i, j, k, a, b, c}]) *
-                                                            dt / hz;
-                                } else {
-                                    f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] - vz[c] *
-                                                                                        (ftime[{i, j, k + 1, a, b, c}] -
-                                                                                         ftime[{i, j, k, a, b, c}]) *
-                                                                                        dt / hz;
-                                }
+                                const double diff = ftime[{i, j, k_next, a, b, c}] - ftime[{i, j, k, a, b, c}];
+                                f[{i, j, k, a, b, c}] = ftime[{i, j, k, a, b, c}] - vz[c] * diff * dt / hz;
                             }
                         }
                     }
