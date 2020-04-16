@@ -3,11 +3,9 @@
 #include <chrono>
 
 #include "scheme.hpp"
+#include "TScheme.h"
 #include "converter.hpp"
 #include "omp.h"
-
-using namespace std;
-using namespace std::chrono;
 
 int main(int argc, char *argv[]) {
 
@@ -51,11 +49,11 @@ int main(int argc, char *argv[]) {
 
     ///////////////////////////////////////////
     //number of cells in cordinate space x
-    const int nx = 10;
+    const size_t nx = 10;
     //number of cells in cordinate space y
-    const int ny = 10;
+    const size_t ny = 10;
     //number of ells in cordinate space z
-    const int nz = 10;
+    const size_t nz = 10;
     //integration step in velocity space x
     const double hvx = 0.2;
     //integration step in velocity space y
@@ -78,8 +76,8 @@ int main(int argc, char *argv[]) {
     //#######################################//
 
     ///////////////////////////////////////////
-    int ITmax = 100;
-    int T_output = 20;
+    size_t ITmax = 3;
+    size_t T_output = 20;
     ///////////////////////////////////////////
 
 
@@ -89,46 +87,63 @@ int main(int argc, char *argv[]) {
 
 //    omp_set_num_threads(44);
 
-    auto start = high_resolution_clock::now();
-    Converter converter(Te, Ti, ni, q, Eext, wc, mi);
-    Scheme scheme(
-            converter, nx, ny, nz, lx, ly, lz,
-            ITmax, r0x, r0y, r0z, hvx, hvy, hvz, vminyz, vmaxyz, hxi, ximax
-    );
-    scheme.InitialLogOut();
-    converter.InitialLogOut();
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
+
+    const auto start = std::chrono::high_resolution_clock::now();
+    const time_t start_time_t = std::chrono::system_clock::to_time_t(start);
+    std::cout << "Start scheme crating at " << std::ctime(&start_time_t);
+
+    TScheme scheme = TScheme::TBuilder()
+            .set_electron_temperature(Te)
+            .set_ion_temperature(Ti)
+            .set_ion_concentration(ni)
+            .set_dust_particle_charge(q)
+            .set_external_electricity_field(Eext)
+            .set_ion_neutral_collisions_frequency(wc)
+            .set_ion_mass(mi)
+            .set_box_split_step_count(nx, ny, nz)
+            .set_box_size(lx, ly, lz)
+            .set_particle_position(r0x, r0y, r0z)
+            .set_velocity_step(hvx, hvy, hvz)
+            .set_velocity_bound_for_yz(vminyz, vmaxyz)
+            .set_integration_parameters(ximax, hxi)
+            .build();
+
+    const auto stop = std::chrono::high_resolution_clock::now();
     cout << "Time taken by inizialisation: "
-         << duration.count() / 1000000.0 << " seconds" << endl;
+         << std::chrono::duration_cast<std::chrono::seconds>(stop - start).count()
+         << " seconds" << endl;
 
     //####################################//
     //##         Computation            ##//
     //####################################//
-    cout << "##############################################" << endl;
-    cout << "##******* Comutations start ****************##" << endl;
-    cout << "##############################################" << endl;
-    auto total_start = high_resolution_clock::now();
-    for (int t = 0; t < ITmax; t++) {
-        start = high_resolution_clock::now();
-        cout << "# Step №" << t << endl;
-        scheme.schemeStep();
-        scheme.printCurrentTime();
-        scheme.printFullCharge();
+    cout << "##############################################\n"
+            "##******* Comutations start ****************##\n"
+            "##############################################\n";
+    const auto total_start = std::chrono::high_resolution_clock::now();
+    const time_t total_start_time_t = std::chrono::system_clock::to_time_t(start);
+    std::cout << "Start time: " << std::ctime(&total_start_time_t);
+    for (size_t t = 0; t < ITmax; ++t) {
+        cout << "# Step " << t << endl;
+        const auto step_start = std::chrono::high_resolution_clock::now();
+        scheme.next_step();
+//        scheme.printCurrentTime();
+//        scheme.printFullCharge();
         if (t % T_output == 0) {
-            scheme.writeDensityFile("./");
-            scheme.writePotentialFile("./");
+//            scheme.writeDensityFile("./");
+//            scheme.writePotentialFile("./");
         }
 
-        stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - start);
+        const auto step_stop = std::chrono::high_resolution_clock::now();
         cout << "Time taken by one step: "
-             << duration.count() / 1000000.0 << " seconds" << endl;
+             << std::chrono::duration_cast<std::chrono::seconds>(step_stop - step_start).count()
+             << " seconds" << endl;
     }
-    auto total_stop = high_resolution_clock::now();
-    auto total_duration = duration_cast<microseconds>(total_stop - total_start);
+    const auto total_stop = std::chrono::high_resolution_clock::now();
+    const time_t total_stop_time_t = std::chrono::system_clock::to_time_t(start);
+    std::cout << "Stop time: " << std::ctime(&total_stop_time_t);
     cout << "Time taken by scheme: "
-         << total_duration.count() / 1000000.0 << " seconds" << endl;
+         << std::chrono::duration_cast<std::chrono::seconds>(total_stop - total_start).count()
+         << " seconds" << endl;
 
     return 0;
 }
