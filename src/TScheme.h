@@ -250,9 +250,9 @@ private:
                     const size_t a_shift_1 = ax_ijk > 0 ? 0 : 1;
                     const size_t a_shift_2 = ax_ijk > 0 ? 1 : 0;
 
-                    for (size_t a = 1; a < x - 1; ++a) {
-                        for (size_t b = 1; b < y - 1; ++b) {
-                            for (size_t c = 1; c < z - 1; ++c) {
+                    for (size_t a = 1; a < vx - 1; ++a) {
+                        for (size_t b = 1; b < vy - 1; ++b) {
+                            for (size_t c = 1; c < vz - 1; ++c) {
                                 const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                 const size_t index1 = index + a_shift_1 * d4;
                                 const size_t index2 = index - a_shift_2 * d4;
@@ -272,9 +272,9 @@ private:
                     const size_t b_shift_1 = ay_ijk > 0 ? 0 : 1;
                     const size_t b_shift_2 = ay_ijk > 0 ? 1 : 0;
 
-                    for (size_t a = 1; a < x - 1; ++a) {
-                        for (size_t b = 1; b < y - 1; ++b) {
-                            for (size_t c = 1; c < z - 1; ++c) {
+                    for (size_t a = 1; a < vx - 1; ++a) {
+                        for (size_t b = 1; b < vy - 1; ++b) {
+                            for (size_t c = 1; c < vz - 1; ++c) {
                                 const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                 const size_t index1 = index + b_shift_1 * d5;
                                 const size_t index2 = index - b_shift_2 * d5;
@@ -294,9 +294,9 @@ private:
                     const size_t c_shift_1 = az_ijk > 0 ? 0 : 1;
                     const size_t c_shift_2 = az_ijk > 0 ? 1 : 0;
 
-                    for (size_t a = 1; a < x - 1; ++a) {
-                        for (size_t b = 1; b < y - 1; ++b) {
-                            for (size_t c = 1; c < z - 1; ++c) {
+                    for (size_t a = 1; a < vx - 1; ++a) {
+                        for (size_t b = 1; b < vy - 1; ++b) {
+                            for (size_t c = 1; c < vz - 1; ++c) {
                                 const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                 const size_t index1 = index + c_shift_1;
                                 const size_t index2 = index - c_shift_2;
@@ -501,7 +501,7 @@ public:
         return *this;
     }
 
-    TBuilder &set_box_split_size(size_t nx, size_t ny, size_t nz) noexcept {
+    TBuilder &set_box_split_step_count(size_t nx, size_t ny, size_t nz) noexcept {
         this->nx = nx;
         this->ny = ny;
         this->nz = nz;
