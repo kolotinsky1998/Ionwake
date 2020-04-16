@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cmath>
 #include <algorithm>
+#include <ostream>
 
 #include "omp.h"
 
@@ -369,6 +370,28 @@ public:
         compute_density();
     }
 
+    void write_density(std::ostream &of) const {
+        of << x << "\t" << y << "\t" << z << "\n";
+        for (size_t k = 0; k < z; ++k) {
+            for (size_t j = 0; j < y; ++j) {
+                for (size_t i = 0; i < x; ++i) {
+                    of << n[i * y * z + j * z + k] - 1.0 << "\n";
+                }
+            }
+        }
+    }
+
+    void write_potential(std::ostream &of) const {
+        of << x << "\t" << y << "\t" << z << "\n";
+        for (size_t k = 0; k < z; ++k) {
+            for (size_t j = 0; j < y; ++j) {
+                for (size_t i = 0; i < x; ++i) {
+                    of << fi[i * y * z + j * z + k] << "\n";
+                }
+            }
+        }
+    }
+
     ~TScheme() {
         delete[] f;
         delete[] f_time;
@@ -554,9 +577,9 @@ public:
         for (size_t a = 0; a < nvx; a++) {
             for (size_t b = 0; b < nvy; b++) {
                 for (size_t c = 0; c < nvz; c++) {
-                    const  double  vx_a = vminx + a * hvx;
-                    const  double  vy_b = vminyz + b * hvy;
-                    const  double  vz_c = vminyz + c * hvz;
+                    const double vx_a = vminx + a * hvx;
+                    const double vy_b = vminyz + b * hvy;
+                    const double vz_c = vminyz + c * hvz;
                     f[a * d4 + b * d5 + c] = initialDisrtibutionFunction(vx_a, vy_b, vz_c, hxi, ximax, vfl_d);
                 }
             }

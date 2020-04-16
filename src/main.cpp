@@ -1,6 +1,8 @@
 #include <cmath>
 #include <iostream>
 #include <chrono>
+#include <sstream>
+#include <fstream>
 
 #include "scheme.hpp"
 #include "TScheme.h"
@@ -129,8 +131,19 @@ int main(int argc, char *argv[]) {
 //        scheme.printCurrentTime();
 //        scheme.printFullCharge();
         if (t % T_output == 0) {
-//            scheme.writeDensityFile("./");
-//            scheme.writePotentialFile("./");
+            ofstream file;
+
+            stringstream filename;
+            filename << "./density_t" << t << ".dat";
+            file.open(filename.str().c_str());
+            scheme.write_density(file);
+            file.close();
+
+            stringstream filename2;
+            filename2 << "./potential_t" << t << ".dat";
+            file.open(filename2.str().c_str());
+            scheme.write_potential(file);
+            file.close();
         }
 
         const auto step_stop = std::chrono::high_resolution_clock::now();
