@@ -4,9 +4,7 @@
 #include <sstream>
 #include <fstream>
 
-#include "scheme.hpp"
 #include "TScheme.h"
-#include "converter.hpp"
 #include "omp.h"
 
 int main(int argc, char *argv[]) {
@@ -92,7 +90,7 @@ int main(int argc, char *argv[]) {
 
     const auto start = std::chrono::high_resolution_clock::now();
     const time_t start_time_t = std::chrono::system_clock::to_time_t(start);
-    std::cout << "Start scheme crating at " << std::ctime(&start_time_t);
+    std::cout << "Start scheme crating at " << std::ctime(&start_time_t) << std::endl;
 
     TScheme scheme = TScheme::TBuilder()
             .set_electron_temperature(Te)
@@ -113,7 +111,7 @@ int main(int argc, char *argv[]) {
     const auto stop = std::chrono::high_resolution_clock::now();
     std::cout << "Time taken by inizialisation: "
               << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() / 1000000.0
-              << " seconds" << endl;
+              << " seconds" << std::endl;
 
     //####################################//
     //##         Computation            ##//
@@ -122,25 +120,25 @@ int main(int argc, char *argv[]) {
                  "##******* Comutations start ****************##\n"
                  "##############################################\n";
     const auto total_start = std::chrono::high_resolution_clock::now();
-    const time_t total_start_time_t = std::chrono::system_clock::to_time_t(start);
+    const time_t total_start_time_t = std::chrono::system_clock::to_time_t(total_start);
     std::cout << "Start time: " << std::ctime(&total_start_time_t);
     for (size_t t = 0; t < ITmax; ++t) {
-        std::cout << "# Step " << t << endl;
+        std::cout << "# Step " << t << std::endl;
         const auto step_start = std::chrono::high_resolution_clock::now();
         scheme.next_step();
 
-        std::cout << "Current dimmensionless time: " << t * scheme.get_dt() << endl;
-        std::cout << "Current full charge in the computational box: " << scheme.get_full_charge() << endl;
+        std::cout << "Current dimmensionless time: " << t * scheme.get_dt() << std::endl;
+        std::cout << "Current full charge in the computational box: " << scheme.get_full_charge() << std::endl;
         if (t % T_output == 0) {
-            ofstream file;
+            std::ofstream file;
 
-            stringstream filename;
+            std::stringstream filename;
             filename << "./density_t" << t << ".dat";
             file.open(filename.str().c_str());
             scheme.write_density(file);
             file.close();
 
-            stringstream filename2;
+            std::stringstream filename2;
             filename2 << "./potential_t" << t << ".dat";
             file.open(filename2.str().c_str());
             scheme.write_potential(file);
@@ -150,14 +148,14 @@ int main(int argc, char *argv[]) {
         const auto step_stop = std::chrono::high_resolution_clock::now();
         std::cout << "Time taken by one step: "
                   << std::chrono::duration_cast<std::chrono::microseconds>(step_stop - step_start).count() / 1000000.0
-                  << " seconds" << endl;
+                  << " seconds" << std::endl;
     }
     const auto total_stop = std::chrono::high_resolution_clock::now();
     const time_t total_stop_time_t = std::chrono::system_clock::to_time_t(start);
     std::cout << "Stop time: " << std::ctime(&total_stop_time_t);
     std::cout << "Time taken by scheme: "
               << std::chrono::duration_cast<std::chrono::microseconds>(total_stop - total_start).count() / 1000000.0
-              << " seconds" << endl;
+              << " seconds" << std::endl;
 
     return 0;
 }
