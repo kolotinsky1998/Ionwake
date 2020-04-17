@@ -111,25 +111,26 @@ int main(int argc, char *argv[]) {
             .build();
 
     const auto stop = std::chrono::high_resolution_clock::now();
-    cout << "Time taken by inizialisation: "
-         << std::chrono::duration_cast<std::chrono::seconds>(stop - start).count()
-         << " seconds" << endl;
+    std::cout << "Time taken by inizialisation: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() / 1000000.0
+              << " seconds" << endl;
 
     //####################################//
     //##         Computation            ##//
     //####################################//
-    cout << "##############################################\n"
-            "##******* Comutations start ****************##\n"
-            "##############################################\n";
+    std::cout << "##############################################\n"
+                 "##******* Comutations start ****************##\n"
+                 "##############################################\n";
     const auto total_start = std::chrono::high_resolution_clock::now();
     const time_t total_start_time_t = std::chrono::system_clock::to_time_t(start);
     std::cout << "Start time: " << std::ctime(&total_start_time_t);
     for (size_t t = 0; t < ITmax; ++t) {
-        cout << "# Step " << t << endl;
+        std::cout << "# Step " << t << endl;
         const auto step_start = std::chrono::high_resolution_clock::now();
         scheme.next_step();
-//        scheme.printCurrentTime();
-//        scheme.printFullCharge();
+
+        std::cout << "Current dimmensionless time: " << t * scheme.get_dt() << endl;
+        std::cout << "Current full charge in the computational box: " << scheme.get_full_charge() << endl;
         if (t % T_output == 0) {
             ofstream file;
 
@@ -147,16 +148,16 @@ int main(int argc, char *argv[]) {
         }
 
         const auto step_stop = std::chrono::high_resolution_clock::now();
-        cout << "Time taken by one step: "
-             << std::chrono::duration_cast<std::chrono::seconds>(step_stop - step_start).count()
-             << " seconds" << endl;
+        std::cout << "Time taken by one step: "
+                  << std::chrono::duration_cast<std::chrono::microseconds>(step_stop - step_start).count() / 1000000.0
+                  << " seconds" << endl;
     }
     const auto total_stop = std::chrono::high_resolution_clock::now();
     const time_t total_stop_time_t = std::chrono::system_clock::to_time_t(start);
     std::cout << "Stop time: " << std::ctime(&total_stop_time_t);
-    cout << "Time taken by scheme: "
-         << std::chrono::duration_cast<std::chrono::seconds>(total_stop - total_start).count()
-         << " seconds" << endl;
+    std::cout << "Time taken by scheme: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(total_stop - total_start).count() / 1000000.0
+              << " seconds" << endl;
 
     return 0;
 }

@@ -76,7 +76,7 @@ private:
             ax(new double[x * y * z]{0}),
             ay(new double[x * y * z]{0}),
             az(new double[x * y * z]{0}),
-            n(new double[x * y * z]{0}),
+            n(n),
             fi(new double[x * y * z]{0}), hy(hy), hx(hx), hz(hz), x0(x0), y0(y0), z0(z0), rde(rde), q(q), Eext(eext),
             dt(dt), vminx(vminx), vminyz(vminyz), wc(wc) {}
 
@@ -390,6 +390,23 @@ public:
                 }
             }
         }
+    }
+
+    double get_full_charge() const {
+        double full_charge = 0;
+#pragma omp parallel for collapse(3)
+        for (size_t i = 0; i < x; i++) {
+            for (size_t j = 0; j < y; j++) {
+                for (size_t k = 0; k < z; k++) {
+                    full_charge += (n[i * y * z + j * z + k] - 1.0) * hx * hy * hz;
+                }
+            }
+        }
+        return full_charge;
+    }
+
+    double get_dt() const {
+        return dt;
     }
 
     ~TScheme() {
