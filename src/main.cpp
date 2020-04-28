@@ -49,11 +49,11 @@ int main(int argc, char *argv[]) {
 
     ///////////////////////////////////////////
     //number of cells in cordinate space x
-    const size_t nx = 10;
+    const int nx = 100;
     //number of cells in cordinate space y
-    const size_t ny = 10;
+    const int ny = 40;
     //number of ells in cordinate space z
-    const size_t nz = 10;
+    const int nz = 40;
     //integration step in velocity space x
     const double hvx = 0.2;
     //integration step in velocity space y
@@ -61,13 +61,13 @@ int main(int argc, char *argv[]) {
     //integration step in velocity space z
     const double hvz = 0.2;
     //maximum velocity yz
-    const double vmaxyz = 1;
+    const double vmaxyz = 5;
     //minimum velocity yz
-    const double vminyz = -1;
+    const double vminyz = -5;
     //integration step for calculation initial conditions
     const double hxi = 0.002;
     //integration limit for calculation initial conditions
-    const double ximax = 5;
+    const double ximax = 13;
     ///////////////////////////////////////////
 
 
@@ -76,8 +76,8 @@ int main(int argc, char *argv[]) {
     //#######################################//
 
     ///////////////////////////////////////////
-    size_t ITmax = 3;
-    size_t T_output = 20;
+    int ITmax = 2000;
+    int T_output = 20;
     ///////////////////////////////////////////
 
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     //##         Inizialization            ##//
     //#######################################//
 
-//    omp_set_num_threads(44);
+    omp_set_num_threads(44);
 
 
     const auto start = std::chrono::high_resolution_clock::now();
