@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     const time_t start_time_t = std::chrono::system_clock::to_time_t(start);
     std::cout << "Start scheme crating at " << std::ctime(&start_time_t);
 
-    TScheme scheme = TScheme::TBuilder()
+    TScheme<double> scheme = TScheme<double>::TBuilder()
             .set_electron_temperature(Te)
             .set_ion_temperature(Ti)
             .set_ion_concentration(ni)

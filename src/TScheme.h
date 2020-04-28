@@ -9,10 +9,7 @@
 
 #include "omp.h"
 
-///Fundamental constants
-constexpr double E = 4.8032e-10; ///electron charge
-constexpr double K_B = 1.3806e-16; ///Boltzmann constant
-
+template<class T>
 class TScheme {
 
 private:
@@ -25,43 +22,43 @@ private:
     const size_t vy;
     const size_t vz;
 
-    double *const f;
-    double *const f_time;
+    T *const f;
+    T *const f_time;
 
-    const double hx;
-    const double hy;
-    const double hz;
+    const T hx;
+    const T hy;
+    const T hz;
 
-    const double hvx;
-    const double hvy;
-    const double hvz;
+    const T hvx;
+    const T hvy;
+    const T hvz;
 
-    double *const n;
-    double *const fi;
+    T *const n;
+    T *const fi;
 
-    const double x0;
-    const double y0;
-    const double z0;
+    const T x0;
+    const T y0;
+    const T z0;
 
-    double *const ax;
-    double *const ay;
-    double *const az;
+    T *const ax;
+    T *const ay;
+    T *const az;
 
-    const double q;
-    const double rde;
-    const double Eext;
-    const double dt;
-    const double vminx;
-    const double vminyz;
-    const double wc;
+    const T q;
+    const T rde;
+    const T Eext;
+    const T dt;
+    const T vminx;
+    const T vminyz;
+    const T wc;
 
     TScheme(const size_t x, const size_t y, const size_t z,
             const size_t vx, const size_t vy, const size_t vz,
-            const double hx, const double hy, const double hz,
-            const double hvx, const double hvy, const double hvz,
-            const double x0, const double y0, const double z0,
-            const double rde, const double q, const double eext, const double dt, const double vminx,
-            const double vminyz, const double wc, double *const f, double *const f_time, double *const n) :
+            const T hx, const T hy, const T hz,
+            const T hvx, const T hvy, const T hvz,
+            const T x0, const T y0, const T z0,
+            const T rde, const T q, const T eext, const T dt, const T vminx,
+            const T vminyz, const T wc, T *const f, T *const f_time, T *const n) :
             x(x),
             y(y),
             z(z),
@@ -73,24 +70,24 @@ private:
             hvz(hvz),
             f(f),
             f_time(f_time),
-            ax(new double[x * y * z]{0}),
-            ay(new double[x * y * z]{0}),
-            az(new double[x * y * z]{0}),
+            ax(new T[x * y * z]{0}),
+            ay(new T[x * y * z]{0}),
+            az(new T[x * y * z]{0}),
             n(n),
-            fi(new double[x * y * z]{0}), hy(hy), hx(hx), hz(hz), x0(x0), y0(y0), z0(z0), rde(rde), q(q), Eext(eext),
+            fi(new T[x * y * z]{0}), hy(hy), hx(hx), hz(hz), x0(x0), y0(y0), z0(z0), rde(rde), q(q), Eext(eext),
             dt(dt), vminx(vminx), vminyz(vminyz), wc(wc) {}
 
-    inline double potential_debye(double rx, double ry, double rz) const noexcept {
-        const double r = distance(rx, ry, rz, x0, y0, z0);
-        const double t = sqrt(hx * hx + hy * hy + hz * hz);
-        const double distance = r < t ? t : r;
+    inline T potential_debye(T rx, T ry, T rz) const noexcept {
+        const T r = distance(rx, ry, rz, x0, y0, z0);
+        const T t = sqrt(hx * hx + hy * hy + hz * hz);
+        const T distance = r < t ? t : r;
         return -q * exp(-distance / rde) / distance;
     }
 
-    static inline double distance(double x1, double y1, double z1, double x2, double y2, double z2) noexcept {
-        const double x = x1 - x2;
-        const double y = y1 - y2;
-        const double z = z1 - z2;
+    static inline T distance(T x1, T y1, T z1, T x2, T y2, T z2) noexcept {
+        const T x = x1 - x2;
+        const T y = y1 - y2;
+        const T z = z1 - z2;
         return sqrt(x * x + y * y + z * z);
     }
 
@@ -99,16 +96,16 @@ private:
         for (size_t i = 0; i < x; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
-                    const double x1 = i * hx;
-                    const double y1 = j * hy;
-                    const double z1 = k * hz;
-                    double potential = potential_debye(x1, y1, z1);
+                    const T x1 = i * hx;
+                    const T y1 = j * hy;
+                    const T z1 = k * hz;
+                    T potential = potential_debye(x1, y1, z1);
 
                     for (size_t i2 = 0; i2 < x; ++i2) {
                         for (size_t j2 = 0; j2 < y; ++j2) {
                             for (size_t k2 = 0; k2 < z; ++k2) {
                                 if (i != i2 || j != j2 || k != k2) {
-                                    const double r = distance(x1, y1, z1, i2 * hx, j2 * hy, k2 * hz);
+                                    const T r = distance(x1, y1, z1, i2 * hx, j2 * hy, k2 * hz);
                                     potential += exp(-r / rde) * (n[i2 * y * z + j2 * z + k2] - 1.) * hx * hy * hz /
                                                  (r * 4 * M_PI);
                                 }
@@ -138,7 +135,7 @@ private:
         }
     }
 
-    static inline double maxwellianDistribution(double vx, double vy, double vz) {
+    static inline T maxwellianDistribution(T vx, T vy, T vz) {
         return exp(-0.5 * vx * vx) * exp(-0.5 * vy * vy) * exp(-0.5 * vz * vz) / pow(2 * M_PI, 1.5);
     }
 
@@ -157,13 +154,13 @@ private:
                     const size_t i_next = i == x - 1 ? 0 : i + 1;
 
                     for (size_t a = 1; a < vx - 1; ++a) {
-                        const double vx_a = vminx + a * hvx;
+                        const T vx_a = vminx + a * hvx;
                         if (vx_a > 0) {
                             for (size_t b = 1; b < vy - 1; ++b) {
                                 for (size_t c = 1; c < vz - 1; ++c) {
                                     const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                     const size_t index_prev = i_prev * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
-                                    const double diff = f_time[index] - f_time[index_prev];
+                                    const T diff = f_time[index] - f_time[index_prev];
                                     f[index] = f_time[index] - vx_a * diff * dt / hx;
                                 }
                             }
@@ -172,7 +169,7 @@ private:
                                 for (size_t c = 1; c < vz - 1; ++c) {
                                     const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                     const size_t index_next = i_next * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
-                                    const double diff = f_time[index_next] - f_time[index];
+                                    const T diff = f_time[index_next] - f_time[index];
                                     f[index] = f_time[index] - vx_a * diff * dt / hx;
                                 }
                             }
@@ -191,19 +188,19 @@ private:
 
                     for (size_t a = 1; a < vx - 1; ++a) {
                         for (size_t b = 1; b < vy - 1; ++b) {
-                            const double vy_b = vminyz + b * hvy;
+                            const T vy_b = vminyz + b * hvy;
                             if (vy_b > 0) {
                                 for (size_t c = 1; c < vz - 1; ++c) {
                                     const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                     const size_t index_prev = i * d1 + j_prev * d2 + k * d3 + a * d4 + b * d5 + c;
-                                    const double diff = f[index] - f[index_prev];
+                                    const T diff = f[index] - f[index_prev];
                                     f_time[index] = f[index] - vy_b * diff * dt / hy;
                                 }
                             } else {
                                 for (size_t c = 1; c < vz - 1; ++c) {
                                     const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                     const size_t index_next = i * d1 + j_next * d2 + k * d3 + a * d4 + b * d5 + c;
-                                    const double diff = f[index_next] - f[index];
+                                    const T diff = f[index_next] - f[index];
                                     f_time[index] = f[index] - vy_b * diff * dt / hy;
                                 }
                             }
@@ -223,16 +220,16 @@ private:
                     for (size_t a = 1; a < vx - 1; ++a) {
                         for (size_t b = 1; b < vy - 1; ++b) {
                             for (size_t c = 1; c < vz - 1; ++c) {
-                                const double vz_c = vminyz + c * hvz;
+                                const T vz_c = vminyz + c * hvz;
                                 if (vz_c > 0) {
                                     const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                     const size_t index_prev = i * d1 + j * d2 + k_prev * d3 + a * d4 + b * d5 + c;
-                                    const double diff = f_time[index] - f_time[index_prev];
+                                    const T diff = f_time[index] - f_time[index_prev];
                                     f[index] = f_time[index] - vz_c * diff * dt / hz;
                                 } else {
                                     const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                     const size_t index_next = i * d1 + j * d2 + k_next * d3 + a * d4 + b * d5 + c;
-                                    const double diff = f_time[index_next] - f_time[index];
+                                    const T diff = f_time[index_next] - f_time[index];
                                     f[index] = f_time[index] - vz_c * diff * dt / hz;
                                 }
                             }
@@ -247,7 +244,7 @@ private:
         for (size_t i = 0; i < x; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
-                    const double ax_ijk = ax[i * y * z + j * z + k];
+                    const T ax_ijk = ax[i * y * z + j * z + k];
                     const size_t a_shift_1 = ax_ijk > 0 ? 0 : 1;
                     const size_t a_shift_2 = ax_ijk > 0 ? 1 : 0;
 
@@ -257,7 +254,7 @@ private:
                                 const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                 const size_t index1 = index + a_shift_1 * d4;
                                 const size_t index2 = index - a_shift_2 * d4;
-                                const double diff = f[index1] - f[index2];
+                                const T diff = f[index1] - f[index2];
                                 f_time[index] = f[index] - ax_ijk * diff * (dt / hvx);
                             }
                         }
@@ -269,7 +266,7 @@ private:
         for (size_t i = 0; i < x; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
-                    const double ay_ijk = ay[i * y * z + j * z + k];
+                    const T ay_ijk = ay[i * y * z + j * z + k];
                     const size_t b_shift_1 = ay_ijk > 0 ? 0 : 1;
                     const size_t b_shift_2 = ay_ijk > 0 ? 1 : 0;
 
@@ -279,7 +276,7 @@ private:
                                 const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                 const size_t index1 = index + b_shift_1 * d5;
                                 const size_t index2 = index - b_shift_2 * d5;
-                                const double diff = f_time[index1] - f_time[index2];
+                                const T diff = f_time[index1] - f_time[index2];
                                 f[index] = f_time[index] - ay_ijk * diff * (dt / hvy);
                             }
                         }
@@ -291,7 +288,7 @@ private:
         for (size_t i = 0; i < x; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
-                    double az_ijk = az[i * y * z + j * z + k];
+                    T az_ijk = az[i * y * z + j * z + k];
                     const size_t c_shift_1 = az_ijk > 0 ? 0 : 1;
                     const size_t c_shift_2 = az_ijk > 0 ? 1 : 0;
 
@@ -301,7 +298,7 @@ private:
                                 const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
                                 const size_t index1 = index + c_shift_1;
                                 const size_t index2 = index - c_shift_2;
-                                const double diff = f[index1] - f[index2];
+                                const T diff = f[index1] - f[index2];
                                 f_time[index] = f[index] - az_ijk * diff * (dt / hvz);
                             }
                         }
@@ -314,17 +311,17 @@ private:
         for (size_t i = 0; i < x; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
-                    double n_ijk = n[i * y * z + j * z + k];
+                    T n_ijk = n[i * y * z + j * z + k];
 
                     for (size_t a = 1; a < vx - 1; ++a) {
                         for (size_t b = 1; b < vy - 1; ++b) {
                             for (size_t c = 1; c < vz - 1; ++c) {
-                                const double vx_a = vminx + a * hvx;
-                                const double vy_b = vminyz + b * hvy;
-                                const double vz_c = vminyz + c * hvz;
+                                const T vx_a = vminx + a * hvx;
+                                const T vy_b = vminyz + b * hvy;
+                                const T vz_c = vminyz + c * hvz;
                                 const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
-                                const double distribution = maxwellianDistribution(vx_a, vy_b, vz_c);
-                                const double value = f_time[index];
+                                const T distribution = maxwellianDistribution(vx_a, vy_b, vz_c);
+                                const T value = f_time[index];
                                 f[index] = value + wc * dt * (distribution * n_ijk - value);
                             }
                         }
@@ -345,7 +342,7 @@ private:
         for (size_t i = 0; i < x; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
-                    double density = 0.0;
+                    T density = 0.0;
                     for (size_t a = 0; a < vx; ++a) {
                         for (size_t b = 0; b < vy; ++b) {
                             for (size_t c = 0; c < vz; ++c) {
@@ -392,8 +389,8 @@ public:
         }
     }
 
-    double get_full_charge() const {
-        double full_charge = 0;
+    T get_full_charge() const {
+        T full_charge = 0;
 #pragma omp parallel for collapse(3)
         for (size_t i = 0; i < x; i++) {
             for (size_t j = 0; j < y; j++) {
@@ -405,7 +402,7 @@ public:
         return full_charge;
     }
 
-    double get_dt() const {
+    T get_dt() const {
         return dt;
     }
 
@@ -421,37 +418,39 @@ public:
 
 };
 
-class TScheme::TBuilder {
+
+template<class T>
+class TScheme<T>::TBuilder {
 
     ///Physical parameters of the system in physical units
-    double Te; ///electron temperature
-    double Ti; ///ion temperature
-    double ni; ///ion concentration
-    double q; ///charge of the dust particle
-    double Eext; ///external electricity field
-    double wc; ///ion-neutral collisions frequency
-    double mi; ///ion mass
+    T Te; ///electron temperature
+    T Ti; ///ion temperature
+    T ni; ///ion concentration
+    T q; ///charge of the dust particle
+    T Eext; ///external electricity field
+    T wc; ///ion-neutral collisions frequency
+    T mi; ///ion mass
 
     /// Calculation of initial distribution function
-    double hxi; ///integration parameter
-    double ximax; ///high limit of integration
+    T hxi; ///integration parameter
+    T ximax; ///high limit of integration
 
-    double vminyz, vmaxyz;
-    double x0, y0, z0;
-    double hvx, hvy, hvz;
-    double lx, ly, lz;
+    T vminyz, vmaxyz;
+    T x0, y0, z0;
+    T hvx, hvy, hvz;
+    T lx, ly, lz;
     size_t nx, ny, nz;
 
-    inline static double initialDisrtibutionFunction(
-            double vx,
-            double vy,
-            double vz,
-            double hxi,
-            double ximax,
-            double vfl
+    inline static T initialDisrtibutionFunction(
+            T vx,
+            T vy,
+            T vz,
+            T hxi,
+            T ximax,
+            T vfl
     ) {
-        double distribution = 0;
-        double xi = 0;
+        T distribution = 0;
+        T xi = 0;
         while (xi < ximax) {
             distribution += exp(-xi) * exp(-0.5 * (vx - xi * vfl) * (vx - xi * vfl)) * exp(-0.5 * vy * vy) *
                             exp(-0.5 * vz * vz) * hxi;
@@ -461,14 +460,14 @@ class TScheme::TBuilder {
         return distribution;
     }
 
-    inline static double vmaxxCompute(double vmaxyz, double hvx, double hxi, double ximax, double vfl) {
-        double distribution;
-        const double maxvell = exp(-vmaxyz * vmaxyz * 0.5);
-        double vmax = 0;
+    inline static T vmaxxCompute(T vmaxyz, T hvx, T hxi, T ximax, T vfl) {
+        T distribution;
+        const T maxvell = exp(-vmaxyz * vmaxyz * 0.5);
+        T vmax = 0;
         do {
             vmax = vmax + hvx;
             distribution = 0;
-            double xi = 0;
+            T xi = 0;
             while (xi < ximax) {
                 distribution += exp(-xi) * exp(-0.5 * (vmax - xi * vfl) * (vmax - xi * vfl)) * hxi;
                 xi = xi + hxi;
@@ -479,62 +478,62 @@ class TScheme::TBuilder {
 
 public:
 
-    TBuilder &set_integration_parameters(double ximax, double step) {
+    TBuilder &set_integration_parameters(T ximax, T step) {
         this->ximax = ximax;
         this->hxi = step;
         return *this;
     }
 
-    TBuilder &set_electron_temperature(double te) {
+    TBuilder &set_electron_temperature(T te) {
         this->Te = te;
         return *this;
     }
 
-    TBuilder &set_ion_temperature(double ti) {
+    TBuilder &set_ion_temperature(T ti) {
         this->Ti = ti;
         return *this;
     }
 
-    TBuilder &set_ion_concentration(double ni) {
+    TBuilder &set_ion_concentration(T ni) {
         this->ni = ni;
         return *this;
     }
 
-    TBuilder &set_dust_particle_charge(double q) {
+    TBuilder &set_dust_particle_charge(T q) {
         this->q = q;
         return *this;
     }
 
-    TBuilder &set_external_electricity_field(double Eext) {
+    TBuilder &set_external_electricity_field(T Eext) {
         this->Eext = Eext;
         return *this;
     }
 
-    TBuilder &set_ion_neutral_collisions_frequency(double wc) {
+    TBuilder &set_ion_neutral_collisions_frequency(T wc) {
         this->wc = wc;
         return *this;
     }
 
-    TBuilder &set_ion_mass(double mi) {
+    TBuilder &set_ion_mass(T mi) {
         this->mi = mi;
         return *this;
     }
 
-    TBuilder &set_particle_position(double x0, double y0, double z0) noexcept {
+    TBuilder &set_particle_position(T x0, T y0, T z0) noexcept {
         this->x0 = x0;
         this->y0 = y0;
         this->z0 = z0;
         return *this;
     }
 
-    TBuilder &set_velocity_step(double hvx, double hvy, double hvz) noexcept {
+    TBuilder &set_velocity_step(T hvx, T hvy, T hvz) noexcept {
         this->hvx = hvx;
         this->hvy = hvy;
         this->hvz = hvz;
         return *this;
     }
 
-    TBuilder &set_box_size(double lx, double ly, double lz) noexcept {
+    TBuilder &set_box_size(T lx, T ly, T lz) noexcept {
         this->lx = lx;
         this->ly = ly;
         this->lz = lz;
@@ -548,40 +547,44 @@ public:
         return *this;
     }
 
-    TBuilder &set_velocity_bound_for_yz(double min_yz, double max_yz) noexcept {
+    TBuilder &set_velocity_bound_for_yz(T min_yz, T max_yz) noexcept {
         this->vminyz = min_yz;
         this->vmaxyz = max_yz;
         return *this;
     }
 
     TScheme build() const {
-        const double rdi = sqrt(K_B * Ti / (4.0 * M_PI * E * E * ni));
-        const double rde = sqrt(K_B * Te / (4.0 * M_PI * E * E * ni));
-        const double wpi = sqrt(4.0 * M_PI * E * E * ni / mi);
-        const double vT = sqrt(K_B * Ti / mi);
-        const double vfl = E * Eext / (mi * wc);
+        ///Fundamental constants
+        constexpr T E = 4.8032e-10; ///electron charge
+        constexpr T K_B = 1.3806e-16; ///Boltzmann constant
 
-        const double Eext_d = Eext * E * rdi / (K_B * Ti);
-        const double wc_d = wc / wpi;
-        const double vfl_d = vfl / vT;
-        const double rde_d = rde / rdi;
-        const double q_d = q / (4.0 * M_PI * ni * rdi * rdi * rdi);
+        const T rdi = sqrt(K_B * Ti / (4.0 * M_PI * E * E * ni));
+        const T rde = sqrt(K_B * Te / (4.0 * M_PI * E * E * ni));
+        const T wpi = sqrt(4.0 * M_PI * E * E * ni / mi);
+        const T vT = sqrt(K_B * Ti / mi);
+        const T vfl = E * Eext / (mi * wc);
 
-        const double vminx = vminyz;
-        const double vmaxx = vmaxxCompute(vmaxyz, hvx, hxi, ximax, vfl_d);
+        const T Eext_d = Eext * E * rdi / (K_B * Ti);
+        const T wc_d = wc / wpi;
+        const T vfl_d = vfl / vT;
+        const T rde_d = rde / rdi;
+        const T q_d = q / (4.0 * M_PI * ni * rdi * rdi * rdi);
+
+        const T vminx = vminyz;
+        const T vmaxx = vmaxxCompute(vmaxyz, hvx, hxi, ximax, vfl_d);
         const auto nvx = size_t(std::round((vmaxx - vminx) / hvx));
         const auto nvy = size_t(std::round((vmaxyz - vminyz) / hvy));
         const auto nvz = size_t(std::round((vmaxyz - vminyz) / hvz));
 
-        const double hx = lx / nx;
-        const double hy = ly / ny;
-        const double hz = lz / nz;
+        const T hx = lx / nx;
+        const T hy = ly / ny;
+        const T hz = lz / nz;
 
-        const double dt = 0.5 * std::fmin(hvx / (Eext_d + (q_d / (hx * hx))), hx / vmaxx);
+        const T dt = 0.5 * std::fmin(hvx / (Eext_d + (q_d / (hx * hx))), hx / vmaxx);
 
-        auto *const f = new double[nx * ny * nz * nvx * nvy * nvz]{0};
-        auto *const f_time = new double[nx * ny * nz * nvx * nvy * nvz]{0};
-        auto *const n = new double[nx * ny * nz];
+        auto *const f = new T[nx * ny * nz * nvx * nvy * nvz]{0};
+        auto *const f_time = new T[nx * ny * nz * nvx * nvy * nvz]{0};
+        auto *const n = new T[nx * ny * nz];
         std::fill_n(n, nx * ny * nz, 1.0);
 
         const size_t d5 = nvz;
@@ -594,9 +597,9 @@ public:
         for (size_t a = 0; a < nvx; a++) {
             for (size_t b = 0; b < nvy; b++) {
                 for (size_t c = 0; c < nvz; c++) {
-                    const double vx_a = vminx + a * hvx;
-                    const double vy_b = vminyz + b * hvy;
-                    const double vz_c = vminyz + c * hvz;
+                    const T vx_a = vminx + a * hvx;
+                    const T vy_b = vminyz + b * hvy;
+                    const T vz_c = vminyz + c * hvz;
                     f[a * d4 + b * d5 + c] = initialDisrtibutionFunction(vx_a, vy_b, vz_c, hxi, ximax, vfl_d);
                 }
             }
