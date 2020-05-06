@@ -87,7 +87,14 @@ private:
         return sqrt(x * x + y * y + z * z);
     }
 
-    void compute_poisson() noexcept {
+    static inline void compute_poisson(
+            const size_t x, const size_t y, const size_t z,
+            const double hx, const double hy, const double hz,
+            const double rde,
+            const double *const precomputed_potential_debye,
+            const double *const n,
+            double *const fi
+    ) noexcept {
         std::copy_n(precomputed_potential_debye, x * y * z, fi);
 #pragma omp parallel for collapse(3)
         for (size_t i = 0; i < x; ++i) {
@@ -116,17 +123,23 @@ private:
         }
     }
 
-    void compute_force() noexcept {
+    static inline void compute_force(
+            const size_t x, const size_t y, const size_t z,
+            const double hx, const double hy, const double hz,
+            const double Eext,
+            const double *const fi,
+            double *const ax,
+            double *const ay,
+            double *const az
+    ) noexcept {
 #pragma omp parallel for collapse(3)
         for (size_t i = 1; i < x - 1; ++i) {
             for (size_t j = 1; j < y - 1; ++j) {
                 for (size_t k = 1; k < z - 1; ++k) {
-                    ax[i * y * z + j * z + k] =
-                            -(fi[(i + 1) * y * z + j * z + k] - fi[(i - 1) * y * z + j * z + k]) / (2.0 * hx) + Eext;
-                    ay[i * y * z + j * z + k] =
-                            -(fi[i * y * z + (j + 1) * z + k] - fi[i * y * z + (j - 1) * z + k]) / (2.0 * hy);
-                    az[i * y * z + j * z + k] =
-                            -(fi[i * y * z + j * z + (k + 1)] - fi[i * y * z + j * z + (k - 1)]) / (2.0 * hz);
+                    const size_t ind = i * y * z + j * z + k;
+                    ax[ind] = -(fi[(i + 1) * y * z + j * z + k] - fi[(i - 1) * y * z + j * z + k]) / (2.0 * hx) + Eext;
+                    ay[ind] = -(fi[i * y * z + (j + 1) * z + k] - fi[i * y * z + (j - 1) * z + k]) / (2.0 * hy);
+                    az[ind] = -(fi[i * y * z + j * z + (k + 1)] - fi[i * y * z + j * z + (k - 1)]) / (2.0 * hz);
                 }
             }
         }
@@ -358,8 +371,8 @@ public:
     class TBuilder;
 
     void next_step() noexcept {
-        compute_poisson();
-        compute_force();
+        compute_poisson(x, y, z, hx, hy, hz, rde, precomputed_potential_debye, n, fi);
+        compute_force(x, y, z, hx, hy, hz, Eext, fi, ax, ay, az);
         compute_kinetic();
         compute_density();
     }
@@ -411,11 +424,12 @@ public:
         delete[] az;
         delete[] n;
         delete[] fi;
+        delete[] precomputed_potential_debye;
     }
 
 };
 
-class TScheme::TBuilder {
+class TScheme::TBuilder final {
 
     ///Physical parameters of the system in physical units
     double Te; ///electron temperature
