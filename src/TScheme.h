@@ -99,11 +99,9 @@ private:
                     double potential = 0;
 
                     for (size_t i2 = 0; i2 < x; ++i2) {
-                        if (i == i2) continue;
                         for (size_t j2 = 0; j2 < y; ++j2) {
-                            if (j == j2) continue;
                             for (size_t k2 = 0; k2 < z; ++k2) {
-                                if (k == k2) continue;
+                                if (i == i2 && j == j2 && k == k2) continue;
 
                                 const double r = distance(x1, y1, z1, i2 * hx, j2 * hy, k2 * hz);
                                 potential += exp(-r / rde) * (n[i2 * y * z + j2 * z + k2] - 1.) * hx * hy * hz /
@@ -474,7 +472,9 @@ class TScheme::TBuilder {
     }
 
     inline double
-    potential_debye(double hx, double hy, double hz, double rx, double ry, double rz, double rde) const noexcept {
+    potential_debye(
+            double hx, double hy, double hz, double rx, double ry, double rz, double q, double rde
+    ) const noexcept {
         const double r = distance(rx, ry, rz, x0, y0, z0);
         const double t = sqrt(hx * hx + hy * hy + hz * hz);
         const double distance = r < t ? t : r;
@@ -631,7 +631,7 @@ public:
                     const double y1 = j * hy;
                     const double z1 = k * hz;
                     const size_t index = i * ny * nz + j * nz + k;
-                    precomputed_potential_debye[index] = potential_debye(hx, hy, hz, x1, y1, z1, rde_d);
+                    precomputed_potential_debye[index] = potential_debye(hx, hy, hz, x1, y1, z1, q_d, rde_d);
                 }
             }
         }
