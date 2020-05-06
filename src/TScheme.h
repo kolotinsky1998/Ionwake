@@ -13,7 +13,7 @@
 constexpr double E = 4.8032e-10; ///electron charge
 constexpr double K_B = 1.3806e-16; ///Boltzmann constant
 
-class TScheme {
+class TScheme final {
 
 private:
 
@@ -38,10 +38,7 @@ private:
 
     double *const n;
     double *const fi;
-
-    const double x0;
-    const double y0;
-    const double z0;
+    double *const precomputed_potential_debye;
 
     double *const ax;
     double *const ay;
@@ -55,13 +52,15 @@ private:
     const double vminyz;
     const double wc;
 
-    TScheme(const size_t x, const size_t y, const size_t z,
+    TScheme(
+            const size_t x, const size_t y, const size_t z,
             const size_t vx, const size_t vy, const size_t vz,
             const double hx, const double hy, const double hz,
             const double hvx, const double hvy, const double hvz,
-            const double x0, const double y0, const double z0,
             const double rde, const double q, const double eext, const double dt, const double vminx,
-            const double vminyz, const double wc, double *const f, double *const f_time, double *const n) :
+            const double vminyz, const double wc, double *const f, double *const f_time, double *const n,
+            double *const precomputed_potential_debye
+    ) :
             x(x),
             y(y),
             z(z),
@@ -73,19 +72,13 @@ private:
             hvz(hvz),
             f(f),
             f_time(f_time),
+            precomputed_potential_debye(precomputed_potential_debye),
             ax(new double[x * y * z]{0}),
             ay(new double[x * y * z]{0}),
             az(new double[x * y * z]{0}),
             n(n),
-            fi(new double[x * y * z]{0}), hy(hy), hx(hx), hz(hz), x0(x0), y0(y0), z0(z0), rde(rde), q(q), Eext(eext),
+            fi(new double[x * y * z]{0}), hy(hy), hx(hx), hz(hz), rde(rde), q(q), Eext(eext),
             dt(dt), vminx(vminx), vminyz(vminyz), wc(wc) {}
-
-    inline double potential_debye(double rx, double ry, double rz) const noexcept {
-        const double r = distance(rx, ry, rz, x0, y0, z0);
-        const double t = sqrt(hx * hx + hy * hy + hz * hz);
-        const double distance = r < t ? t : r;
-        return -q * exp(-distance / rde) / distance;
-    }
 
     static inline double distance(double x1, double y1, double z1, double x2, double y2, double z2) noexcept {
         const double x = x1 - x2;
@@ -95,6 +88,7 @@ private:
     }
 
     void compute_poisson() noexcept {
+        std::copy_n(precomputed_potential_debye, x * y * z, fi);
 #pragma omp parallel for collapse(3)
         for (size_t i = 0; i < x; ++i) {
             for (size_t j = 0; j < y; ++j) {
@@ -102,21 +96,23 @@ private:
                     const double x1 = i * hx;
                     const double y1 = j * hy;
                     const double z1 = k * hz;
-                    double potential = potential_debye(x1, y1, z1);
+                    double potential = 0;
 
                     for (size_t i2 = 0; i2 < x; ++i2) {
+                        if (i == i2) continue;
                         for (size_t j2 = 0; j2 < y; ++j2) {
+                            if (j == j2) continue;
                             for (size_t k2 = 0; k2 < z; ++k2) {
-                                if (i != i2 || j != j2 || k != k2) {
-                                    const double r = distance(x1, y1, z1, i2 * hx, j2 * hy, k2 * hz);
-                                    potential += exp(-r / rde) * (n[i2 * y * z + j2 * z + k2] - 1.) * hx * hy * hz /
-                                                 (r * 4 * M_PI);
-                                }
+                                if (k == k2) continue;
+
+                                const double r = distance(x1, y1, z1, i2 * hx, j2 * hy, k2 * hz);
+                                potential += exp(-r / rde) * (n[i2 * y * z + j2 * z + k2] - 1.) * hx * hy * hz /
+                                             (r * 4 * M_PI);
                             }
                         }
                     }
 
-                    fi[i * y * z + j * z + k] = potential;
+                    fi[i * y * z + j * z + k] += potential;
                 }
             }
         }
@@ -138,7 +134,7 @@ private:
         }
     }
 
-    static inline double maxwellianDistribution(double vx, double vy, double vz) {
+    static inline double maxwellianDistribution(double vx, double vy, double vz) noexcept {
         return exp(-0.5 * vx * vx) * exp(-0.5 * vy * vy) * exp(-0.5 * vz * vz) / pow(2 * M_PI, 1.5);
     }
 
@@ -370,7 +366,7 @@ public:
         compute_density();
     }
 
-    void write_density(std::ostream &of) const {
+    void write_density(std::ostream &of) const noexcept {
         of << x << "\t" << y << "\t" << z << "\n";
         for (size_t k = 0; k < z; ++k) {
             for (size_t j = 0; j < y; ++j) {
@@ -381,7 +377,7 @@ public:
         }
     }
 
-    void write_potential(std::ostream &of) const {
+    void write_potential(std::ostream &of) const noexcept {
         of << x << "\t" << y << "\t" << z << "\n";
         for (size_t k = 0; k < z; ++k) {
             for (size_t j = 0; j < y; ++j) {
@@ -392,7 +388,7 @@ public:
         }
     }
 
-    double get_full_charge() const {
+    double get_full_charge() const noexcept {
         double full_charge = 0;
 #pragma omp parallel for collapse(3)
         for (size_t i = 0; i < x; i++) {
@@ -405,7 +401,7 @@ public:
         return full_charge;
     }
 
-    double get_dt() const {
+    double get_dt() const noexcept {
         return dt;
     }
 
@@ -461,7 +457,7 @@ class TScheme::TBuilder {
         return distribution;
     }
 
-    inline static double vmaxxCompute(double vmaxyz, double hvx, double hxi, double ximax, double vfl) {
+    inline static double vmaxxCompute(double vmaxyz, double hvx, double hxi, double ximax, double vfl) noexcept {
         double distribution;
         const double maxvell = exp(-vmaxyz * vmaxyz * 0.5);
         double vmax = 0;
@@ -477,45 +473,53 @@ class TScheme::TBuilder {
         return vmax;
     }
 
+    inline double
+    potential_debye(double hx, double hy, double hz, double rx, double ry, double rz, double rde) const noexcept {
+        const double r = distance(rx, ry, rz, x0, y0, z0);
+        const double t = sqrt(hx * hx + hy * hy + hz * hz);
+        const double distance = r < t ? t : r;
+        return -q * exp(-distance / rde) / distance;
+    }
+
 public:
 
-    TBuilder &set_integration_parameters(double ximax, double step) {
+    TBuilder &set_integration_parameters(double ximax, double step) noexcept {
         this->ximax = ximax;
         this->hxi = step;
         return *this;
     }
 
-    TBuilder &set_electron_temperature(double te) {
+    TBuilder &set_electron_temperature(double te) noexcept {
         this->Te = te;
         return *this;
     }
 
-    TBuilder &set_ion_temperature(double ti) {
+    TBuilder &set_ion_temperature(double ti) noexcept {
         this->Ti = ti;
         return *this;
     }
 
-    TBuilder &set_ion_concentration(double ni) {
+    TBuilder &set_ion_concentration(double ni) noexcept {
         this->ni = ni;
         return *this;
     }
 
-    TBuilder &set_dust_particle_charge(double q) {
+    TBuilder &set_dust_particle_charge(double q) noexcept {
         this->q = q;
         return *this;
     }
 
-    TBuilder &set_external_electricity_field(double Eext) {
+    TBuilder &set_external_electricity_field(double Eext) noexcept {
         this->Eext = Eext;
         return *this;
     }
 
-    TBuilder &set_ion_neutral_collisions_frequency(double wc) {
+    TBuilder &set_ion_neutral_collisions_frequency(double wc) noexcept {
         this->wc = wc;
         return *this;
     }
 
-    TBuilder &set_ion_mass(double mi) {
+    TBuilder &set_ion_mass(double mi) noexcept {
         this->mi = mi;
         return *this;
     }
@@ -619,12 +623,26 @@ public:
             }
         }
 
-        return TScheme(nx, ny, nz,
-                       nvx, nvy, nvz,
-                       hx, hy, hz,
-                       hvx, hvy, hvz,
-                       x0, y0, z0,
-                       rde_d, q_d, Eext_d, dt, vminx, vminyz, wc_d, f, f_time, n);
+        auto *const precomputed_potential_debye = new double[nx * ny * nz];
+        for (size_t i = 0; i < nx; ++i) {
+            for (size_t j = 0; j < ny; ++j) {
+                for (size_t k = 0; k < nz; ++k) {
+                    const double x1 = i * hx;
+                    const double y1 = j * hy;
+                    const double z1 = k * hz;
+                    const size_t index = i * ny * nz + j * nz + k;
+                    precomputed_potential_debye[index] = potential_debye(hx, hy, hz, x1, y1, z1, rde_d);
+                }
+            }
+        }
+
+        return TScheme(
+                nx, ny, nz,
+                nvx, nvy, nvz,
+                hx, hy, hz,
+                hvx, hvy, hvz,
+                rde_d, q_d, Eext_d, dt, vminx, vminyz, wc_d, f, f_time, n, precomputed_potential_debye
+        );
     }
 };
 
