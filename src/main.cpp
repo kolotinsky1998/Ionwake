@@ -6,9 +6,116 @@
 
 #include "TScheme.h"
 #include "omp.h"
+#include <mpi.h>
+
+class MPIController : public TScheme::TSender {
+
+    void send_and_receive_density(
+            double *const global_density, const double *const density, const size_t local_size, const size_t frame_size,
+            const size_t total_computer_count, size_t *const sizes
+    ) const override {
+        if (global_density != nullptr) {
+            std::copy_n(density, local_size, global_density);
+            size_t shift = local_size;
+            for (size_t i = 1; i < total_computer_count; i++) {
+                MPI_Recv(
+                        global_density + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD,
+                        MPI_STATUS_IGNORE
+                );
+                shift += sizes[i] * frame_size;
+            }
+        } else {
+            MPI_Send(density, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+        }
+    }
+
+    void send_and_receive_forces(
+            const double *const global_ax, const double *const global_ay, const double *const global_az,
+            const double *const ax, const double *const ay, const double *const az,
+            const double *const next_ax, const double *const next_ay, const double *const next_az,
+            const double *const prev_ax, const double *const prev_ay, const double *const prev_az,
+            size_t local_size, size_t frame_size,
+            size_t total_computer_count, size_t *const sizes
+    ) const override {
+        if (global_ax != nullptr) {
+            std::copy_n(global_ax, local_size, ax);
+            std::copy_n(global_ay, local_size, ay);
+            std::copy_n(global_az, local_size, az);
+
+            std::copy_n(global_ax + local_size, frame_size, next_ax);
+            std::copy_n(global_ay + local_size, frame_size, next_ay);
+            std::copy_n(global_az + local_size, frame_size, next_az);
+
+            size_t shift = local_size;
+            for (size_t i = 1; i < total_computer_count; i++) {
+                MPI_Send(global_ax + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                MPI_Send(global_ay + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                MPI_Send(global_az + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+
+                MPI_Send(global_ax + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                MPI_Send(global_ay + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                MPI_Send(global_az + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+
+                if (i + 1 == total_computer_count) {
+                    MPI_Send(global_ax, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                    MPI_Send(global_ay, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                    MPI_Send(global_az, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                } else {
+                    MPI_Send(global_ax + shift + sizes[i] * frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                    MPI_Send(global_ay + shift + sizes[i] * frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                    MPI_Send(global_az + shift + sizes[i] * frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                }
+
+                shift += sizes[i] * frame_size;
+
+            }
+            std::copy_n(global_ax + shift - frame_size, frame_size, prev_ax);
+            std::copy_n(global_ay + shift - frame_size, frame_size, prev_ay);
+            std::copy_n(global_az + shift - frame_size, frame_size, prev_az);
+        } else {
+            MPI_Recv(ax, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(ay, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(az, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            MPI_Recv(next_ax, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(next_ay, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(next_az, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            MPI_Recv(prev_ax, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(prev_ay, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(prev_az, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    }
+
+    void send_previous_x(double *const f, size_t size, size_t computer_index) const override {
+        MPI_Send(f, size, MPI_DOUBLE, computer_index, 0, MPI_COMM_WORLD);
+    }
+
+    void send_next_x(double *const f, size_t size, size_t computer_index) const override {
+        MPI_Send(f, size, MPI_DOUBLE, computer_index, 0, MPI_COMM_WORLD);
+    }
+
+    void receive_next_x(double *const f, size_t size, size_t computer_index) const override {
+        MPI_Recv(f, size, MPI_DOUBLE, computer_index, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+
+    void receive_previous_x(double *const f, size_t size, size_t computer_index) const override {
+        MPI_Recv(f, size, MPI_DOUBLE, computer_index, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+
+    ~MPIController() override {
+
+    }
+};
+//
 
 int main(int argc, char *argv[]) {
 
+    MPI_Init(&argc, &argv);
+
+    int myRank, numprocs;
+    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
     //#######################################//
     //## Physical parameters of the system ##//
     //#######################################//
@@ -92,7 +199,7 @@ int main(int argc, char *argv[]) {
     const time_t start_time_t = std::chrono::system_clock::to_time_t(start);
     std::cout << "Start scheme crating at " << std::ctime(&start_time_t) << std::endl;
 
-    TScheme scheme = TScheme::TBuilder()
+    TScheme::TWorkController scheme = TScheme::TBuilder()
             .set_electron_temperature(Te)
             .set_ion_temperature(Ti)
             .set_ion_concentration(ni)
@@ -106,7 +213,10 @@ int main(int argc, char *argv[]) {
             .set_velocity_step(hvx, hvy, hvz)
             .set_velocity_bound_for_yz(vminyz, vmaxyz)
             .set_integration_parameters(ximax, hxi)
-            .build();
+            .set_computer_index(myRank)
+            .set_max_computer_index(numprocs)
+            .set_sender(new MPIController())
+            .build_work_controller();
 
     const auto stop = std::chrono::high_resolution_clock::now();
     std::cout << "Time taken by inizialisation: "
@@ -127,22 +237,24 @@ int main(int argc, char *argv[]) {
         const auto step_start = std::chrono::high_resolution_clock::now();
         scheme.next_step();
 
-        std::cout << "Current dimmensionless time: " << t * scheme.get_dt() << std::endl;
-        std::cout << "Current full charge in the computational box: " << scheme.get_full_charge() << std::endl;
-        if (t % T_output == 0) {
-            std::ofstream file;
+        if (myRank == 0) {
+            std::cout << "Current dimmensionless time: " << t * scheme.get_dt() << std::endl;
+            std::cout << "Current full charge in the computational box: " << scheme.get_full_charge() << std::endl;
+            if (t % T_output == 0) {
+                std::ofstream file;
 
-            std::stringstream filename;
-            filename << "./density_t" << t << ".dat";
-            file.open(filename.str().c_str());
-            scheme.write_density(file);
-            file.close();
+                std::stringstream filename;
+                filename << "./density_t" << t << ".dat";
+                file.open(filename.str().c_str());
+                scheme.write_density(file);
+                file.close();
 
-            std::stringstream filename2;
-            filename2 << "./potential_t" << t << ".dat";
-            file.open(filename2.str().c_str());
-            scheme.write_potential(file);
-            file.close();
+                std::stringstream filename2;
+                filename2 << "./potential_t" << t << ".dat";
+                file.open(filename2.str().c_str());
+                scheme.write_potential(file);
+                file.close();
+            }
         }
 
         const auto step_stop = std::chrono::high_resolution_clock::now();
@@ -157,5 +269,6 @@ int main(int argc, char *argv[]) {
               << std::chrono::duration_cast<std::chrono::microseconds>(total_stop - total_start).count() / 1000000.0
               << " seconds" << std::endl;
 
+    MPI_Finalize();
     return 0;
 }

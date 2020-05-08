@@ -6,6 +6,7 @@
 #include <cmath>
 #include <algorithm>
 #include <ostream>
+#include <memory>
 
 #include "omp.h"
 
@@ -149,7 +150,7 @@ private:
         return exp(-0.5 * vx * vx) * exp(-0.5 * vy * vy) * exp(-0.5 * vz * vz) / pow(2 * M_PI, 1.5);
     }
 
-    void compute_kinetic() noexcept {
+    void compute_kinetic_x(const size_t x_start, const size_t x_end) noexcept {
         const size_t d5 = vz;
         const size_t d4 = vy * d5;
         const size_t d3 = vx * d4;
@@ -157,7 +158,7 @@ private:
         const size_t d1 = y * d2;
 
 #pragma omp parallel for collapse(3)
-        for (size_t i = 0; i < x; ++i) {
+        for (size_t i = x_start; i < x_end; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
                     const size_t i_prev = i == 0 ? x - 1 : i - 1;
@@ -188,9 +189,17 @@ private:
                 }
             }
         }
+    }
+
+    void compute_kinetic(const size_t x_start, const size_t x_end) noexcept {
+        const size_t d5 = vz;
+        const size_t d4 = vy * d5;
+        const size_t d3 = vx * d4;
+        const size_t d2 = z * d3;
+        const size_t d1 = y * d2;
 
 #pragma omp parallel for collapse(3)
-        for (size_t i = 0; i < x; ++i) {
+        for (size_t i = x_start; i < x_end; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
                     const size_t j_prev = j == 0 ? y - 1 : j - 1;
@@ -221,7 +230,7 @@ private:
         }
 
 #pragma omp parallel for collapse(3)
-        for (size_t i = 0; i < x; ++i) {
+        for (size_t i = x_start; i < x_end; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
                     const size_t k_prev = k == 0 ? z - 1 : k - 1;
@@ -251,7 +260,7 @@ private:
 
 
 #pragma omp parallel for collapse(3)
-        for (size_t i = 0; i < x; ++i) {
+        for (size_t i = x_start; i < x_end; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
                     const double ax_ijk = ax[i * y * z + j * z + k];
@@ -273,7 +282,7 @@ private:
             }
         }
 #pragma omp parallel for collapse(3)
-        for (size_t i = 0; i < x; ++i) {
+        for (size_t i = x_start; i < x_end; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
                     const double ay_ijk = ay[i * y * z + j * z + k];
@@ -295,7 +304,7 @@ private:
             }
         }
 #pragma omp parallel for collapse(3)
-        for (size_t i = 0; i < x; ++i) {
+        for (size_t i = x_start; i < x_end; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
                     double az_ijk = az[i * y * z + j * z + k];
@@ -318,7 +327,7 @@ private:
         }
 
 #pragma omp parallel for collapse(3)
-        for (size_t i = 0; i < x; ++i) {
+        for (size_t i = x_start; i < x_end; ++i) {
             for (size_t j = 0; j < y; ++j) {
                 for (size_t k = 0; k < z; ++k) {
                     double n_ijk = n[i * y * z + j * z + k];
@@ -368,12 +377,43 @@ private:
 
 public:
 
+    class TSender {
+    public:
+        virtual void send_and_receive_density(
+                double *const global_density, const double *const density, const size_t local_size,
+                const size_t frame_size,
+                size_t total_computer_count, size_t *const sizes
+        ) const = 0;
+
+        virtual void send_and_receive_forces(
+                const double *const global_ax, const double *const global_ay, const double *const global_az,
+                const double *const ax, const double *const ay, const double *const az,
+                const double *const next_ax, const double *const next_ay, const double *const next_az,
+                const double *const prev_ax, const double *const prev_ay, const double *const prev_az,
+                const size_t local_size, const size_t frame_size,
+                const size_t total_computer_count, size_t *const sizes
+        ) const = 0;
+
+        virtual void send_previous_x(double *const f, const size_t size, const size_t computer_index) const = 0;
+
+        virtual void send_next_x(double *const f, const size_t size, const size_t computer_index) const = 0;
+
+        virtual void receive_next_x(double *const f, const size_t size, const size_t computer_index) const = 0;
+
+        virtual void receive_previous_x(double *const f, const size_t size, const size_t computer_index) const = 0;
+
+        virtual ~TSender() = 0;
+    };
+
     class TBuilder;
+
+    class TWorkController;
 
     void next_step() noexcept {
         compute_poisson(x, y, z, hx, hy, hz, rde, precomputed_potential_debye, n, fi);
         compute_force(x, y, z, hx, hy, hz, Eext, fi, ax, ay, az);
-        compute_kinetic();
+        compute_kinetic_x(0, x);
+        compute_kinetic(0, x);
         compute_density();
     }
 
@@ -405,7 +445,7 @@ public:
         for (size_t i = 0; i < x; i++) {
             for (size_t j = 0; j < y; j++) {
                 for (size_t k = 0; k < z; k++) {
-                    full_charge += (n[i * y * z + j * z + k] - 1.0) * hx * hy * hz;
+                    full_charge += (n[i * y * z + j * z + k] - 1.0) * (hx * hy * hz);
                 }
             }
         }
@@ -429,6 +469,192 @@ public:
 
 };
 
+
+class TScheme::TWorkController {
+private:
+    TScheme scheme;
+
+    const size_t computer_index;
+    const size_t total_computer_count;
+    const size_t next_computer;
+    const size_t previous_computer;
+
+    const size_t local_scheme_x;
+    const size_t buffer_size;
+
+    double *const global_density;
+    double *const global_fi;
+    double *const global_ax;
+    double *const global_ay;
+    double *const global_az;
+    double *const precomputed_potential_debye;
+
+    const size_t total_x;
+    size_t *const x_sizes;
+
+    TSender *sender;
+public:
+    TWorkController(
+            const TScheme &scheme,
+            const size_t computer_index,
+            const size_t total_computer_count,
+            TSender *sender,
+            double *const global_density,
+            double *const global_fi,
+            double *const global_ax,
+            double *const global_ay,
+            double *const global_az,
+            double *const precomputed_potential_debye,
+            const size_t total_x,
+            size_t *const x_sizes
+    ) :
+            scheme(scheme),
+            computer_index(computer_index),
+            total_computer_count(total_computer_count),
+            next_computer(computer_index + 1 < total_computer_count ? computer_index + 1 : 0),
+            previous_computer(computer_index > 0 ? computer_index - 1 : total_computer_count - 1),
+            local_scheme_x(total_computer_count / computer_index + total_computer_count % computer_index),
+            buffer_size(scheme.y * scheme.z * scheme.vx * scheme.vy * scheme.vz),
+            global_density(global_density),
+            global_fi(global_fi),
+            global_ax(global_ax),
+            global_ay(global_ay),
+            global_az(global_az),
+            precomputed_potential_debye(precomputed_potential_debye),
+            total_x(total_x),
+            x_sizes(x_sizes) {
+        sender = sender;
+    }
+
+    void next_step() {
+        //Прислать в Main thread все density для подсчета потенциала и силы
+        const size_t frame_size = scheme.y * scheme.z;
+        const size_t local_size = x_sizes[computer_index] * frame_size;
+        sender->send_and_receive_density(
+                global_density, scheme.n + frame_size, local_size, frame_size,
+                total_computer_count, x_sizes
+        );
+
+        //Посчитать в Main ...
+        TScheme::compute_poisson(
+                total_x, scheme.y, scheme.z,
+                scheme.hx, scheme.hy, scheme.hz,
+                scheme.rde,
+                precomputed_potential_debye,
+                global_density,
+                global_fi
+        );
+        TScheme::compute_force(
+                total_x, scheme.y, scheme.z,
+                scheme.hx, scheme.hy, scheme.hz,
+                scheme.Eext,
+                global_fi,
+                global_ax, global_ay, global_az
+        );
+
+        //Разослать всем силу
+        sender->send_and_receive_forces(
+                global_ax, global_ay, global_az,
+                scheme.ax + frame_size, scheme.ay + frame_size, scheme.az + frame_size,
+                scheme.ax + frame_size + local_size, scheme.ay + frame_size + local_size,
+                scheme.az + frame_size + local_size,
+                scheme.ax, scheme.ay, scheme.az,
+                local_size, frame_size, total_computer_count, x_sizes
+        );
+        //-----
+
+
+//        std::copy_n(scheme.f, buffer_size, previous_buffer);
+//        std::copy_n(scheme.f + buffer_size * (scheme.x - 1), buffer_size, previous_buffer);
+
+        scheme.compute_kinetic_x(1, x_sizes[computer_index] + 1);
+
+//        for (size_t i = 0; i < buffer_size; i++) {
+//            const double dif = scheme.f_time[i] - previous_buffer[i];
+//            scheme.f_time[i] -= dif;
+//            previous_buffer[i] = dif;
+//        }
+//        for (size_t i = 0; i < buffer_size; i++) {
+//            const double dif = scheme.f_time[buffer_size * (scheme.x - 1) + i] - previous_buffer[i];
+//            scheme.f_time[buffer_size * (scheme.x - 1) + i] -= dif;
+//            previous_buffer[i] = dif;
+//        }
+
+        if (computer_index == 0) {
+            sender->send_next_x(scheme.f + buffer_size * (scheme.x - 2), buffer_size, next_computer);
+            sender->receive_previous_x(scheme.f, buffer_size, previous_computer);
+        } else {
+            sender->receive_previous_x(scheme.f, buffer_size, previous_computer);
+            sender->send_next_x(scheme.f + buffer_size * (scheme.x - 2), buffer_size, next_computer);
+        }
+
+        if (computer_index == 0) {
+            sender->send_previous_x(scheme.f + buffer_size, buffer_size, previous_computer);
+            sender->receive_next_x(scheme.f + buffer_size * (scheme.x - 1), buffer_size, next_computer);
+        } else {
+            sender->receive_next_x(scheme.f + buffer_size * (scheme.x - 1), buffer_size, next_computer);
+            sender->send_previous_x(scheme.f + buffer_size, buffer_size, previous_computer);
+        }
+
+        scheme.compute_kinetic(0, x_sizes[computer_index] + 2);
+        scheme.compute_density();
+    }
+
+    void write_density(std::ostream &of) const noexcept {
+        of << total_x << "\t" << scheme.y << "\t" << scheme.z << "\n";
+        for (size_t k = 0; k < scheme.z; ++k) {
+            for (size_t j = 0; j < scheme.y; ++j) {
+                for (size_t i = 0; i < total_x; ++i) {
+                    const size_t index = i * scheme.y * scheme.z + j * scheme.z + k;
+                    of << global_density[index] - 1.0 << "\n";
+                }
+            }
+        }
+    }
+
+    void write_potential(std::ostream &of) const noexcept {
+        of << total_x << "\t" << scheme.y << "\t" << scheme.z << "\n";
+        for (size_t k = 0; k < scheme.z; ++k) {
+            for (size_t j = 0; j < scheme.y; ++j) {
+                for (size_t i = 0; i < total_x; ++i) {
+                    const size_t index = i * scheme.y * scheme.z + j * scheme.z + k;
+                    of << global_fi[index] << "\n";
+                }
+            }
+        }
+    }
+
+    double get_full_charge() const noexcept {
+        double full_charge = 0;
+#pragma omp parallel for collapse(3)
+        for (size_t i = 0; i < total_x; i++) {
+            for (size_t j = 0; j < scheme.y; j++) {
+                for (size_t k = 0; k < scheme.z; k++) {
+                    const size_t index = i * scheme.y * scheme.z + j * scheme.z + k;
+                    full_charge += (global_density[index] - 1.0) * (scheme.hx * scheme.hy * scheme.hz);
+                }
+            }
+        }
+        return full_charge;
+    }
+
+    double get_dt() const noexcept {
+        return scheme.dt;
+    }
+
+    ~TWorkController() {
+        delete[] global_density;
+        delete[] global_fi;
+        delete[] global_ax;
+        delete[] global_ay;
+        delete[] global_az;
+        delete[] next_buffer;
+        delete[] previous_buffer;
+        delete[] x_sizes;
+        delete sender;
+    }
+};
+
 class TScheme::TBuilder final {
 
     ///Physical parameters of the system in physical units
@@ -449,6 +675,10 @@ class TScheme::TBuilder final {
     double hvx, hvy, hvz;
     double lx, ly, lz;
     size_t nx, ny, nz;
+
+    size_t computer_index;
+    size_t max_computer_indexes;
+    TSender *sender;
 
     inline static double initialDisrtibutionFunction(
             double vx,
@@ -572,6 +802,21 @@ public:
         return *this;
     }
 
+    TBuilder &set_computer_index(const size_t index) noexcept {
+        this->computer_index = index;
+        return *this;
+    }
+
+    TBuilder &set_max_computer_index(const size_t index) noexcept {
+        this->max_computer_indexes = index;
+        return *this;
+    }
+
+    TBuilder &set_sender(TSender *sender) {
+        this->sender = sender;
+        return *this;
+    }
+
     TScheme build() const {
         const double rdi = sqrt(K_B * Ti / (4.0 * M_PI * E * E * ni));
         const double rde = sqrt(K_B * Te / (4.0 * M_PI * E * E * ni));
@@ -656,6 +901,114 @@ public:
                 hx, hy, hz,
                 hvx, hvy, hvz,
                 rde_d, q_d, Eext_d, dt, vminx, vminyz, wc_d, f, f_time, n, precomputed_potential_debye
+        );
+    }
+
+    TScheme::TWorkController build_work_controller() const {
+
+        size_t *const sizes = new size_t[max_computer_indexes];
+        size_t local_x = nx / max_computer_indexes;
+        for (size_t i = 0; i < max_computer_indexes; i++) {
+            sizes[i] = local_x + (nx % max_computer_indexes > computer_index ? 1 : 0);
+        }
+        const size_t nx = sizes[computer_index] + 2;
+
+        const double rdi = sqrt(K_B * Ti / (4.0 * M_PI * E * E * ni));
+        const double rde = sqrt(K_B * Te / (4.0 * M_PI * E * E * ni));
+        const double wpi = sqrt(4.0 * M_PI * E * E * ni / mi);
+        const double vT = sqrt(K_B * Ti / mi);
+        const double vfl = E * Eext / (mi * wc);
+
+        const double Eext_d = Eext * E * rdi / (K_B * Ti);
+        const double wc_d = wc / wpi;
+        const double vfl_d = vfl / vT;
+        const double rde_d = rde / rdi;
+        const double q_d = q / (4.0 * M_PI * ni * rdi * rdi * rdi);
+
+        const double vminx = vminyz;
+        const double vmaxx = vmaxxCompute(vmaxyz, hvx, hxi, ximax, vfl_d);
+        const auto nvx = size_t(std::round((vmaxx - vminx) / hvx));
+        const auto nvy = size_t(std::round((vmaxyz - vminyz) / hvy));
+        const auto nvz = size_t(std::round((vmaxyz - vminyz) / hvz));
+
+        const double hx = lx / nx;
+        const double hy = ly / ny;
+        const double hz = lz / nz;
+
+        const double dt = 0.5 * std::fmin(hvx / (Eext_d + (q_d / (hx * hx))), hx / vmaxx);
+
+        auto *const f = new double[nx * ny * nz * nvx * nvy * nvz]{0};
+        auto *const f_time = new double[nx * ny * nz * nvx * nvy * nvz]{0};
+        auto *const n = new double[nx * ny * nz];
+        std::fill_n(n, nx * ny * nz, 1.0);
+
+        const size_t d5 = nvz;
+        const size_t d4 = nvy * d5;
+        const size_t d3 = nvx * d4;
+        const size_t d2 = nz * d3;
+        const size_t d1 = ny * d2;
+
+#pragma omp parallel for collapse(3)
+        for (size_t a = 0; a < nvx; a++) {
+            for (size_t b = 0; b < nvy; b++) {
+                for (size_t c = 0; c < nvz; c++) {
+                    const double vx_a = vminx + a * hvx;
+                    const double vy_b = vminyz + b * hvy;
+                    const double vz_c = vminyz + c * hvz;
+                    f[a * d4 + b * d5 + c] = initialDisrtibutionFunction(vx_a, vy_b, vz_c, hxi, ximax, vfl_d);
+                }
+            }
+        }
+
+#pragma omp parallel for collapse(3)
+        for (size_t i = 0; i < nx; i++) {
+            for (size_t j = 0; j < ny; j++) {
+                for (size_t k = 0; k < nz; k++) {
+                    for (size_t a = 0; a < nvx; a++) {
+                        for (size_t b = 0; b < nvy; b++) {
+                            for (size_t c = 0; c < nvz; c++) {
+                                const size_t index = i * d1 + j * d2 + k * d3 + a * d4 + b * d5 + c;
+                                f[index] = f[a * d4 + b * d5 + c];
+                                f_time[index] = f[a * d4 + b * d5 + c];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        double *precomputed_potential_debye = nullptr;
+        if (computer_index == 0) {
+            precomputed_potential_debye = new double[this->nx * ny * nz];
+            for (size_t i = 0; i < this->nx; ++i) {
+                for (size_t j = 0; j < ny; ++j) {
+                    for (size_t k = 0; k < nz; ++k) {
+                        const double x1 = i * hx;
+                        const double y1 = j * hy;
+                        const double z1 = k * hz;
+                        const size_t index = i * ny * nz + j * nz + k;
+                        precomputed_potential_debye[index] = potential_debye(hx, hy, hz, x1, y1, z1, q_d, rde_d);
+                    }
+                }
+            }
+        }
+
+        const TScheme &scheme = TScheme(
+                nx, ny, nz,
+                nvx, nvy, nvz,
+                hx, hy, hz,
+                hvx, hvy, hvz,
+                rde_d, q_d, Eext_d, dt, vminx, vminyz, wc_d, f, f_time, n, precomputed_potential_debye
+        );
+        double *const global_density = computer_index == 0 ? new double[this->nx * ny * nz] : nullptr;
+        double *const global_fi = computer_index == 0 ? new double[this->nx * ny * nz] : nullptr;
+        double *const global_ax = computer_index == 0 ? new double[this->nx * ny * nz] : nullptr;
+        double *const global_ay = computer_index == 0 ? new double[this->nx * ny * nz] : nullptr;
+        double *const global_az = computer_index == 0 ? new double[this->nx * ny * nz] : nullptr;
+        return TWorkController(
+                scheme, computer_index, max_computer_indexes, sender,
+                global_density, global_fi, global_ax, global_ay, global_az, precomputed_potential_debye,
+                this->nx, sizes
         );
     }
 };
