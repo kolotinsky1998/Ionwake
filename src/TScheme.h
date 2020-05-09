@@ -387,9 +387,9 @@ public:
 
         virtual void send_and_receive_forces(
                 const double *const global_ax, const double *const global_ay, const double *const global_az,
-                const double *const ax, const double *const ay, const double *const az,
-                const double *const next_ax, const double *const next_ay, const double *const next_az,
-                const double *const prev_ax, const double *const prev_ay, const double *const prev_az,
+                double *const ax, double *const ay, double *const az,
+                double *const next_ax, double *const next_ay, double *const next_az,
+                double *const prev_ax, double *const prev_ay, double *const prev_az,
                 const size_t local_size, const size_t frame_size,
                 const size_t total_computer_count, size_t *const sizes
         ) const = 0;
@@ -401,8 +401,6 @@ public:
         virtual void receive_next_x(double *const f, const size_t size, const size_t computer_index) const = 0;
 
         virtual void receive_previous_x(double *const f, const size_t size, const size_t computer_index) const = 0;
-
-        virtual ~TSender() = 0;
     };
 
     class TBuilder;
@@ -648,10 +646,7 @@ public:
         delete[] global_ax;
         delete[] global_ay;
         delete[] global_az;
-        delete[] next_buffer;
-        delete[] previous_buffer;
         delete[] x_sizes;
-        delete sender;
     }
 };
 

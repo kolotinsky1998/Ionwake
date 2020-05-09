@@ -31,9 +31,9 @@ class MPIController : public TScheme::TSender {
 
     void send_and_receive_forces(
             const double *const global_ax, const double *const global_ay, const double *const global_az,
-            const double *const ax, const double *const ay, const double *const az,
-            const double *const next_ax, const double *const next_ay, const double *const next_az,
-            const double *const prev_ax, const double *const prev_ay, const double *const prev_az,
+            double *const ax, double *const ay, double *const az,
+            double *const next_ax, double *const next_ay, double *const next_az,
+            double *const prev_ax, double *const prev_ay, double *const prev_az,
             size_t local_size, size_t frame_size,
             size_t total_computer_count, size_t *const sizes
     ) const override {
@@ -102,10 +102,6 @@ class MPIController : public TScheme::TSender {
     void receive_previous_x(double *const f, size_t size, size_t computer_index) const override {
         MPI_Recv(f, size, MPI_DOUBLE, computer_index, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
-
-    ~MPIController() override {
-
-    }
 };
 //
 
@@ -116,6 +112,7 @@ int main(int argc, char *argv[]) {
     int myRank, numprocs;
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
     MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+    std::cout << myRank << "/" << numprocs << std::endl;
     //#######################################//
     //## Physical parameters of the system ##//
     //#######################################//
@@ -192,7 +189,7 @@ int main(int argc, char *argv[]) {
     //##         Inizialization            ##//
     //#######################################//
 
-//    omp_set_num_threads(44);
+    omp_set_num_threads(4);
 
 
     const auto start = std::chrono::high_resolution_clock::now();
