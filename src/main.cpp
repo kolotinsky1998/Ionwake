@@ -38,6 +38,7 @@ class MPIController : public TScheme::TSender {
             size_t total_computer_count, size_t *const sizes
     ) const override {
         if (global_ax != nullptr) {
+            std::cout << "computer 0" << std::endl;
             std::copy_n(global_ax, local_size, ax);
             std::copy_n(global_ay, local_size, ay);
             std::copy_n(global_az, local_size, az);
@@ -48,19 +49,27 @@ class MPIController : public TScheme::TSender {
 
             size_t shift = local_size;
             for (size_t i = 1; i < total_computer_count; i++) {
+                std::cout << "send to " << i << std::endl;
+                std::cout << "send global_ax from " << shift << " of " << sizes[i] * frame_size << " data" << std::endl;
                 MPI_Send(global_ax + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                std::cout << "send global_ay from " << shift << " of " << sizes[i] * frame_size << " data" << std::endl;
                 MPI_Send(global_ay + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                std::cout << "send global_az from " << shift << " of " << sizes[i] * frame_size << " data" << std::endl;
                 MPI_Send(global_az + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
 
+                std::cout << "send from " << shift - frame_size << " of " << frame_size << " data" << std::endl;
                 MPI_Send(global_ax + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                 MPI_Send(global_ay + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                 MPI_Send(global_az + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
 
                 if (i + 1 == total_computer_count) {
+                    std::cout << "send from " << 0 << " of " << frame_size << " data" << std::endl;
                     MPI_Send(global_ax, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                     MPI_Send(global_ay, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                     MPI_Send(global_az, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                 } else {
+                    std::cout << "send from " << shift + sizes[i] * frame_size << " of " << frame_size << " data"
+                              << std::endl;
                     MPI_Send(global_ax + shift + sizes[i] * frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                     MPI_Send(global_ay + shift + sizes[i] * frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                     MPI_Send(global_az + shift + sizes[i] * frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
@@ -73,14 +82,19 @@ class MPIController : public TScheme::TSender {
             std::copy_n(global_ay + shift - frame_size, frame_size, prev_ay);
             std::copy_n(global_az + shift - frame_size, frame_size, prev_az);
         } else {
+            std::cout << "receive to ax of " << local_size << " data" << std::endl;
             MPI_Recv(ax, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            std::cout << "receive to ay of " << local_size << " data" << std::endl;
             MPI_Recv(ay, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            std::cout << "receive to az of " << local_size << " data" << std::endl;
             MPI_Recv(az, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
+            std::cout << "receive to next_ax of " << frame_size << " data" << std::endl;
             MPI_Recv(next_ax, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Recv(next_ay, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Recv(next_az, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
+            std::cout << "receive to prev_ax of " << frame_size << " data" << std::endl;
             MPI_Recv(prev_ax, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Recv(prev_ay, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Recv(prev_az, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -109,10 +123,10 @@ int main(int argc, char *argv[]) {
 
     MPI_Init(&argc, &argv);
 
-    int myRank, numprocs;
-    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
-    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-    std::cout << myRank << "/" << numprocs << std::endl;
+    int computer_rank, computer_count;
+    MPI_Comm_rank(MPI_COMM_WORLD, &computer_rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &computer_count);
+    std::cout << "Started: " << computer_rank << "/" << computer_count << std::endl;
     //#######################################//
     //## Physical parameters of the system ##//
     //#######################################//
@@ -191,10 +205,13 @@ int main(int argc, char *argv[]) {
 
     omp_set_num_threads(4);
 
-
     const auto start = std::chrono::high_resolution_clock::now();
     const time_t start_time_t = std::chrono::system_clock::to_time_t(start);
-    std::cout << "Start scheme crating at " << std::ctime(&start_time_t) << std::endl;
+    std::cout << "Start scheme crating at " << std::ctime(&start_time_t)
+              << "(computer " << computer_rank << ')'
+              << std::endl;
+    if (computer_rank == 0) {
+    }
 
     TScheme::TWorkController scheme = TScheme::TBuilder()
             .set_electron_temperature(Te)
@@ -210,31 +227,36 @@ int main(int argc, char *argv[]) {
             .set_velocity_step(hvx, hvy, hvz)
             .set_velocity_bound_for_yz(vminyz, vmaxyz)
             .set_integration_parameters(ximax, hxi)
-            .set_computer_index(myRank)
-            .set_max_computer_index(numprocs)
+            .set_computer_index(computer_rank)
+            .set_max_computer_index(computer_count)
             .set_sender(new MPIController())
             .build_work_controller();
 
     const auto stop = std::chrono::high_resolution_clock::now();
     std::cout << "Time taken by inizialisation: "
               << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() / 1000000.0
+              << "(computer " << computer_rank << ')'
               << " seconds" << std::endl;
 
     //####################################//
     //##         Computation            ##//
     //####################################//
-    std::cout << "##############################################\n"
-                 "##******* Comutations start ****************##\n"
-                 "##############################################\n";
+    if (computer_rank == 0) {
+        std::cout << "##############################################\n"
+                     "##******* Comutations start ****************##\n"
+                     "##############################################\n";
+    }
     const auto total_start = std::chrono::high_resolution_clock::now();
     const time_t total_start_time_t = std::chrono::system_clock::to_time_t(total_start);
     std::cout << "Start time: " << std::ctime(&total_start_time_t);
     for (size_t t = 0; t < ITmax; ++t) {
-        std::cout << "# Step " << t << std::endl;
+        if (computer_rank == 0) {
+            std::cout << "# Step " << t << std::endl;
+        }
         const auto step_start = std::chrono::high_resolution_clock::now();
         scheme.next_step();
 
-        if (myRank == 0) {
+        if (computer_rank == 0) {
             std::cout << "Current dimmensionless time: " << t * scheme.get_dt() << std::endl;
             std::cout << "Current full charge in the computational box: " << scheme.get_full_charge() << std::endl;
             if (t % T_output == 0) {
@@ -257,6 +279,7 @@ int main(int argc, char *argv[]) {
         const auto step_stop = std::chrono::high_resolution_clock::now();
         std::cout << "Time taken by one step: "
                   << std::chrono::duration_cast<std::chrono::microseconds>(step_stop - step_start).count() / 1000000.0
+                  << "(computer " << computer_rank << ')'
                   << " seconds" << std::endl;
     }
     const auto total_stop = std::chrono::high_resolution_clock::now();
@@ -264,6 +287,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Stop time: " << std::ctime(&total_stop_time_t);
     std::cout << "Time taken by scheme: "
               << std::chrono::duration_cast<std::chrono::microseconds>(total_stop - total_start).count() / 1000000.0
+              << "(computer " << computer_rank << ')'
               << " seconds" << std::endl;
 
     MPI_Finalize();

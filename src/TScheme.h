@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <ostream>
 #include <memory>
+#include <iostream>
 
 #include "omp.h"
 
@@ -79,7 +80,9 @@ private:
             az(new double[x * y * z]{0}),
             n(n),
             fi(new double[x * y * z]{0}), hy(hy), hx(hx), hz(hz), rde(rde), q(q), Eext(eext),
-            dt(dt), vminx(vminx), vminyz(vminyz), wc(wc) {}
+            dt(dt), vminx(vminx), vminyz(vminyz), wc(wc) {
+        std::cout << "ax size = " << x * y * z << std::endl;
+    }
 
     static inline double distance(double x1, double y1, double z1, double x2, double y2, double z2) noexcept {
         const double x = x1 - x2;
@@ -477,7 +480,6 @@ private:
     const size_t next_computer;
     const size_t previous_computer;
 
-    const size_t local_scheme_x;
     const size_t buffer_size;
 
     double *const global_density;
@@ -511,7 +513,6 @@ public:
             total_computer_count(total_computer_count),
             next_computer(computer_index + 1 < total_computer_count ? computer_index + 1 : 0),
             previous_computer(computer_index > 0 ? computer_index - 1 : total_computer_count - 1),
-            local_scheme_x(total_computer_count / computer_index + total_computer_count % computer_index),
             buffer_size(scheme.y * scheme.z * scheme.vx * scheme.vy * scheme.vz),
             global_density(global_density),
             global_fi(global_fi),
@@ -520,35 +521,40 @@ public:
             global_az(global_az),
             precomputed_potential_debye(precomputed_potential_debye),
             total_x(total_x),
-            x_sizes(x_sizes) {
-        sender = sender;
-    }
+            x_sizes(x_sizes),
+            sender(sender) {}
 
     void next_step() {
         //Прислать в Main thread все density для подсчета потенциала и силы
+        std::cout << computer_index << " - Sending to main(0) computer!" << std::endl;
         const size_t frame_size = scheme.y * scheme.z;
         const size_t local_size = x_sizes[computer_index] * frame_size;
         sender->send_and_receive_density(
                 global_density, scheme.n + frame_size, local_size, frame_size,
                 total_computer_count, x_sizes
         );
+        std::cout << computer_index << " - received data! computing on 0" << std::endl;
 
         //Посчитать в Main ...
-        TScheme::compute_poisson(
-                total_x, scheme.y, scheme.z,
-                scheme.hx, scheme.hy, scheme.hz,
-                scheme.rde,
-                precomputed_potential_debye,
-                global_density,
-                global_fi
-        );
-        TScheme::compute_force(
-                total_x, scheme.y, scheme.z,
-                scheme.hx, scheme.hy, scheme.hz,
-                scheme.Eext,
-                global_fi,
-                global_ax, global_ay, global_az
-        );
+        if (computer_index == 0) {
+            TScheme::compute_poisson(
+                    total_x, scheme.y, scheme.z,
+                    scheme.hx, scheme.hy, scheme.hz,
+                    scheme.rde,
+                    precomputed_potential_debye,
+                    global_density,
+                    global_fi
+            );
+            TScheme::compute_force(
+                    total_x, scheme.y, scheme.z,
+                    scheme.hx, scheme.hy, scheme.hz,
+                    scheme.Eext,
+                    global_fi,
+                    global_ax, global_ay, global_az
+            );
+        }
+
+        std::cout << computer_index << " - receiving result!" << std::endl;
 
         //Разослать всем силу
         sender->send_and_receive_forces(
@@ -560,6 +566,7 @@ public:
                 local_size, frame_size, total_computer_count, x_sizes
         );
         //-----
+        std::cout << computer_index << " - received! computing... " << std::endl;
 
 
 //        std::copy_n(scheme.f, buffer_size, previous_buffer);
@@ -906,7 +913,6 @@ public:
         for (size_t i = 0; i < max_computer_indexes; i++) {
             sizes[i] = local_x + (nx % max_computer_indexes > computer_index ? 1 : 0);
         }
-        const size_t nx = sizes[computer_index] + 2;
 
         const double rdi = sqrt(K_B * Ti / (4.0 * M_PI * E * E * ni));
         const double rde = sqrt(K_B * Te / (4.0 * M_PI * E * E * ni));
@@ -932,6 +938,7 @@ public:
 
         const double dt = 0.5 * std::fmin(hvx / (Eext_d + (q_d / (hx * hx))), hx / vmaxx);
 
+        const size_t nx = sizes[computer_index] + 2;
         auto *const f = new double[nx * ny * nz * nvx * nvy * nvz]{0};
         auto *const f_time = new double[nx * ny * nz * nvx * nvy * nvz]{0};
         auto *const n = new double[nx * ny * nz];
