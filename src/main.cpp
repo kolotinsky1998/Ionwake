@@ -50,51 +50,46 @@ class MPIController : public TScheme::TSender {
             size_t shift = local_size;
             for (size_t i = 1; i < total_computer_count; i++) {
                 std::cout << "send to " << i << std::endl;
-                std::cout << "send global_ax from " << shift << " of " << sizes[i] * frame_size << " data" << std::endl;
+
+                //center
                 MPI_Send(global_ax + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-                std::cout << "send global_ay from " << shift << " of " << sizes[i] * frame_size << " data" << std::endl;
                 MPI_Send(global_ay + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-                std::cout << "send global_az from " << shift << " of " << sizes[i] * frame_size << " data" << std::endl;
                 MPI_Send(global_az + shift, sizes[i] * frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
 
-                std::cout << "send from " << shift - frame_size << " of " << frame_size << " data" << std::endl;
-                MPI_Send(global_ax + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-                MPI_Send(global_ay + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-                MPI_Send(global_az + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-
+                //next... next can be looped
                 if (i + 1 == total_computer_count) {
-                    std::cout << "send from " << 0 << " of " << frame_size << " data" << std::endl;
                     MPI_Send(global_ax, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                     MPI_Send(global_ay, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                     MPI_Send(global_az, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                 } else {
-                    std::cout << "send from " << shift + sizes[i] * frame_size << " of " << frame_size << " data"
-                              << std::endl;
                     MPI_Send(global_ax + shift + sizes[i] * frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                     MPI_Send(global_ay + shift + sizes[i] * frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                     MPI_Send(global_az + shift + sizes[i] * frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
                 }
 
-                shift += sizes[i] * frame_size;
+                //previous
+                MPI_Send(global_ax + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                MPI_Send(global_ay + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                MPI_Send(global_az + shift - frame_size, frame_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
 
+                shift += sizes[i] * frame_size;
             }
+
             std::copy_n(global_ax + shift - frame_size, frame_size, prev_ax);
             std::copy_n(global_ay + shift - frame_size, frame_size, prev_ay);
             std::copy_n(global_az + shift - frame_size, frame_size, prev_az);
         } else {
-            std::cout << computer_index << "receive to ax of " << local_size << " data" << std::endl;
+            //center
             MPI_Recv(ax, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            std::cout << "receive to ay of " << local_size << " data" << std::endl;
             MPI_Recv(ay, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            std::cout << "receive to az of " << local_size << " data" << std::endl;
             MPI_Recv(az, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            std::cout << "receive to next_ax of " << frame_size << " data" << std::endl;
+            //next
             MPI_Recv(next_ax, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Recv(next_ay, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Recv(next_az, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            std::cout << "receive to prev_ax of " << frame_size << " data" << std::endl;
+            //previous
             MPI_Recv(prev_ax, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Recv(prev_ay, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             MPI_Recv(prev_az, frame_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -117,7 +112,6 @@ class MPIController : public TScheme::TSender {
         MPI_Recv(f, size, MPI_DOUBLE, computer_index, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 };
-//
 
 int main(int argc, char *argv[]) {
 
@@ -210,8 +204,6 @@ int main(int argc, char *argv[]) {
     std::cout << "Start scheme crating at " << std::ctime(&start_time_t)
               << "(computer " << computer_rank << ')'
               << std::endl;
-    if (computer_rank == 0) {
-    }
 
     TScheme::TWorkController *scheme = TScheme::TBuilder()
             .set_electron_temperature(Te)
