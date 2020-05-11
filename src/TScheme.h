@@ -912,8 +912,17 @@ public:
 
         size_t *const sizes = new size_t[max_computer_indexes];
         size_t local_x = nx / max_computer_indexes;
+        if (computer_index == 0) {
+            std::cout << "x sizes: ";
+        }
         for (size_t i = 0; i < max_computer_indexes; i++) {
-            sizes[i] = local_x + (nx % max_computer_indexes > computer_index ? 1 : 0);
+            sizes[i] = local_x + (nx % max_computer_indexes > i ? 1 : 0);
+            if (computer_index == 0) {
+                std::cout << sizes[i] << " ";
+            }
+        }
+        if (computer_index == 0) {
+            std::cout << std::endl;
         }
 
         const double rdi = sqrt(K_B * Ti / (4.0 * M_PI * E * E * ni));
