@@ -34,11 +34,11 @@ class MPIController : public TScheme::TSender {
             double *const ax, double *const ay, double *const az,
             double *const next_ax, double *const next_ay, double *const next_az,
             double *const prev_ax, double *const prev_ay, double *const prev_az,
-            size_t local_size, size_t frame_size,
+            size_t local_size, size_t frame_size, const size_t computer_index,
             size_t total_computer_count, size_t *const sizes
     ) const override {
         if (global_ax != nullptr) {
-            std::cout << "computer 0" << std::endl;
+            std::cout << computer_index << "- computer 0" << std::endl;
             std::copy_n(global_ax, local_size, ax);
             std::copy_n(global_ay, local_size, ay);
             std::copy_n(global_az, local_size, az);
@@ -82,7 +82,7 @@ class MPIController : public TScheme::TSender {
             std::copy_n(global_ay + shift - frame_size, frame_size, prev_ay);
             std::copy_n(global_az + shift - frame_size, frame_size, prev_az);
         } else {
-            std::cout << "receive to ax of " << local_size << " data" << std::endl;
+            std::cout << computer_index << "receive to ax of " << local_size << " data" << std::endl;
             MPI_Recv(ax, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             std::cout << "receive to ay of " << local_size << " data" << std::endl;
             MPI_Recv(ay, local_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -213,7 +213,7 @@ int main(int argc, char *argv[]) {
     if (computer_rank == 0) {
     }
 
-    TScheme::TWorkController scheme = TScheme::TBuilder()
+    TScheme::TWorkController *scheme = TScheme::TBuilder()
             .set_electron_temperature(Te)
             .set_ion_temperature(Ti)
             .set_ion_concentration(ni)
@@ -254,24 +254,24 @@ int main(int argc, char *argv[]) {
             std::cout << "# Step " << t << std::endl;
         }
         const auto step_start = std::chrono::high_resolution_clock::now();
-        scheme.next_step();
+        scheme->next_step();
 
         if (computer_rank == 0) {
-            std::cout << "Current dimmensionless time: " << t * scheme.get_dt() << std::endl;
-            std::cout << "Current full charge in the computational box: " << scheme.get_full_charge() << std::endl;
+            std::cout << "Current dimmensionless time: " << t * scheme->get_dt() << std::endl;
+            std::cout << "Current full charge in the computational box: " << scheme->get_full_charge() << std::endl;
             if (t % T_output == 0) {
                 std::ofstream file;
 
                 std::stringstream filename;
                 filename << "./density_t" << t << ".dat";
                 file.open(filename.str().c_str());
-                scheme.write_density(file);
+                scheme->write_density(file);
                 file.close();
 
                 std::stringstream filename2;
                 filename2 << "./potential_t" << t << ".dat";
                 file.open(filename2.str().c_str());
-                scheme.write_potential(file);
+                scheme->write_potential(file);
                 file.close();
             }
         }
