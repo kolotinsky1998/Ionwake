@@ -535,17 +535,13 @@ public:
 
     void next_step() {
         //Прислать в Main thread все density для подсчета потенциала и силы
-        std::cout << computer_index << " - Sending to main(0) computer!" << std::endl;
         const size_t frame_size = scheme->y * scheme->z;
         const size_t local_size = x_sizes[computer_index] * frame_size;
-        sender->send_and_receive_density(
-                global_density, scheme->n + frame_size, local_size, frame_size,
-                total_computer_count, x_sizes
-        );
-        std::cout << computer_index << " - received data! computing on 0" << std::endl;
 
         //Посчитать в Main ...
         if (computer_index == 0) {
+            std::cout << computer_index << " - computing fi and ax, ay, az!" << std::endl;
+
             TScheme::compute_poisson(
                     total_x, scheme->y, scheme->z,
                     scheme->hx, scheme->hy, scheme->hz,
@@ -563,7 +559,7 @@ public:
             );
         }
 
-        std::cout << computer_index << " - receiving result!" << std::endl;
+        std::cout << computer_index << " - receiving ax, ay, az!" << std::endl;
 
         //Разослать всем силу
         sender->send_and_receive_forces(
@@ -577,23 +573,8 @@ public:
         //-----
         std::cout << computer_index << " - received! computing... " << std::endl;
 
-
-//        std::copy_n(scheme.f, buffer_size, previous_buffer);
-//        std::copy_n(scheme.f + buffer_size * (scheme.x - 1), buffer_size, previous_buffer);
-
         scheme->compute_kinetic_x(1, x_sizes[computer_index] + 1);
-        std::cout << computer_index << " - computed x " << std::endl;
-
-//        for (size_t i = 0; i < buffer_size; i++) {
-//            const double dif = scheme.f_time[i] - previous_buffer[i];
-//            scheme.f_time[i] -= dif;
-//            previous_buffer[i] = dif;
-//        }
-//        for (size_t i = 0; i < buffer_size; i++) {
-//            const double dif = scheme.f_time[buffer_size * (scheme.x - 1) + i] - previous_buffer[i];
-//            scheme.f_time[buffer_size * (scheme.x - 1) + i] -= dif;
-//            previous_buffer[i] = dif;
-//        }
+        std::cout << computer_index << " - computed x! sending..." << std::endl;
 
         if (computer_index == 0) {
             sender->send_next_x(scheme->f + buffer_size * (scheme->x - 2), buffer_size, next_computer);
@@ -602,6 +583,7 @@ public:
             sender->receive_previous_x(scheme->f, buffer_size, previous_computer);
             sender->send_next_x(scheme->f + buffer_size * (scheme->x - 2), buffer_size, next_computer);
         }
+        std::cout << computer_index << " - x forward sended! send backward..." << std::endl;
 
         if (computer_index == 0) {
             sender->send_previous_x(scheme->f + buffer_size, buffer_size, previous_computer);
@@ -610,9 +592,17 @@ public:
             sender->receive_next_x(scheme->f + buffer_size * (scheme->x - 1), buffer_size, next_computer);
             sender->send_previous_x(scheme->f + buffer_size, buffer_size, previous_computer);
         }
+        std::cout << computer_index << " - x sended! computing kinetic and density" << std::endl;
 
         scheme->compute_kinetic(0, x_sizes[computer_index] + 2);
         scheme->compute_density();
+
+        std::cout << computer_index << " - Sending density to 0 computer!" << std::endl;
+        sender->send_and_receive_density(
+                global_density, scheme->n + frame_size, local_size, frame_size,
+                total_computer_count, x_sizes
+        );
+        std::cout << computer_index << " - density sended." << std::endl;
     }
 
     void write_density(std::ostream &of) const noexcept {
@@ -1017,6 +1007,9 @@ public:
                 rde_d, q_d, Eext_d, dt, vminx, vminyz, wc_d, f, f_time, n, precomputed_potential_debye
         );
         double *const global_density = computer_index == 0 ? new double[this->nx * ny * nz] : nullptr;
+        if (global_density != nullptr) {
+            std::fill_n(global_density, this->nx * ny * nz, 1.0);
+        }
         double *const global_fi = computer_index == 0 ? new double[this->nx * ny * nz] : nullptr;
         double *const global_ax = computer_index == 0 ? new double[this->nx * ny * nz] : nullptr;
         double *const global_ay = computer_index == 0 ? new double[this->nx * ny * nz] : nullptr;
