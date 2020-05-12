@@ -592,12 +592,12 @@ public:
             sender->receive_next_x(scheme->f + buffer_size * (scheme->x - 1), buffer_size, next_computer);
             sender->send_previous_x(scheme->f + buffer_size, buffer_size, previous_computer);
         }
-        std::cout << computer_index << " - x sended! computing kinetic and density" << std::endl;
+        std::cout << computer_index << " - x sended! computing kinetic and density..." << std::endl;
 
         scheme->compute_kinetic(0, x_sizes[computer_index] + 2);
         scheme->compute_density();
 
-        std::cout << computer_index << " - Sending density to 0 computer!" << std::endl;
+        std::cout << computer_index << " - sending density to 0 computer..." << std::endl;
         sender->send_and_receive_density(
                 global_density, scheme->n + frame_size, local_size, frame_size,
                 total_computer_count, x_sizes
