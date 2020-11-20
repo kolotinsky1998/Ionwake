@@ -1,3 +1,4 @@
-Для компиляции и запуска задачи необходимо в командной строке набрать команду
-$ ./script data
-Здесь data - название рабочей папки для текущего запуска задачи
+This git repository contains C++ OpenMP and MPI parallelized code which solve system of Vlasov equations 
+(kinetic equation for ion distribution function and Poisson equation). To solve this system of differential equations the finite difference
+scheme is used. Mathematically it is a 6D equation depending on time. The form of the equation can be found here 
+"Kompaneets, R., Morfill, G. E., & Ivlev, A. V. (2016). Wakes in complex plasmas: A self-consistent kinetic theory. Physical Review E, 93(6), 063201".
